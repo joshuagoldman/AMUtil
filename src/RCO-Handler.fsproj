@@ -1,0 +1,34 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+  <ItemGroup>
+    <!-- Info -->
+    <Compile Include="GlobalViews.fs" />
+    <Compile Include="PopupTypes.fs" />
+    <Compile Include="GlobalTypes.fs" />
+    <Compile Include="PopupView.fs" />
+    <Compile Include="JsInterop.fs" />
+    <Compile Include="Rco_Update\Types.fs" />
+    <Compile Include="Rco_Update\Logic.fs" />
+    <Compile Include="Rco_Update\State.fs" />
+    <Compile Include="Rco_Update\View.fs" />
+    <Compile Include="Main\Types.fs" />
+    <Compile Include="Main\Logic.fs" />
+    <Compile Include="Main\State.fs" />
+    <Compile Include="Main\View.fs" />
+    <!-- Counter -->
+    <!-- CounterList -->
+    <!-- Home -->
+    <!-- Navbar -->
+    <Compile Include="Types.fs" />
+    <Compile Include="State.fs" />
+    <Compile Include="App.fs" />
+    <!-- App -->
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Fable.Import.Browser" Version="1.4.0" />
+    <PackageReference Include="Feliz" Version="1.5.0" />
+  </ItemGroup>
+  <Import Project="..\.paket\Paket.Restore.targets" />
+</Project>

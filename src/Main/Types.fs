@@ -1,0 +1,33 @@
+module Main.Types
+
+open Global.Types
+
+type GitLog = {
+    Message : string
+    Commit : string
+    Date : string
+}
+
+type GitBranch = {
+    Name : string
+    Log : GitLog []
+}
+
+type Msg =
+    | Rco_Update_Msg of Rco_Update.Types.Msg
+    | Check_If_Git_Installed_Msg of CheckProcess<(Msg -> unit), Git_Installed_Result>
+    | Check_Origin_Accessibility_Msg of CheckProcess<(Msg -> unit),Origin_Access_Result>
+    | Check_If_Repo_Cloned_Msg of CheckProcess<(Msg -> unit),Git_Repo_Cloned_Result>
+    | Clone_Repo_Msg of CheckProcess<(Msg -> unit),Git_Repo_Cloned_Result>
+    | Check_Repo_Parsing_Msg of CheckProcess<(Msg -> unit),Git_Repo_Parsing_Result>
+    | Popup_Msg of Popup.Types.PopupStyle
+    | Change_Activity of App_Activity
+
+
+type Model = {
+    CurrentRcoFile : string
+    CurrentOption : PageOption
+    Activity : App_Activity
+    Rco_Update : Rco_Update.Types.Model
+}
+

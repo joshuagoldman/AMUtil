@@ -1,0 +1,22 @@
+type [<AllowNullLiteral>] ICommand =
+    [<Import("errOn", "./JsInterop/Process.js")>] 
+    abstract errOn: handler: (ICommand -> unit) -> commandObj: ICommand -> ICommand
+    [<Import("outOn", "./JsInterop/Process.js")>] 
+    abstract outOn: handler: (ICommand -> unit) -> commandObj: ICommand -> ICommand
+
+type BatObjResult = {
+    Error : option<string>
+    Process : option<ICommand>
+}
+
+[<Erase>]
+module Process =
+
+    [<Import("runCommand", "./JsInterop/Process.js")>] 
+    let runCommand (command: string) (options: string[]): BatObjResult = jsNative
+
+    [<Import("outOn", "./JsInterop/Process.js")>] 
+    let errOn (handler: string -> unit) (eventName: string) (commandObj: ICommand) : ICommand = jsNative
+
+    [<Import("errOn", "./JsInterop/Process.js")>] 
+    let outOn (handler: string -> unit) (eventName: string) (commandObj: ICommand) : ICommand = jsNative
