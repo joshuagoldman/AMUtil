@@ -114,7 +114,7 @@ let requestFormDataStyle ( fData : Browser.FormData ) =
 
         let xhr = Browser.XMLHttpRequest.Create()
         xhr.``open``(method = "POST", url = "http://localhost:3001/RcoList")
-        xhr.timeout <- 10000.0
+        xhr.timeout <- 8000.0
     
 
         xhr.onreadystatechange <- fun _ ->
@@ -558,6 +558,21 @@ let checkoutNewBranch ( newBranch : string ) dispatch positions = async{
         msgsCombined
         |> Array.iter (fun msg -> msg |> dispatch)
 }
+
+let changeRcoFaultObjValue ( rcoObjArr : RcoObject[] ) fault newVal =
+    let newArr =
+        rcoObjArr
+        |> Array.indexed
+        |> Array.map (fun (pos,rcoObj) ->
+            if pos = fault.Line
+            then
+                { rcoObj with RStateIn = newVal }
+            else
+                rcoObj
+    )
+
+    newArr
+
 
 
    

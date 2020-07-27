@@ -79,8 +79,17 @@ let update msg (model:Model) : Types.Model * Global.Types.GlobalMsg * Cmd<Msg> =
             |> Cmd.ofMsg
 
         model,Global.Types.MsgNone,resultMsg
-        
-        
+    | Change_RCO_Fault_Arr(newVal,faultObj,rcoObjArr,positions,dispatch) ->
+        let newArr =
+            Logic.changeRcoFaultObjValue
+                rcoObjArr
+                faultObj
+                newVal
 
+        let resultMsg =
+            Investigate_Issues_Rco_Files_Msg(positions,newArr,dispatch)
+            |> Cmd.ofMsg
+
+        model,Global.Types.MsgNone,resultMsg
         
         

@@ -12,6 +12,7 @@
     <Compile Include="Rco_Update\Types.fs" />
     <Compile Include="Rco_Update\Logic.fs" />
     <Compile Include="Rco_Update\State.fs" />
+    <Compile Include="Rco_Update\RcoFaultTable.fs" />
     <Compile Include="Rco_Update\View.fs" />
     <Compile Include="Main\Types.fs" />
     <Compile Include="Main\Logic.fs" />

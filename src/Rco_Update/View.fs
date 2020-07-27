@@ -265,7 +265,10 @@ let faultyLines model dispatch =
         match needsCorrection with
         | NeedsCorrection.Correction_Needed(info,faults) ->
             Html.div[
-                prop.text "Faulty Lines here to modify!"
+                Rco_Update.RcoFaultTable.root
+                    faults
+                    info
+                    dispatch
             ]
         | NeedsCorrection.No_Correction_Needed ->
             Html.none
