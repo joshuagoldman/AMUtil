@@ -400,9 +400,19 @@ let createRcoFileInfo rcoObjArr =
 
 let updateFile dispatch popupPosition rcoObjArr = async {
 
+    let fData = Browser.FormData.Create()
+
+    let startSaveMsg = "Starting save process..."
+
     let fileContent = createRcoFileInfo rcoObjArr
 
-    let fData = Browser.FormData.Create()
+    let popupInfoStr =
+        0.0 |>
+        (
+            Popup.View.getPopupMsgProgress startSaveMsg >>
+            checkingProcessPopupMsg popupPosition
+        )
+    popupInfoStr |> dispatch
 
     fData.append("file",fileContent)
 
@@ -421,10 +431,12 @@ let updateFile dispatch popupPosition rcoObjArr = async {
                 |> ProgressSocket.addEventListener_message(fun scktMsg ->
                     let eventResult = (scktMsg :?> MessageType)
 
+                    let msg = "loading file (" + (eventResult.Progress |> int |> string) + " loaded)"
+
                     let popupInfoStr =
-                        "loading file (" + (eventResult.Progress |> string) + " loaded)" |>
+                        eventResult.Progress |>
                         (
-                            Popup.View.getPopupMsgSpinner >>
+                            Popup.View.getPopupMsgProgress msg >>
                             checkingProcessPopupMsg popupPosition >>
                             dispatch
                         )

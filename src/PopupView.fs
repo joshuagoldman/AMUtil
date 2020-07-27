@@ -10,7 +10,7 @@ open Fable.React
 open Fable.React.Props
 open Popup.Types
 
-let getPopupMsgProgress ( msg : string ) percentage =
+let getPopupMsgProgress ( msg : string ) ( percentage : float ) =
     [|
         Html.div[
             prop.className "columns is-centered"
@@ -41,16 +41,19 @@ let getPopupMsgProgress ( msg : string ) percentage =
             ]
         ]
         Html.div[
-            prop.className "progress"
+            prop.className "columns is-centered"
             prop.children[
                 Html.div[
-                    prop.className "progress-bar progress-bar-striped"
-                    prop.role "progressbar"
-                    prop.ariaValueNow (percentage :float)
-                    prop.ariaValueMin 0
-                    prop.ariaValueMax 100
+                    prop.className "column"
                     prop.style[
-                        Feliz.style.width (percentage |> int)
+                        Feliz.style.margin 10
+                    ]
+                    prop.children[
+                        Html.progress[
+                            prop.className "progress is-primary"
+                            prop.value percentage
+                            prop.max 100
+                        ]
                     ]
                 ]
             ]
