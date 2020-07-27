@@ -116,7 +116,7 @@ let createButtons dispatch buttons =
     buttons
     |> Array.map (fun button ->
         Html.div[
-            prop.className ("column is-" + buttonAmount)
+            prop.className "column"
             prop.style[
                 Feliz.style.margin 10
             ]
