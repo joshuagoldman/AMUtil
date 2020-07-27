@@ -79,17 +79,33 @@ let update msg (model:Model) : Types.Model * Global.Types.GlobalMsg * Cmd<Msg> =
             |> Cmd.ofMsg
 
         model,Global.Types.MsgNone,resultMsg
-    | Change_RCO_Fault_Arr(newVal,faultObj,rcoObjArr,positions,dispatch) ->
-        let newArr =
-            Logic.changeRcoFaultObjValue
-                rcoObjArr
-                faultObj
-                newVal
+    | Change_RCO_Fault_Arr newFault ->
+        match model.CurrRcoInfo with
+        | Yes_Rco_Info correction ->
+            match correction with
+            | NeedsCorrection.Correction_Needed(rcoObjArr,faultsArr) ->
+                let newfaultsArr =
+                    faultsArr
+                    |> Array.map (fun fault ->
+                        if fault.Line = newFault.Line
+                        then
+                            newFault
+                        else
+                            fault)
 
-        let resultMsg =
-            Investigate_Issues_Rco_Files_Msg(positions,newArr,dispatch)
-            |> Cmd.ofMsg
+                let newRcoInfo =
+                    (rcoObjArr,newfaultsArr) |>
+                    (
+                        NeedsCorrection.Correction_Needed >>
+                        Yes_Rco_Info
+                    )
 
-        model,Global.Types.MsgNone,resultMsg
+                { model with CurrRcoInfo = newRcoInfo },Global.Types.MsgNone,[]
+                    
+            | _ ->
+                model,Global.Types.MsgNone,[]
+        | _ ->
+            model,Global.Types.MsgNone,[]
+
         
         

@@ -250,16 +250,17 @@ let findFaultsInRcoFile rcoObjectArr ( popupPosition : Popup.Types.PopupPosition
 
     chcekingFaultsInformationMsg
 
-    let forbiddenRstateRegex = "^(?!(All\s[0-9])|((-|\+))?R([0-9]|10)([A-Z]|\s)(?:\/[A-Z])?).*"
+    let forbiddenRstateRegex = "(\+|-|^)R[0-9]{1,2}([A-Z]|$)|All$"
     
     let faultyLines =
         rcoObjectArr
         |> Array.indexed
         |> Array.choose (fun (pos,line) ->
-            let rstateFaultyOpt = JsInterop.Regex.IsMatch forbiddenRstateRegex line.RStateIn
-            match rstateFaultyOpt with
-            | Some rstateFaulty ->
-                if rstateFaulty
+            let rstateAllowedOpt =
+                JsInterop.Regex.IsMatch forbiddenRstateRegex line.RStateIn
+            match rstateAllowedOpt with
+            | Some rstateAllowed ->
+                if rstateAllowed |> not
                 then
                     {
                         Line = pos
@@ -558,20 +559,6 @@ let checkoutNewBranch ( newBranch : string ) dispatch positions = async{
         msgsCombined
         |> Array.iter (fun msg -> msg |> dispatch)
 }
-
-let changeRcoFaultObjValue ( rcoObjArr : RcoObject[] ) fault newVal =
-    let newArr =
-        rcoObjArr
-        |> Array.indexed
-        |> Array.map (fun (pos,rcoObj) ->
-            if pos = fault.Line
-            then
-                { rcoObj with RStateIn = newVal }
-            else
-                rcoObj
-    )
-
-    newArr
 
 
 

@@ -98,11 +98,7 @@ type Msg =
     | Investigate_Issues_Rco_Files_Msg of Popup.Types.PopupPosition * RcoObject[] * (Msg -> unit)
     | Update_Rco_Changes of RcoObject[] * RcoFaultInfo[] * Popup.Types.PopupPosition * (Msg -> unit)
     | Save_New_Rco_Info of RcoObject[] * Popup.Types.PopupPosition * (Msg -> unit)
-    | Change_RCO_Fault_Arr of RstateIn: string *
-                              RcoFaultInfo *
-                              RcoObject[] *
-                              Popup.Types.PopupPosition *
-                              (Msg -> unit)
+    | Change_RCO_Fault_Arr of RcoFaultInfo 
 
 type Model = {
     Info : Git_Info
