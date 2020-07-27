@@ -31,7 +31,7 @@ let update msg (model:Model) : Types.Model * Global.Types.GlobalMsg * Cmd<Msg> =
     | Change_File_Msg fileOpt ->
         { model with CurrFile = fileOpt }, Global.Types.MsgNone,[]
 
-    | Change_Current_Branch_Msg branch_name ->
+    | Change_Current_Branch_Msg(branch_name,positions,dispatch) ->
         match model.Info with
         | No_Git_Info ->
             model, Global.Types.MsgNone,[]
@@ -39,6 +39,9 @@ let update msg (model:Model) : Types.Model * Global.Types.GlobalMsg * Cmd<Msg> =
             let newInfo =
                 { info with CurrBranch = branch_name }
                 |> Yes_Git_info
+
+            Logic.checkoutNewBranch branch_name dispatch positions  
+            |> Async.StartImmediate
 
             { model with Info = newInfo }, Global.Types.MsgNone,[]
     | Change_Current_Rco_Info info ->
@@ -60,8 +63,24 @@ let update msg (model:Model) : Types.Model * Global.Types.GlobalMsg * Cmd<Msg> =
             |> Cmd.fromAsyncSeveral
 
         model, Global.Types.MsgNone, msgs
-    | Save_New_Rco_Info rcoObj ->
+    | Save_New_Rco_Info(rcoObjArr,postions,dispatch) ->
+        rcoObjArr
+        |> Logic.updateFile dispatch postions
+        |> Async.StartImmediate
+
         model, Global.Types.MsgNone,[]
+
+    | Update_Rco_Changes(info,faults,positions,dispatch) ->
+        let newRcoObjArr =
+            Logic.modifyRcoLines info faults
+
+        let resultMsg =
+            Investigate_Issues_Rco_Files_Msg(positions,newRcoObjArr,dispatch)
+            |> Cmd.ofMsg
+
+        model,Global.Types.MsgNone,resultMsg
+        
+        
 
         
         

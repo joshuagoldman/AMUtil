@@ -105,17 +105,27 @@ let killPopupMsg =
         Types.Global_Msg
     )
 
-let requestFormDataStyle ( fData : Browser.FormData ) = 
+type HttpResponse =
+    | TimedOut of string
+    | Success of Browser.XMLHttpRequest
+
+let requestFormDataStyle ( fData : Browser.FormData ) =
     Async.FromContinuations <| fun (resolve,_,_) ->
+
         let xhr = Browser.XMLHttpRequest.Create()
-        xhr.``open``(method = "POST", url = "http://localhost:3001/shellcommand")
-        xhr.setRequestHeader("Content-Type","application/x-www-form-urlencoded")
-        
+        xhr.``open``(method = "POST", url = "http://localhost:3001/RcoList")
+        xhr.timeout <- 10000.0
+    
 
         xhr.onreadystatechange <- fun _ ->
             if xhr.readyState = (4 |> float)
             then
-                resolve(xhr)
+                resolve (xhr |> HttpResponse.Success)
+
+        xhr.ontimeout <-fun _ ->
+            let timeoutStr =
+                "Connection timed out. The RCO List file does sometimes contain infinite rows. If that's the case, then create a new RCO List file containing relevant columns only!"
+            resolve (timeoutStr |> HttpResponse.TimedOut)
 
         xhr.send(fData)
 
@@ -140,75 +150,83 @@ let getFileListData model dispatch popupPosition = async {
             
         let! res = requestFormDataStyle fData
             
-        match res.status with
-        | 200.0 ->
-            let parsedInfo = parseRcoData res.responseText
+        match res with
+        | HttpResponse.Success resSuccess ->
+            match resSuccess.status with
+            | 200.0 ->
+                let parsedInfo = parseRcoData resSuccess.responseText
 
-            match parsedInfo with
-            | Ok info ->
-                let question4Msg =
-                    "The RCO file list was successfully parsed. Would you like to check for any abnormalities within the file?"
+                match parsedInfo with
+                | Ok info ->
+                    let question4Msg =
+                        "The RCO file list was successfully parsed. Would you like to check for any abnormalities within the file?"
 
-                let investigateIssuesMsg =
-                    (popupPosition,info,dispatch) |>
-                    (
-                        Investigate_Issues_Rco_Files_Msg
-                    )
+                    let investigateIssuesMsg =
+                        (popupPosition,info,dispatch) |>
+                        (
+                            Investigate_Issues_Rco_Files_Msg
+                        )
 
-                let saveNewRcoDataMsg =
-                    info |>
-                    (
-                        Save_New_Rco_Info
-                    )
+                    let saveNewRcoDataMsg =
+                        (info,popupPosition,dispatch) |>
+                        (
+                            Save_New_Rco_Info
+                        )
 
-                let turnIntoMsgWithKillPopup msgChosen =
-                    [|
-                        killPopupMsg
-                        msgChosen
-                    |]
-                    |> Types.Msg.Batch
+                    let turnIntoMsgWithKillPopup msgChosen =
+                        [|
+                            killPopupMsg
+                            msgChosen
+                        |]
+                        |> Types.Msg.Batch
                     
 
-                let! questionPopupMsg =
-                    QuestionPopup
-                        question4Msg
-                        (investigateIssuesMsg |> turnIntoMsgWithKillPopup)
-                        (saveNewRcoDataMsg |> turnIntoMsgWithKillPopup)
-                        dispatch
+                    let! questionPopupMsg =
+                        QuestionPopup
+                            question4Msg
+                            (investigateIssuesMsg |> turnIntoMsgWithKillPopup)
+                            (saveNewRcoDataMsg |> turnIntoMsgWithKillPopup)
+                            dispatch
+                            popupPosition
+
+                    let newRcoInfoMsg =
+                        info |>
+                        (
+                            NeedsCorrection.No_Correction_Needed >>
+                            Yes_Rco_Info >>
+                            Change_Current_Rco_Info
+                        )
+
+                    let msgCombined =
+                        [|
+                            newRcoInfoMsg
+                            questionPopupMsg
+                        |]
+
+                    msgCombined
+                    |> Array.iter (fun msg -> msg |> dispatch)
+                    
+                | Error err ->
+
+                    let! errorMsg =
                         popupPosition
+                        |> errorPopupMsg err killPopupMsg dispatch 
 
-                let newRcoInfoMsg =
-                    info |>
-                    (
-                        NeedsCorrection.No_Correction_Needed >>
-                        Yes_Rco_Info >>
-                        Change_Current_Rco_Info
-                    )
-
-                let msgCombined =
-                    [|
-                        newRcoInfoMsg
-                        questionPopupMsg
-                    |]
-
-                msgCombined
-                |> Array.iter (fun msg -> msg |> dispatch)
-                    
-            | Error err ->
+                    errorMsg |> dispatch
+            | _ ->
 
                 let! errorMsg =
                     popupPosition
-                    |> errorPopupMsg err killPopupMsg dispatch 
+                    |> errorPopupMsg resSuccess.responseText killPopupMsg dispatch 
 
                 errorMsg |> dispatch
-        | _ ->
+        | HttpResponse.TimedOut msg ->
 
             let! errorMsg =
                 popupPosition
-                |> errorPopupMsg res.responseText killPopupMsg dispatch 
+                |> errorPopupMsg msg killPopupMsg dispatch 
 
             errorMsg |> dispatch
-        
     | _ -> 
         let errorMsgStr =
             "No Rco list file to update!"
@@ -258,7 +276,7 @@ let findFaultsInRcoFile rcoObjectArr ( popupPosition : Popup.Types.PopupPosition
     match faultyLines.Length with
     | 0 ->
         let saveNewRcoFileMsg =
-            rcoObjectArr 
+            (rcoObjectArr,popupPosition,dispatch) 
             |> Save_New_Rco_Info
             |> fun x -> [|x|]
     
@@ -285,7 +303,7 @@ let findFaultsInRcoFile rcoObjectArr ( popupPosition : Popup.Types.PopupPosition
             [|
                 killPopupMsg
 
-                rcoObjectArr 
+                (rcoObjectArr,popupPosition,dispatch) 
                 |> Save_New_Rco_Info
             |]
             |> Types.Batch
@@ -335,21 +353,11 @@ let createRcoFileInfo rcoObjArr =
         RStateIn = "R-stateIN"
         RStateOut = "R-stateOUT"
         RcLatEvaluate = "RCLAT-Evaluate"
-        RcLatTextOut = {
-            Formula =  "\"Perform RCO \"&D2"
-            Result = "RCLAT-Textout"
-            Ref = "O2:O10"
-            ShareType = "shared"
-        }
+        RcLatTextOut = "RCLAT-Textout"
         ScPrttEvaluate = "SCPRTT-Evaluate"
         ScPrttTextOut = "SCPRTT�Textout"
         CloudLatEvaluate = "CloudLAT-Evaluate"
-        CloudLatTextOut = {
-            Formula =  "\"Perform RCO \"&D2"
-            Result = "CloudLAT-Textout"
-            Ref = "O2:O10"
-            ShareType = "shared"
-        }
+        CloudLatTextOut = "CloudLAT-Textout"
         ExecutionOrder = "Executionorder"
         MfgDateFrom = "Manucfacturingdate(From)"
         MfgDateTo = "Manucfacturingdate(To)"
@@ -372,11 +380,11 @@ let createRcoFileInfo rcoObjArr =
             row.RStateIn 
             row.RStateOut
             row.RcLatEvaluate 
-            row.RcLatTextOut.Result
+            row.RcLatTextOut
             row.ScPrttEvaluate
             row.ScPrttTextOut
             row.CloudLatEvaluate
-            row.CloudLatTextOut.Result
+            row.CloudLatTextOut
             row.ExecutionOrder
             row.MfgDateFrom
             row.MfgDateTo
@@ -394,89 +402,149 @@ let updateFile dispatch popupPosition rcoObjArr = async {
 
     let fileContent = createRcoFileInfo rcoObjArr
 
-    let requestData = "content=" + fileContent
+    let fData = Browser.FormData.Create()
 
-    let request = async{
-        let xhr = Browser.XMLHttpRequest.Create()
-        xhr.``open``(method = "POST", url = "http://localhost:3001/save")
-        
-        xhr.send(requestData) |> fun  _ -> ()
-    }
+    fData.append("file",fileContent)
 
-    let mutable time = 0
-    let mutable exitLoop = false
+    let request =
+        Async.FromContinuations <| fun (resolve,_,_) ->
 
-    let socketResponse = ProgressSocket.connect("http://localhost:3001")
+            let xhr = Browser.XMLHttpRequest.Create()
+            xhr.``open``(method = "POST", url = "http://localhost:3001/save")
+            xhr.timeout <- 10000.0
+
+            let socketResponse = ProgressSocket.connect("http://localhost:3001")
     
-    match socketResponse.ErrorMessage with
-    | None  ->
-        socketResponse.Socket.Value
-        |> ProgressSocket.addEventListener_message(fun scktMsg ->
-            let eventResult = (scktMsg :?> MessageType)
+            match socketResponse.ErrorMessage with
+            | None  ->
+                socketResponse.Socket.Value
+                |> ProgressSocket.addEventListener_message(fun scktMsg ->
+                    let eventResult = (scktMsg :?> MessageType)
 
-            let popupInfoStr =
-                "loading file (" + (eventResult.Progress |> string) + " loaded)" |>
-                (
-                    Popup.View.getPopupMsgSpinner >>
-                    checkingProcessPopupMsg popupPosition >>
-                    dispatch
-                )
+                    let popupInfoStr =
+                        "loading file (" + (eventResult.Progress |> string) + " loaded)" |>
+                        (
+                            Popup.View.getPopupMsgSpinner >>
+                            checkingProcessPopupMsg popupPosition >>
+                            dispatch
+                        )
 
-            popupInfoStr
+                    popupInfoStr
                             
-        ) "message"
-        |> ProgressSocket.addEventListener_message(fun scktMsg ->
-            let response = (scktMsg :?> FinishedType)
+                    ) "message"
+                |> ProgressSocket.addEventListener_message(fun scktMsg ->
+                    let response = (scktMsg :?> FinishedType)
             
-            socketResponse.Socket.Value 
-            |> ProgressSocket.disconnect
-            |> ignore
+                    socketResponse.Socket.Value 
+                    |> ProgressSocket.disconnect
+                    |> ignore
 
-            match response.Status with
-            | 200 ->
-                let errorMsg =
-                    popupPosition
-                    |> errorPopupMsgNotAsync response.Msg killPopupMsg dispatch
+                    resolve response
 
-                errorMsg |> dispatch
-            | _ ->
-                let popupInfoStr =
-                    "Error code 404: " + response.Msg 
+                    
+                    ) "finished"
+                |> ignore
 
-                let errorMsg =
-                    popupPosition
-                    |> errorPopupMsgNotAsync popupInfoStr killPopupMsg dispatch
+            | Some error ->
 
-                errorMsg |> dispatch
+                resolve
+                    {
+                        Status = 404
+                        Msg = error
+                    }
 
-            exitLoop <- true
-            ) "finished"
-        |> ignore
+            xhr.ontimeout <- fun _ ->
+                let error =
+                    "Connection timed out."
 
-    | Some error ->
-        exitLoop <- true
+                resolve
+                    {
+                        Status = 404
+                        Msg = error
+                    }
 
-        let! errorMsg =
-            popupPosition
-            |> errorPopupMsg error killPopupMsg dispatch
+            xhr.send(fData) |> fun  _ -> ()
 
-        errorMsg |> dispatch
+    let! response = request
 
-    do! request
+    popupPosition |>
+    (
+        errorPopupMsgNotAsync response.Msg killPopupMsg dispatch >>
+        dispatch
+    )
+}
 
-    while time < 15000 && exitLoop = false  do
-        do! Async.Sleep 10
-        time <- time + 10
-        if time > 15000
-        then
-            let error =
-                "Connection timed out."
-            let! errorMsg =
-                popupPosition
-                |> errorPopupMsg error killPopupMsg dispatch
+let modifyRcoLines rcoObjArr ( faults : RcoFaultInfo[] ) =
+    let newRcoObjectArr =
+        rcoObjArr
+        |> Array.indexed
+        |> Array.map (fun (pos,line) ->
+            faults
+            |> Array.tryPick (fun faultLine ->
+                if faultLine.Line = pos
+                then
+                    Some faultLine
+                else
+                    None)
+            |> function
+                | res when res.IsSome ->
+                    match res.Value.Correction with
+                    | Correction rstateInNew ->
+                        { line with RStateIn = rstateInNew}
+                    | _ -> line
+                
+                | _ -> line
+            )
+    newRcoObjectArr
 
-            errorMsg |> dispatch
+let checkoutNewBranch ( newBranch : string ) dispatch positions = async{
 
+    do! Async.Sleep 2000
+
+    let prms =
+        String.Format(
+            "shellCommand=cd server;cd loganalyzer;git checkout {0}",
+            newBranch
+        )
+
+    let! res = request prms
+
+    match res.status with
+    | 200.0 -> ()
+            
+    | _ ->
+        let popupMsg =
+            res.responseText |>
+            (
+                Popup.View.getPopupMsg >>
+                checkingProcessPopupMsg positions
+            )
+
+        let exitMsg =
+            "You've been thrown out due to some error. Please refresh to return"
+            |> Popup.View.getPopupMsg
+
+        let button =
+            Popup.View.simpleOkButton
+                            killPopupMsg
+                            dispatch
+                        
+        let! kickedOutMsg =
+            (button,exitMsg) |>
+            (
+                GlobalMsg.Go_To_Failed_Page >>
+                Types.Global_Msg >>
+                delayedMessage 3000
+            )
+
+        let msgsCombined =
+            [|
+                popupMsg
+                kickedOutMsg
+            |]
+
+        msgsCombined
+        |> Array.iter (fun msg -> msg |> dispatch)
 }
 
 

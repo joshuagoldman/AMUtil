@@ -74,20 +74,6 @@ type GitUserDataType<'a> = {
 type StringOrStringArray =
     | IsString of GitUserDataType<string option> 
     | IsStringArray of GitUserDataType<string[] option>  
-    
-let request ( data : obj ) = 
-    Async.FromContinuations <| fun (resolve,_,_) ->
-        let xhr = Browser.XMLHttpRequest.Create()
-        xhr.``open``(method = "POST", url = "http://localhost:3001/shellcommand")
-        xhr.setRequestHeader("Content-Type","application/x-www-form-urlencoded")
-        
-
-        xhr.onreadystatechange <- fun _ ->
-            if xhr.readyState = (4 |> float)
-            then
-                resolve(xhr)
-
-        xhr.send(data)
 
 let checkIfProcessExists dispatch = async{
 
@@ -266,14 +252,14 @@ let checkRepositoryDownloaded dispatch = async{
 
     do! Async.Sleep 3000
 
-    let prms = "shellCommand=cd server;cd loganalyzer;git status"
+    let prms = "shellCommand=cd server;cd loganalyzer;git remote -v"
 
     let! res = request prms
 
     match res.status with
     | 200.0 ->
         let doesRepoExist =
-            "On branch"
+            "ssh://git@segaeesl01.eipu.ericsson.se:8081/nodetest/loganalyzer.git"
             |> res.responseText.Contains
 
         match doesRepoExist with

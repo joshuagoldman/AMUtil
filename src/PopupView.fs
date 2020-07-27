@@ -114,9 +114,12 @@ let createButtons dispatch buttons =
     |> Array.map (fun button ->
         Html.div[
             prop.className ("column is-" + buttonAmount)
+            prop.style[
+                Feliz.style.margin 10
+            ]
             prop.children[
                 Html.div[
-                    prop.className "button is"
+                    prop.className "button"
                     prop.text button.Name
                     prop.onClick (fun _ ->
                         button.Msg |> dispatch)
@@ -139,7 +142,10 @@ let simpleOkButton msg dispatch =
 let yesNoButtons yesMsg noMsg dispatch =
     [
         Html.div[
-            prop.className "columns is-centered"
+            prop.className "column is-2"
+            prop.style[
+                Feliz.style.margin 10
+            ]
             prop.children[
                 Html.div[
                     prop.className "button"
@@ -149,18 +155,15 @@ let yesNoButtons yesMsg noMsg dispatch =
             ]
         ]
         Html.div[
-            prop.className "columns is-centered"
+            prop.className "column is-2"
+            prop.style[
+                Feliz.style.margin 10
+            ]
             prop.children[
                 Html.div[
-                    prop.className "column"
-                    prop.children[
-                        Html.div[
-                            prop.className "button"
-                            prop.text "No"
-                            prop.onClick (fun _ -> noMsg |> dispatch)
-                        ]
-                    ]
-                    
+                    prop.className "button"
+                    prop.text "No"
+                    prop.onClick (fun _ -> noMsg |> dispatch)
                 ]
             ]
         ]
@@ -219,16 +222,16 @@ let popup_view popup_Style =
                     standardPopupAppearance >>
                     prop.style
                 )
-                prop.children(
-                    buttons
-                    |> Array.append(
-                        Html.div[
-                            prop.className "columns is-centered"
-                            prop.children msg
-                        ]
-                        |> fun x -> [|x|]
-                    )
-                ) 
+                prop.children[
+                    Html.div[
+                        prop.className "columns is-centered"
+                        prop.children msg
+                    ]
+                    Html.div[
+                        prop.className "columns is-centered"
+                        prop.children buttons
+                    ]
+                ]   
             ]
     | Has_No_Alternatives(msgs,position) ->
         Html.div[

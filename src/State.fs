@@ -116,4 +116,16 @@ let update msg (model:Model) : Types.Model * Cmd<Types.Msg> =
             { model with Git = git_decision }, []
         | Popup_Msg_Global style ->
             { model with Popup = style }, []
+        | Go_To_Failed_Page(button,msgs) ->
+            let popupOption =
+                (button,msgs)
+                |> Popup.Types.Simple_Ok
+
+            let popupStyle =
+                (popupOption,Main.Logic.standardPositions)
+                |> Popup.Types.Has_Alternatives
+
+            { model with Popup = popupStyle }, []
+                
+        
 

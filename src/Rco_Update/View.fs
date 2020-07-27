@@ -158,16 +158,27 @@ let standardBranchAlt =
         ]
     |]
 
-let handleBranchNameChange ( ev : Browser.Types.Event ) =
+let handleBranchNameChange ( ev : Browser.Types.Event ) dispatch =
     let branchName = ev.target?value |> string
 
     match branchName with
     | "Choose Branch..." ->
         Curr_Rco_File.No_Rco_File
         |> Types.Msg.Change_File_Msg
-        |> fun x -> [|Global.Types.MsgNone |> Types.Global_Msg|]
+        |> fun x ->
+            [|
+                x
+
+                Global.Types.MsgNone
+                |> Types.Global_Msg
+            |]
     | _ ->
-        [|branchName |> Types.Msg.Change_Current_Branch_Msg|]
+        let positions =
+            {
+                Popup.Types.PosX = ( ev?pageX : float )
+                Popup.Types.PosY = ( ev?pageY : float )
+            }
+        [|(branchName,positions,dispatch) |> Types.Msg.Change_Current_Branch_Msg|]
         
 
 let branchDropDown model dispatch =
@@ -194,9 +205,9 @@ let branchDropDown model dispatch =
                                         fontWeight.bold
                                     ]
                                     prop.onChange ( fun ev ->
-                                        ev |>
+                                        dispatch |>
                                         (
-                                            handleBranchNameChange >>
+                                            handleBranchNameChange ev >>
                                             Array.iter (fun msg -> msg |> dispatch)
                                         ))
                                     prop.id "inlineFormCustomSelect"
@@ -260,13 +271,21 @@ let faultyLines model dispatch =
             Html.none
     | _ -> Html.none
 
+
 let RetryRcoUpdate model dispatch =
     match model.CurrRcoInfo with
     | Yes_Rco_Info needsCorrection ->
         match needsCorrection with
         | NeedsCorrection.Correction_Needed(info,faults) ->
             Html.div[
-                prop.text "Faulty Lines here to modify!"
+                prop.className "button"
+                prop.text "Update modified RCO List"
+                prop.style[
+                    style.fontSize 17
+                    style.fontWeight.bold
+                    style.color "black"
+                ]
+                prop.onClick (fun ev -> Types.Msg.Update_Rco_Changes(info,faults,ev |> Global.Types.getPositions,dispatch) |> dispatch)
             ]
         | NeedsCorrection.No_Correction_Needed ->
             Html.none
@@ -315,14 +334,6 @@ let root model dispatch =
                         ]
                     ]
                 ]
-                prop.children[
-                    Html.div[
-                        prop.className "column"
-                        prop.children[
-                            currentBranchInfo model
-                        ]
-                    ]
-                ]
             ]
             Html.div[
                 prop.className "columns is-centered"
@@ -331,6 +342,12 @@ let root model dispatch =
                         prop.className "column"
                         prop.children[
                             faultyLines model dispatch
+                        ]
+                    ]
+                    Html.div[
+                        prop.className "column"
+                        prop.children[
+                            RetryRcoUpdate model dispatch
                         ]
                     ]
                 ]

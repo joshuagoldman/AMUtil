@@ -22,11 +22,11 @@ type RcoObject = {
     RStateIn : string
     RStateOut : string
     RcLatEvaluate : string
-    RcLatTextOut : ExcelFormula
+    RcLatTextOut : string
     ScPrttEvaluate : string
     ScPrttTextOut : string
     CloudLatEvaluate : string
-    CloudLatTextOut : ExcelFormula
+    CloudLatTextOut : string
     ExecutionOrder : string
     MfgDateFrom : string
     MfgDateTo : string
@@ -35,14 +35,6 @@ type RcoObject = {
     Cost : string
     Comments : string
 };
-
-let ExcelFormulaDecoder : Decoder<ExcelFormula> = 
-    Decode.object (fun fields -> {
-        Formula = fields.Required.At ["formula"] Decode.string
-        Result = fields.Required.At ["result"] Decode.string
-        Ref = fields.Required.At ["ref"] Decode.string
-        ShareType = fields.Required.At ["sharedType"] Decode.string
-    })
 
 let RcoObjectDecoder : Decoder<RcoObject> = 
     Decode.object (fun fields -> {
@@ -56,11 +48,11 @@ let RcoObjectDecoder : Decoder<RcoObject> =
         RStateIn = fields.Required.At ["RStateIn"] Decode.string
         RStateOut = fields.Required.At ["RStateOut"] Decode.string
         RcLatEvaluate = fields.Required.At ["RcLatEvaluate"] Decode.string
-        RcLatTextOut = fields.Required.At ["RcLatTextOut"] ExcelFormulaDecoder
+        RcLatTextOut = fields.Required.At ["RcLatTextOut"] Decode.string
         ScPrttEvaluate = fields.Required.At ["ScPrttEvaluate"] Decode.string
         ScPrttTextOut = fields.Required.At ["ScPrttTextOut"] Decode.string
         CloudLatEvaluate = fields.Required.At ["CloudLatEvaluate"] Decode.string
-        CloudLatTextOut = fields.Required.At ["CloudLatTextOut"] ExcelFormulaDecoder
+        CloudLatTextOut = fields.Required.At ["CloudLatTextOut"] Decode.string
         ExecutionOrder = fields.Required.At ["ExecutionOrder"] Decode.string
         MfgDateFrom = fields.Required.At ["MfgDateFrom"] Decode.string
         MfgDateTo = fields.Required.At ["MfgDateTo"] Decode.string
@@ -106,12 +98,14 @@ type Msg =
     | Batch of Msg[]
     | Get_New_Info_Msg of Git_Info
     | Change_File_Msg of Curr_Rco_File
-    | Change_Current_Branch_Msg of Branch_Name : string
+    | Change_Current_Branch_Msg of Branch_Name : string * Popup.Types.PopupPosition * (Msg -> unit) 
     | Change_Current_Rco_Info of Curr_Rco_Info
     | Global_Msg of GlobalMsg
     | Get_Rco_Data_Msg of (Msg -> unit) * Types.Event 
     | Investigate_Issues_Rco_Files_Msg of Popup.Types.PopupPosition * RcoObject[] * (Msg -> unit)
-    | Save_New_Rco_Info of RcoObject[]
+    | Update_Rco_Changes of RcoObject[] * RcoFaultInfo[] * Popup.Types.PopupPosition * (Msg -> unit)
+    | Save_New_Rco_Info of RcoObject[] * Popup.Types.PopupPosition * (Msg -> unit)
+    | Checkout_New_Branch of BranchName: string * Popup.Types.PopupPosition * (Msg -> unit)
 
 type Model = {
     Info : Git_Info

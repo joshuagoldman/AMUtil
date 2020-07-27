@@ -41,16 +41,13 @@ io.sockets.on(`connection`, (sckt) => {
 
 const progress = require('progress-stream');
 const streamBuffers = require('stream-buffers');
+app.use(bodyParser({limit: '10mb'}));
 
 app.post("/save", (req, res, next) => {
-    let rcoContent = req.body.content;
     const rcoPathFromRepo = `Ericsson.AM.RcoHandler/EmbeddedResources/RBS6000/Aftermarket/RBS RCO List.csv` 
     let pathRcoFile = __dirname.replace(/\\/g,"/") + `/../public/loganalyzer/${rcoPathFromRepo}`;
 
-    //var blob = new Blob([rcoContent],
-     //           { type: "text/plain;charset=utf-8" });
-
-     var buffer = Buffer.from(rcoContent, "utf-8");
+     var buffer = new Buffer(req.body.file, 'base64');
 
     var myReadableStreamBuffer = new streamBuffers.ReadableStreamBuffer({
         frequency: 1000,      // in milliseconds.
@@ -162,55 +159,63 @@ app.post("/RcoList", (req, res) => {
     
     var wb = new Excel.Workbook();
     var rco = new Buffer(req.files.file.data, 'base64');
+    console.log(rco.length);
 
-    wb.xlsx.load(rco).then(function(){
-        var sh = wb.getWorksheet("Combined");
+    try {
 
-        var jsonArr = new Array();
-        var headerArr = new Array()
+        wb.xlsx.load(rco).
+        then(function(){
+            var sh = wb.getWorksheet("Combined");
 
-        for (l = 1; l <= 26; l++) {
-            var headerName = sh.getRow(1).getCell(l).value.toString().
-            replace(/\s+/g,"");
-            headerArr.push(
-                {
-                    Header : headerName,
-                    Position : l
-                }
-            );
-        }
+            var jsonArr = new Array();
+            var headerArr = new Array()
 
-        console.log(sh.rowCount);
-        for (i = 2; i <= sh.rowCount; i++) {
-            var jsonObj = {
-                ReleaseDate : sh.getRow(i).getCell(getVal("ReleaseDate",headerArr)).value || "",
-                RcoDocument : sh.getRow(i).getCell(getVal("RCOdoc",headerArr)).value || "",
-                RcoRevision : sh.getRow(i).getCell(getVal("RCOrev",headerArr)).value,
-                BarcodeText : sh.getRow(i).getCell(getVal("MatchthestringinRCO-doc(Barcodetext)",headerArr)).value || "",
-                Slogan : sh.getRow(i).getCell(getVal("Slogan",headerArr)).value || "",
-                ProductNumber : sh.getRow(i).getCell(getVal("Productnumber",headerArr)).value || "",
-                ProductGroup : sh.getRow(i).getCell(getVal("ProductGroup",headerArr)).value || "",
-                RStateIn : sh.getRow(i).getCell(getVal("R-stateIN",headerArr)).value || "",
-                RStateOut : sh.getRow(i).getCell(getVal("R-stateOUT",headerArr)).value || "",
-                RcLatEvaluate : sh.getRow(i).getCell(getVal("RCLAT-Evaluate",headerArr)).value || "",
-                RcLatTextOut : sh.getRow(i).getCell(getVal("RCLAT-Textout",headerArr)).value || "",
-                ScPrttEvaluate : sh.getRow(i).getCell(getVal("SCPRTT-Evaluate",headerArr)).value || "",
-                ScPrttTextOut : sh.getRow(i).getCell(getVal("SCPRTT-Textout",headerArr)).value || "",
-                CloudLatEvaluate : sh.getRow(i).getCell(getVal("CloudLAT-Evaluate",headerArr)).value || "",
-                CloudLatTextOut : sh.getRow(i).getCell(getVal("CloudLAT-Textout",headerArr)).value || "",
-                ExecutionOrder : sh.getRow(i).getCell(getVal("Executionorder",headerArr)).value || "",
-                MfgDateFrom : sh.getRow(i).getCell(getVal("Manucfacturingdate(From)",headerArr)).value || "",
-                MfgDateTo : sh.getRow(i).getCell(getVal("Manucfacturingdate(To)",headerArr)).value || "",
-                ProductFamily : sh.getRow(i).getCell(getVal("Prod.Family",headerArr)).value || "",
-                Closed : sh.getRow(i).getCell(getVal("Closed",headerArr)).value || "",
-                Cost : sh.getRow(i).getCell(getVal("Cost",headerArr)).value || "",
-                Comments : sh.getRow(i).getCell(getVal("Comments",headerArr)).value || ""
-            };
-            jsonArr.push(jsonObj);
-        }
+            for (l = 1; l <= 26; l++) {
+                var headerName = sh.getRow(1).getCell(l).value.toString().
+                replace(/\s+/g,"");
+                headerArr.push(
+                    {
+                        Header : headerName,
+                        Position : l
+                    }
+                );
+            }
 
-        return res.json(jsonArr);
-    }).catch((err) => {
-        return res.status(404).send(err);
-    });
+            console.log(sh.rowCount);
+            for (i = 2; i <= sh.rowCount; i++) {
+                var jsonObj = {
+                    ReleaseDate : sh.getRow(i).getCell(getVal("ReleaseDate",headerArr)).toString() || "",
+                    RcoDocument : sh.getRow(i).getCell(getVal("RCOdoc",headerArr)).toString() || "",
+                    RcoRevision : sh.getRow(i).getCell(getVal("RCOrev",headerArr)).toString(),
+                    BarcodeText : sh.getRow(i).getCell(getVal("MatchthestringinRCO-doc(Barcodetext)",headerArr)).toString() || "",
+                    Slogan : sh.getRow(i).getCell(getVal("Slogan",headerArr)).toString() || "",
+                    ProductNumber : sh.getRow(i).getCell(getVal("Productnumber",headerArr)).toString() || "",
+                    ProductGroup : sh.getRow(i).getCell(getVal("ProductGroup",headerArr)).toString() || "",
+                    RStateIn : sh.getRow(i).getCell(getVal("R-stateIN",headerArr)).toString() || "",
+                    RStateOut : sh.getRow(i).getCell(getVal("R-stateOUT",headerArr)).toString() || "",
+                    RcLatEvaluate : sh.getRow(i).getCell(getVal("RCLAT-Evaluate",headerArr)).toString() || "",
+                    RcLatTextOut : sh.getRow(i).getCell(getVal("RCLAT-Textout",headerArr)).toString() || "",
+                    ScPrttEvaluate : sh.getRow(i).getCell(getVal("SCPRTT-Evaluate",headerArr)).toString() || "",
+                    ScPrttTextOut : sh.getRow(i).getCell(getVal("SCPRTT-Textout",headerArr)).toString() || "",
+                    CloudLatEvaluate : sh.getRow(i).getCell(getVal("CloudLAT-Evaluate",headerArr)).toString() || "",
+                    CloudLatTextOut : sh.getRow(i).getCell(getVal("CloudLAT-Textout",headerArr)).toString() || "",
+                    ExecutionOrder : sh.getRow(i).getCell(getVal("Executionorder",headerArr)).toString() || "",
+                    MfgDateFrom : sh.getRow(i).getCell(getVal("Manucfacturingdate(From)",headerArr)).toString() || "",
+                    MfgDateTo : sh.getRow(i).getCell(getVal("Manucfacturingdate(To)",headerArr)).toString() || "",
+                    ProductFamily : sh.getRow(i).getCell(getVal("Prod.Family",headerArr)).toString() || "",
+                    Closed : sh.getRow(i).getCell(getVal("Closed",headerArr)).toString() || "",
+                    Cost : sh.getRow(i).getCell(getVal("Cost",headerArr)).toString() || "",
+                    Comments : sh.getRow(i).getCell(getVal("Comments",headerArr)).toString() || ""
+                };
+                jsonArr.push(jsonObj);
+            }
+
+            if(jsonArr.length === 0) return res.status(404).send("RCO data invalid.");
+            else return res.json(jsonArr);
+        })
+        
+    } catch (error) {
+        return res.status(404).send("RCO data invalid.")
+    }
+    
 });
