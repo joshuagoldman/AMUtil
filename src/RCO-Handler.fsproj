@@ -14,6 +14,11 @@
     <Compile Include="Rco_Update\State.fs" />
     <Compile Include="Rco_Update\RcoFaultTable.fs" />
     <Compile Include="Rco_Update\View.fs" />
+    <Compile Include="Upgrade_NuGet\Types.fs" />
+    <Compile Include="Upgrade_NuGet\Logic.fs" />
+    <Compile Include="Upgrade_NuGet\State.fs" />
+    <Compile Include="Upgrade_NuGet\RepoStateTable.fs" />
+    <Compile Include="Upgrade_NuGet\View.fs" />
     <Compile Include="Main\Types.fs" />
     <Compile Include="Main\Logic.fs" />
     <Compile Include="Main\State.fs" />

@@ -36,6 +36,7 @@ let request ( data : obj ) =
 type App_Activity =
     | Activity_None
     | RCOUpdate
+    | NugetUpgrade
 
 type PageOption =
     | RcoUpdate
@@ -123,5 +124,7 @@ type GlobalMsg =
     | Popup_Msg_Global of Popup.Types.PopupStyle
     | Batch of array<GlobalMsg>
     | Go_To_Failed_Page of Button : ReactElement * Message : ReactElement []
+    | Spread_New_Branch_Name of Git_Repository
+    | Spread_New_Git_Repo of Git_Repository
 
 

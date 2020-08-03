@@ -38,12 +38,15 @@ let update msg (model:Model) : Types.Model * Global.Types.GlobalMsg * Cmd<Msg> =
         | Yes_Git_info info ->
             let newInfo =
                 { info with CurrBranch = branch_name }
-                |> Yes_Git_info
+
+            let spreadMsg =
+                newInfo
+                |> Global.Types.GlobalMsg.Spread_New_Branch_Name
 
             Logic.checkoutNewBranch branch_name dispatch positions  
             |> Async.StartImmediate
 
-            { model with Info = newInfo }, Global.Types.MsgNone,[]
+            model, spreadMsg,[]
     | Change_Current_Rco_Info info ->
         { model with CurrRcoInfo = info }, Global.Types.MsgNone,[]
     | Get_Rco_Data_Msg(dispatch,ev) ->

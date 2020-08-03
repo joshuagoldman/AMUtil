@@ -618,9 +618,7 @@ The info was parsed from the string:
                 let newGitInfoMsg =
                     repo |>
                     (
-                        Rco_Update.Types.Yes_Git_info >>
-                        Rco_Update.Types.Msg.Get_New_Info_Msg >>
-                        Types.Msg.Rco_Update_Msg >>
+                        Spread_New_Git_Repo_Main >>
                         dispatch
                     )
 

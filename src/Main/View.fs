@@ -43,8 +43,9 @@ let dropDownOptionItem model dispatch ( appOption : OptionPageWName )=
 
 let listOfPages =
     [|
-        { Activity = Global.Types.App_Activity.RCOUpdate ; Activity_name = "Update RCO List" }
         { Activity = Global.Types.App_Activity.Activity_None ; Activity_name = "Home" }
+        { Activity = Global.Types.App_Activity.RCOUpdate ; Activity_name = "Update RCO List" }
+        { Activity = Global.Types.App_Activity.NugetUpgrade ; Activity_name = "Upgrade NuGet" }
     |]
     
 
@@ -166,6 +167,8 @@ let root ( model : Model ) dispatch =
                         homePage
                     | Global.Types.RCOUpdate ->
                         Rco_Update.View.root model.Rco_Update (Types.Msg.Rco_Update_Msg >> dispatch)
+                    | Global.Types.NugetUpgrade ->
+                        Upgrade_NuGet.View.root model.Upgrade_NuGet (Types.Msg.Upgrade_NuGet_Msg >> dispatch)
                 ]
             ]
         ]

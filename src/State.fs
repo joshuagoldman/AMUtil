@@ -126,6 +126,25 @@ let update msg (model:Model) : Types.Model * Cmd<Types.Msg> =
                 |> Popup.Types.Has_Alternatives
 
             { model with Popup = popupStyle }, []
+        | Spread_New_Branch_Name git_repo ->
+            let main_model_msg_version =
+                git_repo |>
+                (
+                    Main.Types.Msg.Spread_New_Branch_Name_Main >>
+                    Types.Msg.MainMsg >>
+                    Cmd.ofMsg
+                )
+            model, main_model_msg_version
+
+        | Spread_New_Git_Repo git_repo ->
+            let main_model_msg_version =
+                git_repo |>
+                (
+                    Main.Types.Msg.Spread_New_Git_Repo_Main >>
+                    Types.Msg.MainMsg >>
+                    Cmd.ofMsg
+                )
+            model, main_model_msg_version
                 
         
 
