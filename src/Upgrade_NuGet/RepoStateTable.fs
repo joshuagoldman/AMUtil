@@ -25,17 +25,40 @@ let newRstatInInput fault rcoObjArr dispatch =
         ]
     ]
 
+let isUpdateRow project is_chosen dispatch =
+    let isChecked =
+        match is_chosen with
+        | Project_Chosen -> true
+        | _ -> false
+
+    Html.label[
+        prop.className "checkbox"
+        prop.isChecked isChecked
+        prop.onClick (fun _ ->
+            let newStatus =
+                Logic.changeNugetStatus is_chosen
+            { project with Is_Chosen = newStatus } |>
+            (
+                Change_NuGet_Status >>
+                dispatch
+            )
+        )
+    ]
+
 let tableRow project dispatch =
     Html.tr[
         prop.children[
             Html.th[
-                prop.text ""
+                prop.text project.Name
             ]
             Html.th[
-                prop.text ""
+                isUpdateRow project project.Is_Chosen dispatch
             ]
             Html.th[
-                prop.text ""
+                prop.text "Current NuGet Name"
+            ]
+            Html.th[
+                prop.text "New NuGet Name"
             ]
         ]
     ]
@@ -52,16 +75,17 @@ let root ( projects_table : Loganalyzer_Projects_Table ) dispatch =
                 Html.thead[
                     prop.children[
                         Html.tr[
-                            prop.children[
-                                Html.th[
-                                    prop.text "Project Name"
-                                ]
-                                Html.th[
-                                    prop.text "Create NuGet"
-                                ]
-                                Html.th[
-                                    prop.text "Changes"
-                                ]
+                            Html.th[
+                                prop.text "Project Name"
+                            ]
+                            Html.th[
+                                prop.text "Update"
+                            ]
+                            Html.th[
+                                prop.text "Current NuGet Name"
+                            ]
+                            Html.th[
+                                prop.text "New NuGet Name"
                             ]
                         ]
                     ]

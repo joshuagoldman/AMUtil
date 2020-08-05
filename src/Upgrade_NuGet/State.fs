@@ -25,3 +25,19 @@ let update msg (model:Model) : Types.Model * Global.Types.GlobalMsg * Cmd<Msg> =
         
     | GlobalMsg_Upgrade_Nuget msg ->
         model, msg, []
+    | Change_NuGet_Status newProject ->
+        match model.Projects_Table with
+        | Yes_Projects_Table_Info projects ->
+            let newProjects =
+                projects
+                |> Array.map (fun project ->
+                    if project.Name = newProject.Name
+                    then
+                        newProject
+                    else
+                        project)
+                |> Yes_Projects_Table_Info
+
+            { model with Projects_Table = newProjects}, Global.Types.MsgNone, []
+
+        | _ -> model, Global.Types.MsgNone, []

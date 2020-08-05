@@ -33,3 +33,10 @@ let handleBranchNameChange gitRepo ( ev : Browser.Types.Event ) dispatch =
             Spread_New_Branch_Name >>
             GlobalMsg_Upgrade_Nuget
         )
+
+let changeNugetStatus isCurrentlyChosen =
+    match isCurrentlyChosen with
+    | Project_Not_Chosen ->
+        Project_Chosen
+    | _ ->
+        Project_Not_Chosen
