@@ -16,6 +16,19 @@ type OptionPageWName = {
     Activity_name : string
 }
 
+let activityChangeDispatch model activity dispatch =
+    match activity with
+    | Global.Types.App_Activity.NugetUpgrade _ ->
+        match model.Upgrade_NuGet.Projects_Table with
+        | Upgrade_NuGet.Types.Loganalyzer_Projects_Table_Status.Info_Not_Loaded ->
+            (dispatch,activity) |> Obtain_New_Nuget_Info
+        | _ ->
+            activity
+            |> Change_Activity
+    | _ ->
+        activity
+        |> Change_Activity
+
 let dropDownOptionItem model dispatch ( appOption : OptionPageWName )=
     Html.div[
         prop.className "dropdown-item"
@@ -24,11 +37,8 @@ let dropDownOptionItem model dispatch ( appOption : OptionPageWName )=
                 prop.className "button"
                 prop.text appOption.Activity_name
                 prop.onClick (fun _ ->
-                    appOption.Activity |>
-                    (
-                        Change_Activity >>
-                        dispatch
-                    )
+                    activityChangeDispatch model appOption.Activity dispatch
+                    |> dispatch
                 )
                 prop.style[
                     Feliz.style.color "black"
@@ -68,7 +78,7 @@ let menuButton model dispatch =
                                     fontWeight.bold
                                 ]
                                 prop.children[
-                                    Html.span "Options"
+                                    //Html.span "Options"
                                     Html.span[
                                         prop.className "icon is-small"
                                         prop.children[

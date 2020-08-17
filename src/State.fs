@@ -145,6 +145,5 @@ let update msg (model:Model) : Types.Model * Cmd<Types.Msg> =
                     Cmd.ofMsg
                 )
             model, main_model_msg_version
-                
         
 

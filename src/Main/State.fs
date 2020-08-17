@@ -38,6 +38,8 @@ let init =
 
 let update msg (model:Model) : Model * GlobalMsg * Cmd<Msg> =
     match msg with
+    | MsgNone_Main ->
+        model, MsgNone,[]
     | Check_If_Git_Installed_Msg stage ->
         match stage with
         | CheckProcessStarted dispatch ->
@@ -132,8 +134,14 @@ let update msg (model:Model) : Model * GlobalMsg * Cmd<Msg> =
 
         model, popupMsg, []
 
-    | Change_Activity actibity ->
-        { model with Activity = actibity }, MsgNone, []
+    | Change_Activity activity ->
+        { model with Activity = activity }, MsgNone, []
+
+    | Obtain_New_Nuget_Info(dispatch,activity) ->
+        Logic.checkIfDotNetInstalled dispatch
+        |> Async.StartImmediate
+
+        { model with Activity = activity }, MsgNone, []
 
     | Rco_Update_Msg rco_update_msg ->
         let (rco_update_model, global_msg, rco_msg_cmd) = Rco_Update.State.update rco_update_msg model.Rco_Update
@@ -150,6 +158,15 @@ let update msg (model:Model) : Model * GlobalMsg * Cmd<Msg> =
     | Spread_New_Git_Repo_Main git_Repo ->
         git_Repo
         |> updateGitRepo model
+
+    | GlobalMsg_Main global_msg ->
+        model,global_msg,[]
+
+    | Get_All_Projects_Info dispatch ->
+        Logic.getNuGetTableInfo dispatch
+        |> Async.StartImmediate
+
+        model,MsgNone,[]
 
 
 

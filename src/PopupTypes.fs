@@ -12,6 +12,11 @@ type PopupPosition = {
     PosY : float
 }
 
+let standardPositions = {
+    PosX = 250.0
+    PosY = 250.0
+}
+
 type Alternative_Popup_Otpions =
     | Simple_Ok of Button : ReactElement * Message : ReactElement[]
     | Several_Alternatives of Buttons : ReactElement[] * Message : ReactElement[]

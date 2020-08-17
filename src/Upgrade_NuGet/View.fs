@@ -7,6 +7,7 @@ open Fable.Core.JsInterop
 open Types
 open Feliz
 open Feliz.style
+open System
 
 let branchDropDown model dispatch =
     match model.Info with
@@ -68,7 +69,42 @@ let currentBranchInfo model =
             ]
     | _ -> Html.none
 
+let getTableLoadPopup model dispatch =
+    match model.Projects_Table with
+    | Loganalyzer_Projects_Table_Status.Info_Is_Loading mix ->
+        let allProjectsLoaded = Logic.haveProjectsBeenLoaded mix
+
+        let allMsgs =
+            mix
+            |> Array.map (fun proj ->
+                match proj with
+                | Loganalyzer_Projects_Table_Mix.Project_Not_Loading proj_not_loading ->
+                    match proj_not_loading with
+                    | Loganalyzer_Projects_Table_Result.Loading_Was_Successfull _ ->
+                        "Project info successfully loaded"
+                    | _ ->
+                        "Project info was not successfully loaded"
+
+                | Loganalyzer_Projects_Table_Mix.Project_Loading proj_loading ->
+                    let msg =
+                        String.Format(
+                            "{0} -> {1}",
+                            proj_loading.Project_Name,
+                            proj_loading.Loading_Msg
+                        )
+
+                    msg)
+
+        match allProjectsLoaded with
+        | true ->
+            Logic.cretateLoadingFinishedPopup allMsgs dispatch
+        | _ ->
+            Logic.cretateLoadingPopup allMsgs dispatch
+            
+    | _ -> ()
+
 let root model dispatch =
+    getTableLoadPopup model dispatch
     Html.div[
         prop.children[
             Html.div[

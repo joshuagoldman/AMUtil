@@ -39,10 +39,34 @@ let isUpdateRow project is_chosen dispatch =
                 Logic.changeNugetStatus is_chosen
             { project with Is_Chosen = newStatus } |>
             (
-                Change_NuGet_Status >>
+                
+                Change_Project_Status >>
                 dispatch
             )
         )
+    ]
+
+let newNugetNameInput project dispatch =
+    Html.div[
+        prop.className "field"
+        prop.children[
+            Html.html[
+                prop.className "control"
+                prop.children[
+                    Html.input[
+                        prop.className "input is-primary"
+                        prop.type' "text"
+                        prop.placeholder "Enter new NuGet name"
+                        prop.onChange (fun ev ->
+                            (project,ev) |>
+                            (
+                                Types.New_Nuget_Name_Change >>
+                                dispatch
+                            ))
+                    ]
+                ]
+            ]
+        ]
     ]
 
 let tableRow project dispatch =
@@ -55,10 +79,11 @@ let tableRow project dispatch =
                 isUpdateRow project project.Is_Chosen dispatch
             ]
             Html.th[
-                prop.text "Current NuGet Name"
+                prop.text project.Nuget_Names.CurrName
             ]
+
             Html.th[
-                prop.text "New NuGet Name"
+                newNugetNameInput project dispatch
             ]
         ]
     ]

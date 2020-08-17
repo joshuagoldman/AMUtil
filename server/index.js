@@ -219,3 +219,19 @@ app.post("/RcoList", (req, res) => {
     }
     
 });
+
+// --------------------------------------------------------------------------------------------------------------
+// Get Project File Content
+// --------------------------------------------------------------------------------------------------------------
+app.post("/projectInfo", (req, res) => {
+    var projectName = req.body.project;
+
+    const generalPath = __dirname.replace(/\\/g,"/") + '/../public/loganalyzer';
+    const specificPath = `${generalPath}/${projectName}/${projectName}.csproj`
+
+    fs.readFile(specificPath, function read(err,data){
+        if(err) return res.status(404).send(err);
+        else return res.send(data);
+    });
+    
+});

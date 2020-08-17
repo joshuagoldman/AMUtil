@@ -66,6 +66,26 @@ let killPopupMsg =
         Main.Types.Popup_Msg
     )
 
+let kickedOutTemplate dispatch msg =
+    let exitMsg =
+        msg + ". Please refresh to return"
+        |> Popup.View.getPopupMsg
+
+    let button =
+        Popup.View.simpleOkButton
+                        killPopupMsg
+                        dispatch
+
+    let kickedOutMsg =
+        (button,exitMsg) |>
+        (
+            GlobalMsg.Go_To_Failed_Page >>
+            Main.Types.GlobalMsg_Main >>
+            dispatch
+        )
+
+    kickedOutMsg
+
 type GitUserDataType<'a> = {
     UserValue : 'a
     TypeName : string
@@ -659,6 +679,172 @@ The info was parsed from the string:
 
         originIsAccessibleMsg
     
+}
+
+let checkIfDotNetInstalled dispatch = async {
+
+    let popupMsg =
+        "Checking if Dotnet is installed"
+        |> Popup.View.getPopupMsgSpinner
+        |> checkingProcessPopupMsg standardPositions
+        |> dispatch
+
+    popupMsg
+
+    do! Async.Sleep 2000
+
+    let commandStr = "shellCommand=cd server;cd loganalyzer;dotnet"
+
+    let! res = Global.Types.request commandStr
+
+    match res.status with
+    | 200.0 ->
+        let dotnetRegex = JsInterop.Regex.IsMatch "Usage: dotnet" res.responseText
+
+        match dotnetRegex with
+        | Some regResult ->
+            match regResult with
+            | true ->
+                let getNugetInfoMsg =
+                    dispatch |>
+                    (
+                        Get_All_Projects_Info >>
+                        dispatch
+                    )
+
+                getNugetInfoMsg
+            | _ ->
+                let exitMsg =
+                    "Dotnet is not installed on the server side. Please install it and retry."
+                    |> Popup.View.getPopupMsg
+
+                let button =
+                    Popup.View.simpleOkButton
+                                    killPopupMsg
+                                    dispatch
+
+                let kickedOutMsg =
+                    (button,exitMsg) |>
+                    (
+                        GlobalMsg.Go_To_Failed_Page >>
+                        Main.Types.GlobalMsg_Main >>
+                        dispatch
+                    )
+
+                kickedOutMsg
+
+        | _ ->
+            let exitMsg =
+                "Dotnet is not installed on the server side. Please install it and retry."
+                |> Popup.View.getPopupMsg
+
+            let button =
+                Popup.View.simpleOkButton
+                                killPopupMsg
+                                dispatch
+
+            let kickedOutMsg =
+                (button,exitMsg) |>
+                (
+                    GlobalMsg.Go_To_Failed_Page >>
+                    Main.Types.GlobalMsg_Main >>
+                    dispatch
+                )
+
+            kickedOutMsg
+    | _ ->
+        let exitMsg =
+            res.responseText + ". Please refresh to return"
+            |> Popup.View.getPopupMsg
+
+        let button =
+            Popup.View.simpleOkButton
+                            killPopupMsg
+                            dispatch
+
+        let kickedOutMsg =
+            (button,exitMsg) |>
+            (
+                GlobalMsg.Go_To_Failed_Page >>
+                Main.Types.GlobalMsg_Main >>
+                dispatch
+            )
+
+        kickedOutMsg
+}
+
+let getNuGetTableInfo dispatch = async {
+
+    let popupMsg =
+        "Checking if Dotnet is installed"
+        |> Popup.View.getPopupMsgSpinner
+        |> checkingProcessPopupMsg standardPositions
+        |> dispatch
+
+    popupMsg
+    
+    let commandStr = "shellCommand=cd server;cd loganalyzer;ls;"
+
+    let! res = request commandStr
+
+    match res.status with
+    | 200.0 ->
+        let regexStr = "(?<=Ericsson.AM.).*?(?!Test)(?=\s)"
+        
+        let matchesOpt = JsInterop.Regex.Matches regexStr res.responseText
+
+        match matchesOpt with
+        | Some matches ->
+            let projectNotTest =
+                matches
+                |> Array.choose (fun matchStr ->
+                    let isTestProjectOpt =
+                        JsInterop.Regex.IsMatch ".Test" matchStr
+
+                    match isTestProjectOpt with
+                    | Some isTestProject ->
+                        match isTestProject with
+                        | true -> None
+                        | _ -> matchStr |> Some
+                    | _ -> None)
+                |> Array.map (fun proj ->
+                    {
+                        Upgrade_NuGet.Types.Project_Name = proj
+                        Upgrade_NuGet.Types.Loading_Msg = "loading info for " + proj + "."
+                    }
+                    |> Upgrade_NuGet.Types.Loganalyzer_Projects_Table_Mix.Project_Loading)
+
+            let getNugetInfoMsgs =
+                matches
+                |> Array.map (fun proj ->
+                    (proj,Types.Msg.Upgrade_NuGet_Msg >> dispatch) |>
+                    (
+                        Upgrade_NuGet.Types.Get_Project_Info >>
+                        Types.Upgrade_NuGet_Msg
+                    ))
+
+            let msgs =
+                getNugetInfoMsgs
+                |> Array.append(
+                    [|
+                        projectNotTest |>
+                        (
+                            Upgrade_NuGet.Types.Loganalyzer_Projects_Table_Status.Info_Is_Loading >>
+                            Upgrade_NuGet.Types.Change_NuGet_Status >>
+                            Types.Upgrade_NuGet_Msg
+                        )
+
+
+                    |]
+                )
+
+            msgs
+            |> Array.iter (fun msg -> msg |> dispatch)
+
+        | _ ->
+            kickedOutTemplate dispatch res.responseText
+    | _ ->
+        kickedOutTemplate dispatch res.responseText
 }
 
     
