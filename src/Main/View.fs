@@ -22,6 +22,13 @@ let activityChangeDispatch model activity dispatch =
         match model.Upgrade_NuGet.Projects_Table with
         | Upgrade_NuGet.Types.Loganalyzer_Projects_Table_Status.Info_Not_Loaded ->
             (dispatch,activity) |> Obtain_New_Nuget_Info
+        | Upgrade_NuGet.Types.Loganalyzer_Projects_Table_Status.Info_Has_Been_Loaded res ->
+            match res with
+            | Upgrade_NuGet.Types.Loganalyzer_Projects_Table.No_Projects_Table_Info -> 
+                (dispatch,activity) |> Obtain_New_Nuget_Info
+            | _ ->
+                activity
+                |> Change_Activity
         | _ ->
             activity
             |> Change_Activity

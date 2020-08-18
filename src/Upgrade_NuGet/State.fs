@@ -22,6 +22,14 @@ let update msg (model:Model) : Types.Model * Global.Types.GlobalMsg * Cmd<Msg> =
             |> Cmd.batch
 
         model, Global.Types.MsgNone, msgsIntoOneCmd
+    | Batch_Upgrade_Nuget_Async asyncMsgs ->
+        let msgsIntoOneCmd =
+            asyncMsgs
+            |> Array.map (fun msg ->
+                msg |> Cmd.fromAsync)
+            |> Cmd.batch
+
+        model, Global.Types.MsgNone, msgsIntoOneCmd
         
     | GlobalMsg_Upgrade_Nuget msg ->
         model, msg, []
@@ -48,13 +56,14 @@ let update msg (model:Model) : Types.Model * Global.Types.GlobalMsg * Cmd<Msg> =
 
     | Change_NuGet_Status status ->
         { model with Projects_Table = status}, Global.Types.MsgNone, []
-    | Get_Project_Info(proj_name,dispatch) ->
+    | Get_Project_Info proj_name ->
         match model.Projects_Table with
         | Loganalyzer_Projects_Table_Status.Info_Is_Loading mix ->
-            Logic.monitorEachProjectInfoExtraction mix proj_name dispatch
-            |> Async.StartImmediate
-
-            model, Global.Types.MsgNone, []
+            let msg =
+                Logic.monitorEachProjectInfoExtraction mix proj_name
+                |> Cmd.fromAsync
+            
+            model, Global.Types.MsgNone, msg
         | _ ->
             model, Global.Types.MsgNone, []
     | Change_Project_Status project ->

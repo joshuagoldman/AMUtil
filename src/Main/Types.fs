@@ -14,6 +14,7 @@ type GitBranch = {
 }
 
 type Msg =
+    | Batch_Main of Msg []
     | MsgNone_Main
     | GlobalMsg_Main of GlobalMsg
     | Rco_Update_Msg of Rco_Update.Types.Msg

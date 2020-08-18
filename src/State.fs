@@ -125,7 +125,18 @@ let update msg (model:Model) : Types.Model * Cmd<Types.Msg> =
                 (popupOption,Main.Logic.standardPositions)
                 |> Popup.Types.Has_Alternatives
 
-            { model with Popup = popupStyle }, []
+            let newGitDecisionState =
+                Git_Error |>
+                (
+                    Git_Repo_Cloned_Options.Repo_Cloned_Has_Been_Checked >>
+                    Origin_accessbile >>
+                    Origin_Accessibility_Has_Been_Checked >>
+                    Git_Installed >>
+                    GitDecision.Git_Installed_Check_Performed
+                )
+
+            { model with Popup = popupStyle
+                         Git = newGitDecisionState}, []
         | Spread_New_Branch_Name git_repo ->
             let main_model_msg_version =
                 git_repo |>

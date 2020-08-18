@@ -4,6 +4,10 @@ open Fable.React
 open Fable.Core.JsInterop
 open Fable.Import
 
+type AsynSyncMix<'a> =
+    | Is_Async of Async<'a>
+    | Is_Not_Async of 'a
+
 let getPositions ev =
     {
         Popup.Types.PosX = ( ev?pageX : float )
@@ -23,6 +27,20 @@ let request ( data : obj ) =
     Async.FromContinuations <| fun (resolve,_,_) ->
         let xhr = Browser.XMLHttpRequest.Create()
         xhr.``open``(method = "POST", url = "http://localhost:3001/shellcommand")
+        xhr.setRequestHeader("Content-Type","application/x-www-form-urlencoded")
+        
+
+        xhr.onreadystatechange <- fun _ ->
+            if xhr.readyState = (4 |> float)
+            then
+                resolve(xhr)
+
+        xhr.send(data)
+
+let requestCustom url ( data : obj ) = 
+    Async.FromContinuations <| fun (resolve,_,_) ->
+        let xhr = Browser.XMLHttpRequest.Create()
+        xhr.``open``(method = "POST", url = url)
         xhr.setRequestHeader("Content-Type","application/x-www-form-urlencoded")
         
 

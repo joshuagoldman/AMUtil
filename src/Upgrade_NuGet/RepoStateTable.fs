@@ -33,20 +33,34 @@ let isUpdateRow project is_chosen dispatch =
 
     Html.label[
         prop.className "checkbox"
-        prop.isChecked isChecked
-        prop.onClick (fun _ ->
-            let newStatus =
-                Logic.changeNugetStatus is_chosen
-            { project with Is_Chosen = newStatus } |>
-            (
-                
-                Change_Project_Status >>
-                dispatch
-            )
-        )
+        prop.children[
+            Html.input[
+                prop.isChecked isChecked
+                prop.type'.checkbox
+                prop.onClick (fun _ ->
+                    let newStatus =
+                        Logic.changeNugetStatus is_chosen
+                    { project with Is_Chosen = newStatus } |>
+                    (
+                        
+                        Change_Project_Status >>
+                        dispatch
+                    )
+                )
+            ]
+        ]
     ]
 
 let newNugetNameInput project dispatch =
+    let colorBasedOnCorrectNugetName =
+        match project.Nuget_Names.New_Nuget_Name with
+        | New_Nuget_Name.Has_New_Name res ->
+            match res with
+            | Nuget_Name_Valid ->
+                "black"
+            | _ -> "red"
+        | _ -> "black"
+
     Html.div[
         prop.className "field"
         prop.children[
@@ -55,6 +69,9 @@ let newNugetNameInput project dispatch =
                 prop.children[
                     Html.input[
                         prop.className "input is-primary"
+                        prop.style[
+                            Feliz.style.color colorBasedOnCorrectNugetName
+                        ]
                         prop.type' "text"
                         prop.placeholder "Enter new NuGet name"
                         prop.onChange (fun ev ->

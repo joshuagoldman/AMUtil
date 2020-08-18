@@ -58,7 +58,7 @@ type Loganalyzer_Projects_Table_Loading = {
 
 type Loganalyzer_Projects_Table_Result =
     | Loading_Was_Successfull of Project_Info
-    | Loading_Was_Not_Successfull
+    | Loading_Was_Not_Successfull of Proj_Name : string
 
 type Loganalyzer_Projects_Table_Mix =
     | Project_Not_Loading of Loganalyzer_Projects_Table_Result
@@ -71,12 +71,13 @@ type Loganalyzer_Projects_Table_Status =
 
 type Msg =
     | Batch of Msg[]
+    | Batch_Upgrade_Nuget_Async of Async<Msg>[]
     | GlobalMsg_Upgrade_Nuget of GlobalMsg
     | Change_Project_Info of Project_Info
     | New_Nuget_Name_Change of Project_Info * Types.Event
     | Change_NuGet_Status of Loganalyzer_Projects_Table_Status
     | Change_Project_Status of Project_Info
-    | Get_Project_Info of string * (Msg -> unit)
+    | Get_Project_Info of string
 
 type Model = {
     Info : Git_Info_Nuget

@@ -48,7 +48,7 @@ let haveProjectsBeenLoaded projLoadingMixes =
         | Loganalyzer_Projects_Table_Mix.Project_Loading _ -> false
         | _ -> true)
 
-let monitorEachProjectInfoExtraction ( projectsLoadingInfo : Loganalyzer_Projects_Table_Mix [] ) projectName dispatch = async {
+let monitorEachProjectInfoExtraction ( projectsLoadingInfo : Loganalyzer_Projects_Table_Mix [] ) projectName = async {
     let fullProjectNameFolder = "project=Ericsson.AM." + projectName
 
     let nugetPackageVersionRegex = "(?<=<Version>).*(?=<\/Version>)"
@@ -84,40 +84,75 @@ let monitorEachProjectInfoExtraction ( projectsLoadingInfo : Loganalyzer_Project
 
     let checkFinishLoading newInfo =
         let newMix = newInfo |> modifyProjectsLoadingInfo
+
+        let pickNewLoadingProject =
+            projectsLoadingInfo
+            |> Array.tail
+            |> Array.choose (fun proj ->
+                match proj with
+                | Loganalyzer_Projects_Table_Mix.Project_Loading proj_loading ->
+                    Some proj_loading
+                | Loganalyzer_Projects_Table_Mix.Project_Not_Loading res ->
+                    match res with
+                    | Loganalyzer_Projects_Table_Result.Loading_Was_Successfull projInfo ->
+                        None
+                    | _ -> None)
+            |> function
+                | res when res |> Array.length <> 0 ->
+                    Some (res |> Array.head)
+                | _ -> None
         
-        match (haveProjectsBeenLoaded newMix) with
-        | true ->
+        match pickNewLoadingProject with
+        | None ->
             let successInfo =
                 newMix
                 |> pickSuccessProjectInfoLoads
 
             match successInfo with
             | Some info ->
-                info |>
-                (
-                    Yes_Projects_Table_Info >>
-                    Info_Has_Been_Loaded >>
-                    Upgrade_NuGet.Types.Msg.Change_NuGet_Status >>
-                    dispatch
-                )
+                [|
+                    info |>
+                    (
+                        Yes_Projects_Table_Info >>
+                        Info_Has_Been_Loaded >>
+                        Upgrade_NuGet.Types.Msg.Change_NuGet_Status >>
+                        delayedMessage 500
+                    )
+                |]
+                |> Batch_Upgrade_Nuget_Async
+                
             | _ ->
-                No_Projects_Table_Info |>
-                (
-                    Info_Has_Been_Loaded >>
-                    Upgrade_NuGet.Types.Msg.Change_NuGet_Status >>
-                    dispatch
-                )
+                [|
+                    No_Projects_Table_Info |>
+                    (
+                        Info_Has_Been_Loaded >>
+                        Upgrade_NuGet.Types.Msg.Change_NuGet_Status >>
+                        delayedMessage 500
+                    )
+                |]
+                |> Batch_Upgrade_Nuget_Async
+                
                                 
-        | _ ->
-            newMix |>
-            (
-                Info_Is_Loading >>
-                Upgrade_NuGet.Types.Msg.Change_NuGet_Status >>
-                dispatch
-            )
+        | Some proj_to_load ->
+            [|
+                newMix |>
+                (
+                    Info_Is_Loading >>
+                    Upgrade_NuGet.Types.Msg.Change_NuGet_Status >>
+                    delayedMessage 500
+                )
+
+                proj_to_load.Project_Name |>
+                (
+                    Upgrade_NuGet.Types.Get_Project_Info >>
+                    delayedMessage 500
+                )
+            |]
+            |> Batch_Upgrade_Nuget_Async
+            
         
 
-    let! res = request fullProjectNameFolder
+    let! res = requestCustom "http://localhost:3001/projectInfo" fullProjectNameFolder
 
     match res.status with
     | 200.0 ->
@@ -143,17 +178,20 @@ let monitorEachProjectInfoExtraction ( projectsLoadingInfo : Loganalyzer_Project
                     }
                     |> Loganalyzer_Projects_Table_Result.Loading_Was_Successfull
                     
-
-                checkFinishLoading newInfo
+                return(checkFinishLoading newInfo)
                 
             | _ ->
-                checkFinishLoading Loganalyzer_Projects_Table_Result.Loading_Was_Not_Successfull
+                let asyncMsg2Dispatch = checkFinishLoading (projectName|> Loganalyzer_Projects_Table_Result.Loading_Was_Not_Successfull)
+
+                return(asyncMsg2Dispatch)
         | _ ->
-            checkFinishLoading Loganalyzer_Projects_Table_Result.Loading_Was_Not_Successfull
+            let asyncMsg2Dispatch = checkFinishLoading (projectName|> Loganalyzer_Projects_Table_Result.Loading_Was_Not_Successfull)
+
+            return(asyncMsg2Dispatch)
     | _ ->
-        checkFinishLoading Loganalyzer_Projects_Table_Result.Loading_Was_Not_Successfull
-        
-    return ()
+        let asyncMsg2Dispatch = checkFinishLoading (projectName|> Loganalyzer_Projects_Table_Result.Loading_Was_Not_Successfull)
+
+        return(asyncMsg2Dispatch)
 }
 
 let cretateLoadingFinishedPopup msgs dispatch  =

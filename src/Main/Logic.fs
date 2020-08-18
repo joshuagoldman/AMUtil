@@ -693,13 +693,13 @@ let checkIfDotNetInstalled dispatch = async {
 
     do! Async.Sleep 2000
 
-    let commandStr = "shellCommand=cd server;cd loganalyzer;dotnet"
+    let commandStr = "shellCommand=cd server;cd loganalyzer;dotnet --list-sdks"
 
     let! res = Global.Types.request commandStr
 
     match res.status with
     | 200.0 ->
-        let dotnetRegex = JsInterop.Regex.IsMatch "Usage: dotnet" res.responseText
+        let dotnetRegex = JsInterop.Regex.IsMatch "dotnet" res.responseText
 
         match dotnetRegex with
         | Some regResult ->
@@ -776,20 +776,22 @@ let checkIfDotNetInstalled dispatch = async {
 let getNuGetTableInfo dispatch = async {
 
     let popupMsg =
-        "Checking if Dotnet is installed"
+        "Locating all relevant AM.LogAnalyzer projects..."
         |> Popup.View.getPopupMsgSpinner
         |> checkingProcessPopupMsg standardPositions
         |> dispatch
 
     popupMsg
+
+    do! Async.Sleep 2000
     
-    let commandStr = "shellCommand=cd server;cd loganalyzer;ls;"
+    let commandStr = "shellCommand=cd server;cd loganalyzer;ls"
 
     let! res = request commandStr
 
     match res.status with
     | 200.0 ->
-        let regexStr = "(?<=Ericsson.AM.).*?(?!Test)(?=\s)"
+        let regexStr = "(?<=Ericsson\.AM\.(?!sln))\w+(?!.*\.)"
         
         let matchesOpt = JsInterop.Regex.Matches regexStr res.responseText
 
@@ -814,29 +816,27 @@ let getNuGetTableInfo dispatch = async {
                     }
                     |> Upgrade_NuGet.Types.Loganalyzer_Projects_Table_Mix.Project_Loading)
 
-            let getNugetInfoMsgs =
-                matches
-                |> Array.map (fun proj ->
-                    (proj,Types.Msg.Upgrade_NuGet_Msg >> dispatch) |>
-                    (
-                        Upgrade_NuGet.Types.Get_Project_Info >>
-                        Types.Upgrade_NuGet_Msg
-                    ))
-
-            let msgs =
-                getNugetInfoMsgs
-                |> Array.append(
-                    [|
-                        projectNotTest |>
-                        (
-                            Upgrade_NuGet.Types.Loganalyzer_Projects_Table_Status.Info_Is_Loading >>
-                            Upgrade_NuGet.Types.Change_NuGet_Status >>
-                            Types.Upgrade_NuGet_Msg
-                        )
-
-
-                    |]
+            let! startGetProjInfoChain =
+                let firstProj = matches |> Array.head
+                
+                firstProj |>
+                (
+                    Upgrade_NuGet.Types.Get_Project_Info >>
+                    Types.Upgrade_NuGet_Msg >>
+                    delayedMessage 2000
                 )
+                
+            let msgs =
+                [|
+                    projectNotTest |>
+                    (
+                        Upgrade_NuGet.Types.Loganalyzer_Projects_Table_Status.Info_Is_Loading >>
+                        Upgrade_NuGet.Types.Change_NuGet_Status >>
+                        Types.Upgrade_NuGet_Msg
+                    )
+
+                    startGetProjInfoChain
+                |]
 
             msgs
             |> Array.iter (fun msg -> msg |> dispatch)

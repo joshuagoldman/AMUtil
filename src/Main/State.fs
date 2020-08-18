@@ -38,6 +38,12 @@ let init =
 
 let update msg (model:Model) : Model * GlobalMsg * Cmd<Msg> =
     match msg with
+    | Batch_Main msgs ->
+        let batchedMsgs =
+            msgs
+            |> Array.map (fun msg -> msg |> Cmd.ofMsg)
+            |> Cmd.batch
+        model, MsgNone, batchedMsgs
     | MsgNone_Main ->
         model, MsgNone,[]
     | Check_If_Git_Installed_Msg stage ->

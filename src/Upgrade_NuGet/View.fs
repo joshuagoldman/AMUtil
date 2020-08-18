@@ -80,10 +80,20 @@ let getTableLoadPopup model dispatch =
                 match proj with
                 | Loganalyzer_Projects_Table_Mix.Project_Not_Loading proj_not_loading ->
                     match proj_not_loading with
-                    | Loganalyzer_Projects_Table_Result.Loading_Was_Successfull _ ->
-                        "Project info successfully loaded"
-                    | _ ->
-                        "Project info was not successfully loaded"
+                    | Loganalyzer_Projects_Table_Result.Loading_Was_Successfull proj_not_loading ->
+                        let msg =
+                            String.Format(
+                                "{0} -> Loading was successfull",
+                                proj_not_loading.Name
+                            )
+                        msg
+                    | Loganalyzer_Projects_Table_Result.Loading_Was_Not_Successfull name ->
+                        let msg =
+                            String.Format(
+                                "{0} -> Loading was not successfull",
+                                name
+                            )
+                        msg
 
                 | Loganalyzer_Projects_Table_Mix.Project_Loading proj_loading ->
                     let msg =
@@ -128,6 +138,20 @@ let root model dispatch =
                         prop.className "column"
                         prop.children[
                             currentBranchInfo model      
+                        ]
+                    ]
+                ]
+            ]
+            Html.div[
+                prop.className "columns is-centered"
+                prop.children[
+                    Html.div[
+                        prop.className "column"
+                        prop.children[
+                            match model.Projects_Table with
+                            | Loganalyzer_Projects_Table_Status.Info_Has_Been_Loaded res ->
+                                RepoStateTable.root res dispatch
+                            | _ -> Html.none
                         ]
                     ]
                 ]

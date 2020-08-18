@@ -69,7 +69,7 @@ let verifyFailedPage ( msg : seq<ReactElement> ) =
             Feliz.style.backgroundImage "url(img/RadioTower.jpg)"
             backgroundSize.cover
             backgroundRepeat.noRepeat
-            Feliz.style.minHeight 600
+            Feliz.style.minHeight 1200
         ]
         prop.children[
             Html.div[
