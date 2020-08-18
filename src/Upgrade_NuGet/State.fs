@@ -73,3 +73,11 @@ let update msg (model:Model) : Types.Model * Global.Types.GlobalMsg * Cmd<Msg> =
             { model with Projects_Table = newState}, Global.Types.MsgNone, []
         | _ ->
             model, Global.Types.MsgNone, []
+    | New_Nuget_Name_Change(info_chosen,ev) ->
+        let newProjOpt =
+            Logic.newNugetNameEvaluation model.Projects_Table info_chosen ev
+
+        match newProjOpt with
+        | Some newProj ->
+            { model with Projects_Table = newProj }, Global.Types.MsgNone, []
+        | _ -> model, Global.Types.MsgNone, []

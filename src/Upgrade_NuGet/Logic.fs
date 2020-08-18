@@ -90,6 +90,7 @@ let monitorEachProjectInfoExtraction ( projectsLoadingInfo : Loganalyzer_Project
             let successInfo =
                 newMix
                 |> pickSuccessProjectInfoLoads
+
             match successInfo with
             | Some info ->
                 info |>
@@ -220,4 +221,74 @@ let changeProjectStatus model project =
             Some newInfo
         | _ -> None
     | _ -> None
-        
+
+let newNugetNameEvaluation projects_table info_chosen ( ev : Browser.Types.Event )=
+    let newName = ev.target?value : string
+    
+    let NugetVersionValidRegex = "(\d\.\d){1,}$|(\d\.\d){1,}\-\w+$"
+    
+    let isNameValidOpt = JsInterop.Regex.IsMatch NugetVersionValidRegex newName
+    
+    let newInfo =
+        match isNameValidOpt with
+        | Some isNameValid ->
+            match isNameValid with
+            | true ->
+                let newNameAsType =
+                    JsInterop.Regex.Match NugetVersionValidRegex newName |>
+                    (
+                        (fun x -> x.Value) >>
+                        Nuget_Name_Valid >>
+                        New_Nuget_Name.Has_New_Name
+                    )
+                let newNewNugetName =
+                    { info_chosen.Nuget_Names with New_Nuget_Name = newNameAsType}
+    
+                let newProjInfo =
+                    { info_chosen with Nuget_Names = newNewNugetName}
+    
+                newProjInfo
+            | false ->
+                let newNewNugetName =
+                    { info_chosen.Nuget_Names with New_Nuget_Name =
+                                                    Nuget_Name_Not_Valid
+                                                    |> New_Nuget_Name.Has_New_Name }
+    
+                let newProjInfo =
+                    { info_chosen with Nuget_Names = newNewNugetName}
+    
+                newProjInfo
+        | _ ->
+            let newNewNugetName =
+                { info_chosen.Nuget_Names with New_Nuget_Name =
+                                                    Nuget_Name_Not_Valid
+                                                    |> New_Nuget_Name.Has_New_Name }
+    
+            let newProjInfo =
+                { info_chosen with Nuget_Names = newNewNugetName}
+    
+            newProjInfo
+    
+    match projects_table with
+    | Loganalyzer_Projects_Table_Status.Info_Has_Been_Loaded res ->
+        match res with
+        | Loganalyzer_Projects_Table.Yes_Projects_Table_Info infos ->
+            let newInfos =
+                infos
+                |> Array.map (fun info ->
+                    if info.Name = info_chosen.Name
+                    then
+                        newInfo
+                    else
+                        info)
+    
+            let newProjectsStatus =
+                newInfos |>
+                (
+                    Loganalyzer_Projects_Table.Yes_Projects_Table_Info >>
+                    Loganalyzer_Projects_Table_Status.Info_Has_Been_Loaded
+                )
+    
+            Some newProjectsStatus
+        | _ -> None   
+    | _ -> None
