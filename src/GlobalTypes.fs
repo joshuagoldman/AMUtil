@@ -55,6 +55,7 @@ type App_Activity =
     | Activity_None
     | RCOUpdate
     | NugetUpgrade
+    | Criteria_1_84
 
 type PageOption =
     | RcoUpdate

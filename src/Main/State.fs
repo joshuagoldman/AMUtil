@@ -33,6 +33,7 @@ let init =
         Activity = Activity_None
         Rco_Update = Rco_Update.State.init ()
         Upgrade_NuGet = Upgrade_NuGet.State.init ()
+        Criteria_1_84 = Criteria_1_84.State.init ()
     }
 
 
@@ -149,6 +150,10 @@ let update msg (model:Model) : Model * GlobalMsg * Cmd<Msg> =
 
         { model with Activity = activity }, MsgNone, []
 
+    | Criteria_1_84_Msg criteria_1_84_msg ->
+        let (criteria_1_84_model, global_msg, critiera_1_84_msg_cmd) = Criteria_1_84.State.update criteria_1_84_msg model.Criteria_1_84
+
+        { model with Criteria_1_84 = criteria_1_84_model }, global_msg, Cmd.map Criteria_1_84_Msg critiera_1_84_msg_cmd
     | Rco_Update_Msg rco_update_msg ->
         let (rco_update_model, global_msg, rco_msg_cmd) = Rco_Update.State.update rco_update_msg model.Rco_Update
 

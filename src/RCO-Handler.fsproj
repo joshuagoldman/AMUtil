@@ -9,6 +9,10 @@
     <Compile Include="GlobalTypes.fs" />
     <Compile Include="PopupView.fs" />
     <Compile Include="JsInterop.fs" />
+    <Compile Include="Criteria_1_84\Types.fs" />
+    <Compile Include="Criteria_1_84\Logic.fs" />
+    <Compile Include="Criteria_1_84\State.fs" />
+    <Compile Include="Criteria_1_84\View.fs" />
     <Compile Include="Rco_Update\Types.fs" />
     <Compile Include="Rco_Update\Logic.fs" />
     <Compile Include="Rco_Update\State.fs" />
