@@ -263,7 +263,7 @@ let changeProjectStatus model project =
 let newNugetNameEvaluation projects_table info_chosen ( ev : Browser.Types.Event )=
     let newName = ev.target?value : string
     
-    let NugetVersionValidRegex = "(\d\.\d){1,}$|(\d\.\d){1,}\-\w+$"
+    let NugetVersionValidRegex = "\d{1,}\.\d{1,}\.\d{1,}(-.*|$)"
     
     let isNameValidOpt = JsInterop.Regex.IsMatch NugetVersionValidRegex newName
     
