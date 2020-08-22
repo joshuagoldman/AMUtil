@@ -101,7 +101,7 @@ let update msg (model:Model) : Types.Model * Global.Types.GlobalMsg * Cmd<Msg> =
             { model with Projects_Table = newProj }, Global.Types.MsgNone, []
         | _ -> model, Global.Types.MsgNone, []
 
-    | Change_Server_Action_Option proj_info ->
+    | Change_Server_Action_Option (proj_info,option) ->
         match model.Projects_Table with
         | Loganalyzer_Projects_Table_Status.Info_Has_Been_Loaded res ->
             match res with
@@ -111,19 +111,19 @@ let update msg (model:Model) : Types.Model * Global.Types.GlobalMsg * Cmd<Msg> =
                     | New_Nuget_Name.Has_New_Name validity ->
                         match validity with
                         | Nuget_Name_Validity.Nuget_Name_Valid _ ->
-                            proj_info.Server_Options
+                            option
                         | _ ->
                             match proj_info.Server_Options with
                             | Server_Options.Push_Nuget ->
                                 Server_Options.No_Server_Actions
                             | _ ->
-                                proj_info.Server_Options
+                                option
                     | _ ->
                         match proj_info.Server_Options with
                         | Server_Options.Push_Nuget ->
                             Server_Options.No_Server_Actions
                         | _ ->
-                            proj_info.Server_Options
+                            option
 
                 let newProj =
                     {proj_info with Server_Options = newOption}

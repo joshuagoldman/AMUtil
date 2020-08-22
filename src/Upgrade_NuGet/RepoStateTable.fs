@@ -8,23 +8,6 @@ open Types
 open Feliz
 open Feliz.style
 
-let newRstatInInput fault rcoObjArr dispatch =
-    Html.div[
-        prop.className "field"
-        prop.children[
-            Html.div[
-                prop.className "control"
-                prop.children[
-                    Html.input[
-                        prop.className "input is-primary"
-                        prop.type' "text"
-                        prop.placeholder "Insert new Rstate-In value"
-                    ]
-                ]
-            ]
-        ]
-    ]
-
 let currChoiceWithName =
     [|
         {
@@ -46,46 +29,83 @@ let currChoiceWithName =
     |]
 
 let getServerActionButton project ( option : Global.Types.TypeString<Server_Options>) dispatch =
-    Html.a[
+    Html.div[
         prop.className "dropdown-item"
-        prop.text option.ObjString
-        prop.onClick (fun _ ->
-            project |>
-            (
-                Change_Server_Action_Option >>
-                dispatch
-            ))
+        prop.children[
+            Html.div[
+                prop.className "button"
+                prop.text option.ObjString
+                prop.onClick (fun _ ->
+                    (project,option.ObjType) |>
+                    (
+                        Change_Server_Action_Option >>
+                        dispatch
+                    ))
+            ]
+        ]
+        
     ]
 
-let getActionsList ( arr : Global.Types.TypeString<Server_Options> [])
+let getActionsList project
+                   ( arr : Global.Types.TypeString<Server_Options> [])
                    ( obj : Global.Types.TypeString<Server_Options> ) =
-    match obj.ObjType with
-    | Server_Options.Push_Nuget ->
-        arr
-        |> Array.choose (fun opt ->
-            match (opt.ObjString = obj.ObjString) with
-            | true ->
-                None
-            | _ ->
-                opt
-                |> Some)
-    | _ ->
-        arr
-        |> Array.choose (fun opt ->
-            match opt.ObjType with
-            | Server_Options.Push_Nuget ->
-                None
-            | _ ->
-                match (opt.ObjString = obj.ObjString) with
-                | true ->
-                    None
-                | _ ->
-                    opt
-                    |> Some)
 
+        match project.Nuget_Names.New_Nuget_Name with
+           | New_Nuget_Name.Has_New_Name validity ->
+               match validity with
+               | Nuget_Name_Validity.Nuget_Name_Valid _ ->
+                   arr
+                   |> Array.choose (fun opt ->
+                       match (opt.ObjString = obj.ObjString) with
+                       | true ->
+                           None
+                       | _ ->
+                           opt
+                           |> Some)
+               | _ ->
+                    match obj.ObjType with
+                    | Push_Nuget ->
+                       arr
+                       |> Array.choose (fun opt ->
+                           match opt.ObjType with
+                           | Server_Options.Push_Nuget ->
+                               None
+                           | _ ->
+                               match opt.ObjType with
+                               | Server_Options.No_Server_Actions ->
+                                   None
+                               | _ ->
+                                   opt
+                                   |> Some)
+                    | _ ->
+                        arr
+                        |> Array.choose (fun opt ->
+                            match opt.ObjType with
+                            | Server_Options.Push_Nuget ->
+                                None
+                            | _ ->
+                                match (opt.ObjString = obj.ObjString) with
+                                | true ->
+                                    None
+                                | _ ->
+                                    opt
+                                    |> Some)
+            | _ ->
+                arr
+                |> Array.choose (fun opt ->
+                    match opt.ObjType with
+                    | Server_Options.Push_Nuget ->
+                        None
+                    | _ ->
+                        match (opt.ObjString = obj.ObjString) with
+                        | true ->
+                            None
+                        | _ ->
+                            opt
+                            |> Some)
+        
 let currentServerActionItem ( name : string ) =
     Html.span[
-        prop.className "dropdown-item"
         prop.text name
     ]
 
@@ -97,7 +117,7 @@ let nugetServerOptionsViewItems project dispatch =
             Global.Types.ObjString = "No Actions"
         } |>
         (
-            getActionsList currChoiceWithName >>
+            getActionsList project currChoiceWithName >>
             Array.map (fun option ->
                 getServerActionButton
                                     project
@@ -110,7 +130,7 @@ let nugetServerOptionsViewItems project dispatch =
             Global.Types.ObjString = "Delete"
         } |>
         (
-            getActionsList currChoiceWithName >>
+            getActionsList project currChoiceWithName >>
             Array.map (fun option ->
                 getServerActionButton
                                     project
@@ -123,7 +143,7 @@ let nugetServerOptionsViewItems project dispatch =
             Global.Types.ObjString = "Replace"
         } |>
         (
-            getActionsList currChoiceWithName >>
+            getActionsList project currChoiceWithName >>
             Array.map (fun option ->
                 getServerActionButton
                                     project
@@ -136,7 +156,7 @@ let nugetServerOptionsViewItems project dispatch =
             Global.Types.ObjString = "Push"
         } |>
         (
-            getActionsList currChoiceWithName >>
+            getActionsList project currChoiceWithName >>
             Array.map (fun option ->
                 getServerActionButton
                                     project
@@ -145,15 +165,34 @@ let nugetServerOptionsViewItems project dispatch =
         )
 
 let nugetServerOptionsViewSelectedItem project =
-    match project.Server_Options with
-    | Server_Options.No_Server_Actions ->
-        currentServerActionItem "No Actions"
-    | Server_Options.Is_To_Be_Deleted ->
-        currentServerActionItem "Delete"
-    | Server_Options.Is_To_Be_Updated ->
-        currentServerActionItem "Replace"
-    | Server_Options.Push_Nuget ->
-        currentServerActionItem "Push"
+    let spanWhenNugetNameInvalid =
+        match project.Server_Options with
+        | Server_Options.No_Server_Actions ->
+            currentServerActionItem "No Actions"
+        | Server_Options.Is_To_Be_Deleted ->
+            currentServerActionItem "Delete"
+        | Server_Options.Is_To_Be_Updated ->
+            currentServerActionItem "Replace"
+        | Server_Options.Push_Nuget ->
+            currentServerActionItem "No Actions"
+
+    match project.Nuget_Names.New_Nuget_Name with
+    | New_Nuget_Name.Has_New_Name validity ->
+        match validity with
+        | Nuget_Name_Validity.Nuget_Name_Valid _ ->
+            match project.Server_Options with
+            | Server_Options.No_Server_Actions ->
+                currentServerActionItem "No Actions"
+            | Server_Options.Is_To_Be_Deleted ->
+                currentServerActionItem "Delete"
+            | Server_Options.Is_To_Be_Updated ->
+                currentServerActionItem "Replace"
+            | Server_Options.Push_Nuget ->
+                currentServerActionItem "Push"
+        | _ ->
+            spanWhenNugetNameInvalid
+    | _ -> 
+        spanWhenNugetNameInvalid
 
 let nugetServerOptionsView project dispatch =
     Html.div[
@@ -165,6 +204,7 @@ let nugetServerOptionsView project dispatch =
                     Html.button[
                         prop.className "button"
                         prop.ariaHasPopup true
+                        prop.ariaControls "dropdown-menu2"
                         prop.children[
                             nugetServerOptionsViewSelectedItem project
                             Html.span[
@@ -183,7 +223,7 @@ let nugetServerOptionsView project dispatch =
             ]
             Html.div[
                 prop.className "dropdown-menu"
-                prop.id "dropdown-menu"
+                prop.id "dropdown-menu2"
                 prop.role.menu
                 prop.children[
                     Html.div[
@@ -257,7 +297,7 @@ let newNugetNameInput project dispatch =
                         prop.onChange (fun ev ->
                             [|
 
-                                project
+                                (project,project.Server_Options)
                                 |> Types.Change_Server_Action_Option
 
                                 (project,ev) |>
@@ -301,7 +341,7 @@ let root ( projects_table : Loganalyzer_Projects_Table ) dispatch =
         Html.table[
             prop.className "table is-fullwidth is-scrollable is-striped"
             prop.style[
-                Feliz.style.height 300
+                Feliz.style.height 900
             ]
             prop.children[
                 Html.thead[
