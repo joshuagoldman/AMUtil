@@ -144,12 +144,6 @@ let update msg (model:Model) : Model * GlobalMsg * Cmd<Msg> =
     | Change_Activity activity ->
         { model with Activity = activity }, MsgNone, []
 
-    | Obtain_New_Nuget_Info(dispatch,activity) ->
-        Logic.checkIfDotNetInstalled dispatch
-        |> Async.StartImmediate
-
-        { model with Activity = activity }, MsgNone, []
-
     | Criteria_1_84_Msg criteria_1_84_msg ->
         let (criteria_1_84_model, global_msg, critiera_1_84_msg_cmd) = Criteria_1_84.State.update criteria_1_84_msg model.Criteria_1_84
 
@@ -172,12 +166,6 @@ let update msg (model:Model) : Model * GlobalMsg * Cmd<Msg> =
 
     | GlobalMsg_Main global_msg ->
         model,global_msg,[]
-
-    | Get_All_Projects_Info dispatch ->
-        Logic.getNuGetTableInfo dispatch
-        |> Async.StartImmediate
-
-        model,MsgNone,[]
 
 
 

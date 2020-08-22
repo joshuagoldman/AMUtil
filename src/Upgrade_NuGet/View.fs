@@ -33,14 +33,7 @@ let branchDropDown model dispatch =
                                         fontWeight.bold
                                     ]
                                     prop.onChange ( fun ev ->
-                                        match model.Info with
-                                        | Yes_Git_Info_Nuget repo ->
-                                            dispatch |>
-                                            (
-                                                Upgrade_NuGet.Logic.handleBranchNameChange repo ev >>
-                                                dispatch
-                                            )
-                                        | _ -> ())
+                                        Logic.changeBranchNugetUpgrade model dispatch ev)
                                     prop.id "inlineFormCustomSelect"
                                     prop.children(
                                         Logic.getBranches model.Info
@@ -58,6 +51,7 @@ let branchDropDown model dispatch =
 
 let currentBranchInfo model =
     match model.Info with
+
     | Yes_Git_Info_Nuget info ->
             Html.div[
                 prop.text ("Current branch: " + info.CurrBranch)
@@ -140,6 +134,7 @@ let root model dispatch =
                             currentBranchInfo model      
                         ]
                     ]
+                    Logic.updateNugetTable model dispatch
                 ]
             ]
             Html.div[

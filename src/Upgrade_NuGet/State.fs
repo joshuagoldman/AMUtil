@@ -30,6 +30,11 @@ let update msg (model:Model) : Types.Model * Global.Types.GlobalMsg * Cmd<Msg> =
             |> Cmd.batch
 
         model, Global.Types.MsgNone, msgsIntoOneCmd
+    | Popup_Msg_Upgrade_Nuget style ->
+        let msg =
+            Global.Types.Popup_Msg_Global style
+
+        model, msg, []
         
     | GlobalMsg_Upgrade_Nuget msg ->
         model, msg, []
@@ -90,3 +95,18 @@ let update msg (model:Model) : Types.Model * Global.Types.GlobalMsg * Cmd<Msg> =
         | Some newProj ->
             { model with Projects_Table = newProj }, Global.Types.MsgNone, []
         | _ -> model, Global.Types.MsgNone, []
+
+    | Obtain_New_Nuget_Info(dispatch,activity) ->
+        Logic.checkIfDotNetInstalled dispatch
+        |> Async.StartImmediate
+
+        let activityMsg =
+            activity |> Global.Types.Change_Activity_Global
+
+        model, activityMsg, []
+
+    | Get_All_Projects_Info dispatch ->
+        Logic.getNuGetTableInfo dispatch
+        |> Async.StartImmediate
+
+        model, Global.Types.MsgNone, []

@@ -77,7 +77,7 @@ let mainPage model ( dispatch : Msg -> unit ) =
                                 match result with
                                 | Global.Types.Git_Repo_Parsing_Result.Parsing_Succeded ->
                                     Main.View.root model.Main (Types.Msg.MainMsg >> dispatch)
-                                | Global.Types.Git_Repo_Parsing_Result.Parsing_Failed ->
+                                | Global.Types.Git_Repo_Parsing_Result.Parsing_Failed _ ->
                                     [Html.none]
                                     |> Global.View.verifyFailedPage
                             | Global.Types.Parsing_Has_Not_Been_Performed ->

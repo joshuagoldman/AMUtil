@@ -270,7 +270,7 @@ let faultyLines model dispatch =
                     info
                     dispatch
             ]
-        | NeedsCorrection.No_Correction_Needed ->
+        | NeedsCorrection.No_Correction_Needed _ ->
             Html.none
     | _ -> Html.none
 
@@ -290,7 +290,7 @@ let RetryRcoUpdate model dispatch =
                 ]
                 prop.onClick (fun ev -> Types.Msg.Update_Rco_Changes(info,faults,ev |> Global.Types.getPositions,dispatch) |> dispatch)
             ]
-        | NeedsCorrection.No_Correction_Needed ->
+        | NeedsCorrection.No_Correction_Needed _ ->
             Html.none
     | _ -> Html.none
 

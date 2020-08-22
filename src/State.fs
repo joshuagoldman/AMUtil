@@ -156,5 +156,11 @@ let update msg (model:Model) : Types.Model * Cmd<Types.Msg> =
                     Cmd.ofMsg
                 )
             model, main_model_msg_version
+        | Change_Activity_Global activity ->
+            {
+                model with Main = {
+                        model.Main with Activity = activity
+                }
+            }, []
         
 

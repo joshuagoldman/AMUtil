@@ -8,6 +8,10 @@ type AsynSyncMix<'a> =
     | Is_Async of Async<'a>
     | Is_Not_Async of 'a
 
+let sleepAsync time = async {
+    do! Async.Sleep time
+}
+
 let getPositions ev =
     {
         Popup.Types.PosX = ( ev?pageX : float )
@@ -145,5 +149,7 @@ type GlobalMsg =
     | Go_To_Failed_Page of Button : ReactElement * Message : ReactElement []
     | Spread_New_Branch_Name of Git_Repository
     | Spread_New_Git_Repo of Git_Repository
+    | Change_Activity_Global of App_Activity
+
 
 

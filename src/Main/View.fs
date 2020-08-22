@@ -21,11 +21,19 @@ let activityChangeDispatch model activity dispatch =
     | Global.Types.App_Activity.NugetUpgrade _ ->
         match model.Upgrade_NuGet.Projects_Table with
         | Upgrade_NuGet.Types.Loganalyzer_Projects_Table_Status.Info_Not_Loaded ->
-            (dispatch,activity) |> Obtain_New_Nuget_Info
+            (Main.Types.Upgrade_NuGet_Msg >> dispatch,activity) |>
+            (
+                Upgrade_NuGet.Types.Obtain_New_Nuget_Info >>
+                Main.Types.Upgrade_NuGet_Msg
+            )
         | Upgrade_NuGet.Types.Loganalyzer_Projects_Table_Status.Info_Has_Been_Loaded res ->
             match res with
             | Upgrade_NuGet.Types.Loganalyzer_Projects_Table.No_Projects_Table_Info -> 
-                (dispatch,activity) |> Obtain_New_Nuget_Info
+                (Main.Types.Upgrade_NuGet_Msg >> dispatch,activity) |>
+                (
+                    Upgrade_NuGet.Types.Obtain_New_Nuget_Info >>
+                    Main.Types.Upgrade_NuGet_Msg
+                )
             | _ ->
                 activity
                 |> Change_Activity

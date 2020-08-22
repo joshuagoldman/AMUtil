@@ -72,13 +72,15 @@ type Loganalyzer_Projects_Table_Status =
 type Msg =
     | Batch of Msg[]
     | Batch_Upgrade_Nuget_Async of Async<Msg>[]
+    | Popup_Msg_Upgrade_Nuget of Popup.Types.PopupStyle
     | GlobalMsg_Upgrade_Nuget of GlobalMsg
     | Change_Project_Info of Project_Info
     | New_Nuget_Name_Change of Project_Info * Types.Event
     | Change_NuGet_Status of Loganalyzer_Projects_Table_Status
     | Change_Project_Status of Project_Info
     | Get_Project_Info of string
-
+    | Obtain_New_Nuget_Info of (Msg -> unit) * App_Activity
+    | Get_All_Projects_Info of (Msg -> unit)
 type Model = {
     Info : Git_Info_Nuget
     Projects_Table : Loganalyzer_Projects_Table_Status

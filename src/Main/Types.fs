@@ -29,8 +29,6 @@ type Msg =
     | Change_Activity of App_Activity
     | Spread_New_Branch_Name_Main of Git_Repository
     | Spread_New_Git_Repo_Main of Git_Repository
-    | Obtain_New_Nuget_Info of (Msg -> unit) * Global.Types.App_Activity
-    | Get_All_Projects_Info of (Msg -> unit)
 
 
 type Model = {
