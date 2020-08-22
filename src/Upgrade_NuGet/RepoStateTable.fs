@@ -50,7 +50,7 @@ let getServerActionButton project ( option : Global.Types.TypeString<Server_Opti
         prop.className "dropdown-item"
         prop.text option.ObjString
         prop.onClick (fun _ ->
-            (option.ObjType,project) |>
+            project |>
             (
                 Change_Server_Action_Option >>
                 dispatch
@@ -201,7 +201,7 @@ let nugetServerOptionsView project dispatch =
         ]
     ]
 
-let isInfoRow ( project : Project_Info ) dispatch =
+let isInfoRow ( project : Project_Info ) =
 
     match project.Nuget_Names.New_Nuget_Name with
     | New_Nuget_Name.Has_New_Name res ->
@@ -255,11 +255,18 @@ let newNugetNameInput project dispatch =
                         prop.type' "text"
                         prop.placeholder "Enter new NuGet version"
                         prop.onChange (fun ev ->
-                            (project,ev) |>
-                            (
-                                Types.New_Nuget_Name_Change >>
-                                dispatch
-                            ))
+                            [|
+
+                                project
+                                |> Types.Change_Server_Action_Option
+
+                                (project,ev) |>
+                                (
+                                    Types.New_Nuget_Name_Change
+                                )
+                            |]
+                            |> Array.iter (fun msg -> msg |> dispatch)
+                            )
                     ]
                 ]
             ]
@@ -273,10 +280,10 @@ let tableRow project dispatch =
                 prop.text project.Name
             ]
             Html.th[
-                isInfoRow project dispatch
+                isInfoRow project
             ]
             Html.th[
-                isUpdateRow project dispatch
+                nugetServerOptionsView project dispatch
             ]
             Html.th[
                 prop.text project.Nuget_Names.CurrName

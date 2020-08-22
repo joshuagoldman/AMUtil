@@ -42,7 +42,7 @@ type Nuget_Name_Validity =
     | Nuget_Name_Not_Valid of Not_Valid_Nuget_Reason
 
 type New_Nuget_Name =
-    | Has_No_Name of Server_Options
+    | Has_No_Name
     | Has_New_Name of Nuget_Name_Validity
 
 type Nuget_Names = {
@@ -99,7 +99,7 @@ type Msg =
     | Change_Current_Branch_UpgradeNuget of Branch_Name : string * Popup.Types.PopupPosition * (Msg -> unit)
     | Change_Nuget_Server_Info of Nuget_Server_Options
     | Check_Nuget_Server  of (Msg -> unit)
-    | Change_Server_Action_Option of Server_Options * Project_Info
+    | Change_Server_Action_Option of Project_Info
 type Model = {
     Info : Git_Info_Nuget
     Projects_Table : Loganalyzer_Projects_Table_Status

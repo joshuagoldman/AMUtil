@@ -101,6 +101,50 @@ let update msg (model:Model) : Types.Model * Global.Types.GlobalMsg * Cmd<Msg> =
             { model with Projects_Table = newProj }, Global.Types.MsgNone, []
         | _ -> model, Global.Types.MsgNone, []
 
+    | Change_Server_Action_Option proj_info ->
+        match model.Projects_Table with
+        | Loganalyzer_Projects_Table_Status.Info_Has_Been_Loaded res ->
+            match res with
+            | Loganalyzer_Projects_Table.Yes_Projects_Table_Info infos ->
+                let newOption =
+                    match proj_info.Nuget_Names.New_Nuget_Name with
+                    | New_Nuget_Name.Has_New_Name validity ->
+                        match validity with
+                        | Nuget_Name_Validity.Nuget_Name_Valid _ ->
+                            proj_info.Server_Options
+                        | _ ->
+                            match proj_info.Server_Options with
+                            | Server_Options.Push_Nuget ->
+                                Server_Options.No_Server_Actions
+                            | _ ->
+                                proj_info.Server_Options
+                    | _ ->
+                        match proj_info.Server_Options with
+                        | Server_Options.Push_Nuget ->
+                            Server_Options.No_Server_Actions
+                        | _ ->
+                            proj_info.Server_Options
+
+                let newProj =
+                    {proj_info with Server_Options = newOption}
+                let newinfos =
+                    infos |>
+                    (
+                        Array.map (fun info ->
+                            if info.Name = newProj.Name
+                            then
+                                newProj
+                            else info) >>
+                        Loganalyzer_Projects_Table.Yes_Projects_Table_Info >>
+                        Loganalyzer_Projects_Table_Status.Info_Has_Been_Loaded
+                    )
+
+                { model with Projects_Table = newinfos}, Global.Types.GlobalMsg.MsgNone, []
+            | _ ->
+                model, Global.Types.GlobalMsg.MsgNone, []
+        | _ ->
+            model, Global.Types.GlobalMsg.MsgNone, []
+
     | Obtain_New_Nuget_Info(dispatch,activity) ->
         Logic.checkIfDotNetInstalled dispatch
         |> Async.StartImmediate

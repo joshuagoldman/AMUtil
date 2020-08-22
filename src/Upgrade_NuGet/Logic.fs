@@ -189,9 +189,11 @@ let monitorEachProjectInfoExtraction ( projectsLoadingInfo : Loganalyzer_Project
                                         CurrName =
                                             JsInterop.Regex.Match nugetPackageVersionRegex res.responseText
                                             |> fun x -> x.Value
+
                                         New_Nuget_Name = New_Nuget_Name.Has_No_Name
                                     }
                                 Existing_Packages = existingPackages.Value
+                                Server_Options = No_Server_Actions
                             }
                             |> Loganalyzer_Projects_Table_Result.Loading_Was_Successfull
                             
@@ -325,16 +327,15 @@ let isWrittenNewNugetNameValid newName project =
                
                     match alreadyExistsInServer with
                     | false ->
-                        (newName,NuGet_Not_To_Be_Pushed) |>
+                        newName |>
                         (
                             Nuget_Name_Validity.Nuget_Name_Valid >>
                             Some
                         )
                             
                     | _ ->
-                        Server_Options.No_Server_Actions |>
+                        Not_Valid_Nuget_Reason.Nuget_Already_In_Server |>
                         (
-                            Not_Valid_Nuget_Reason.Nuget_Already_In_Server >>
                             Nuget_Name_Not_Valid >>
                             Some
                         )
