@@ -27,9 +27,13 @@ type Project_Chosen_option =
     | Project_Chosen
     | Project_Not_Chosen
 
+type Not_Valid_Nuget_Reason =
+    | Has_Same_Nuget_Name
+    | Nuget_Already_In_Server
+    | Has_Wrong_Pattern
 type Nuget_Name_Validity =
     | Nuget_Name_Valid of string
-    | Nuget_Name_Not_Valid
+    | Nuget_Name_Not_Valid of Not_Valid_Nuget_Reason
 
 type New_Nuget_Name =
     | Has_No_Name
@@ -45,6 +49,7 @@ type Project_Info = {
     Is_Chosen : Project_Chosen_option
     Changes : Project_Changes
     Nuget_Names : Nuget_Names
+    Existing_Packages : string []
 }
 
 type Loganalyzer_Projects_Table =
@@ -58,7 +63,7 @@ type Loganalyzer_Projects_Table_Loading = {
 
 type Loganalyzer_Projects_Table_Result =
     | Loading_Was_Successfull of Project_Info
-    | Loading_Was_Not_Successfull of Proj_Name : string
+    | Loading_Was_Not_Successfull of Proj_Name : string * Msg: string
 
 type Loganalyzer_Projects_Table_Mix =
     | Project_Not_Loading of Loganalyzer_Projects_Table_Result
@@ -68,6 +73,10 @@ type Loganalyzer_Projects_Table_Status =
     | Info_Not_Loaded
     | Info_Is_Loading of Loganalyzer_Projects_Table_Mix []
     | Info_Has_Been_Loaded of Loganalyzer_Projects_Table
+
+type Nuget_Server_Options =
+    | Nuget_Server_Is_Available of string
+    | Nuget_Server_Is_Not_Available
 
 type Msg =
     | Batch of Msg[]
@@ -81,8 +90,12 @@ type Msg =
     | Get_Project_Info of string
     | Obtain_New_Nuget_Info of (Msg -> unit) * App_Activity
     | Get_All_Projects_Info of (Msg -> unit)
+    | Change_Current_Branch_UpgradeNuget of Branch_Name : string * Popup.Types.PopupPosition * (Msg -> unit)
+    | Change_Nuget_Server_Info of Nuget_Server_Options
+    | Check_Nuget_Server  of (Msg -> unit)
 type Model = {
     Info : Git_Info_Nuget
     Projects_Table : Loganalyzer_Projects_Table_Status
+    Nuget_Server : Nuget_Server_Options
 }
 

@@ -81,11 +81,12 @@ let getTableLoadPopup model dispatch =
                                 proj_not_loading.Name
                             )
                         msg
-                    | Loganalyzer_Projects_Table_Result.Loading_Was_Not_Successfull name ->
+                    | Loganalyzer_Projects_Table_Result.Loading_Was_Not_Successfull (name, msg) ->
                         let msg =
                             String.Format(
-                                "{0} -> Loading was not successfull",
-                                name
+                                "{0} -> {1}",
+                                name,
+                                msg
                             )
                         msg
 

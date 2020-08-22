@@ -41,6 +41,18 @@ let request ( data : obj ) =
 
         xhr.send(data)
 
+let simpleGetRequest urlstr = 
+    Async.FromContinuations <| fun (resolve,_,_) ->
+        let xhr = Browser.XMLHttpRequest.Create()
+        xhr.``open``(method = "GET", url = urlstr)
+
+        xhr.onreadystatechange <- fun _ ->
+            if xhr.readyState = (4 |> float)
+            then
+                resolve(xhr)
+
+        xhr.send(None)
+
 let requestCustom url ( data : obj ) = 
     Async.FromContinuations <| fun (resolve,_,_) ->
         let xhr = Browser.XMLHttpRequest.Create()

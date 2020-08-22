@@ -10,6 +10,7 @@ var shell = require('shelljs');
 var readline = require('readline');
 const fileUpload = require('express-fileupload');
 var clientSocket = require('socket.io-client');
+const xhr = require('xmlhttprequest');
 
 const app = express();
 app.use(cors())
@@ -18,6 +19,8 @@ app.use(express.urlencoded(({extended:true})));
 app.use(bodyParser.json());
 app.use(fileUpload());
 app.use('/files', express.static(__dirname + '/../public'))
+app.use(bodyParser.json({limit: '200mb'}));
+app.use(bodyParser.urlencoded({limit: '200mb', extended: true}));
 
 var server = app.listen(PORT, () => {
     console.log( `Server listening on port ${PORT}...`);
@@ -233,5 +236,19 @@ app.post("/projectInfo", (req, res) => {
         if(err) return res.status(404).send(err);
         else return res.send(data);
     });
+    
+});  
+
+// --------------------------------------------------------------------------------------------------------------
+// Get NuGet Server Info
+// --------------------------------------------------------------------------------------------------------------
+app.get("/nugetinfo", (req, res) => {
+
+    let request = new xhr.XMLHttpRequest();
+    request.open('GET',"http://segaeesw04.eipu.ericsson.se/nuget/Packages");
+    request.onreadystatechange = function() {
+        if (request.readyState === 4) return res.send(request.responseText);
+      };
+    request.send();
     
 });  

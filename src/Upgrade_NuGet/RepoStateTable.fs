@@ -25,70 +25,58 @@ let newRstatInInput fault rcoObjArr dispatch =
         ]
     ]
 
-let isNewNugetNameValid project =
-    match project.Nuget_Names.New_Nuget_Name with
-    | New_Nuget_Name.Has_New_Name res ->
-        match res with
-        | Nuget_Name_Valid newName ->
-            let numberRegex = "\d{1,}"
-            let numberMatchOpt = JsInterop.Regex.Match numberRegex newName
-            match numberMatchOpt with
-            | Some numberMatch ->
-                let oldnumberMatchOpt = JsInterop.Regex.Match numberRegex project.Nuget_Names.CurrName
-                match oldnumberMatchOpt with
-                | Some oldnumberMatch ->
-                    let areNumbersSame =
-                        oldnumberMatch = numberMatch
-
-                    let isNewNugetNumberLarger =
-                        oldnumberMatch < numberMatch
-                        
-                    match areNumbersSame with
-                    | true ->
-                        if project.Nuget_Names.CurrName = newName
-                        then false
-                        else true
-                    | _ ->
-                        match isNewNugetNumberLarger with
-                        | true -> true
-                        | _ -> false
-                | _ -> false
-            | _ -> false
-        | _ -> false
-    | _ -> false
-
-let isUpdateRow project is_chosen dispatch =
+let isUpdateRow ( project : Project_Info ) dispatch =
     let isChecked =
-        match is_chosen with
+        match project.Is_Chosen with
         | Project_Chosen -> true
         | _ -> false
 
-    
-
-    match (isNewNugetNameValid project) with
-    | true ->
-        Html.label[
-            prop.className "checkbox"
-            prop.children[
-                Html.input[
-                    prop.isChecked isChecked
-                    prop.type'.checkbox
-                    prop.onClick (fun _ ->
-                        let newStatus =
-                            Logic.changeNugetStatus is_chosen
-                        { project with Is_Chosen = newStatus } |>
-                        (
+    match project.Nuget_Names.New_Nuget_Name with
+    | New_Nuget_Name.Has_New_Name res ->
+        match res with
+        | Nuget_Name_Validity.Nuget_Name_Not_Valid reason ->
+            match reason with
+            | Not_Valid_Nuget_Reason.Has_Wrong_Pattern ->
+                Html.div[
+                    prop.text "NuGet version has wrong format."
+                ]
+            | Not_Valid_Nuget_Reason.Has_Same_Nuget_Name ->
+                Html.div[
+                    prop.style[
+                        Feliz.style.maxWidth 200
+                    ]
+                    prop.text "Can't use same NuGet version name as the current."
+                ]
+            | Not_Valid_Nuget_Reason.Nuget_Already_In_Server ->
+                Html.div[
+                    prop.text "This name already exists in NuGet server."
+                    prop.style[
+                        Feliz.style.maxWidth 200
+                    ]
+                ]
+        | Nuget_Name_Validity.Nuget_Name_Valid _ ->
+            Html.label[
+                prop.className "checkbox"
+                prop.children[
+                    Html.input[
+                        prop.isChecked isChecked
+                        prop.type'.checkbox
+                        prop.onClick (fun _ ->
+                            let newStatus =
+                                Logic.changeNugetStatus project.Is_Chosen
+                            { project with Is_Chosen = newStatus } |>
+                            (
                         
-                            Change_Project_Status >>
-                            dispatch
+                                Change_Project_Status >>
+                                dispatch
+                            )
                         )
-                    )
+                    ]
                 ]
             ]
-        ]
     | _ ->
         Html.div[
-            prop.text "NuGet version not valid"
+            prop.text "NuGet version has wrong format."
         ]
 
 let newNugetNameInput project dispatch =
@@ -103,8 +91,12 @@ let newNugetNameInput project dispatch =
                         prop.className "input is-primary"
                         prop.style[
                             Feliz.style.color(
-                                match (isNewNugetNameValid project) with
-                                | true -> "black"
+                                match project.Nuget_Names.New_Nuget_Name with
+                                | New_Nuget_Name.Has_New_Name res ->
+                                    match res with
+                                    | Nuget_Name_Validity.Nuget_Name_Valid _ ->
+                                        "black"
+                                    | _ -> "red"
                                 | _ -> "red"
                             )
                         ]
@@ -129,7 +121,7 @@ let tableRow project dispatch =
                 prop.text project.Name
             ]
             Html.th[
-                isUpdateRow project project.Is_Chosen dispatch
+                isUpdateRow project dispatch
             ]
             Html.th[
                 prop.text project.Nuget_Names.CurrName
@@ -145,9 +137,9 @@ let root ( projects_table : Loganalyzer_Projects_Table ) dispatch =
     match projects_table with
     | Yes_Projects_Table_Info projects ->
         Html.table[
-            prop.className "table is-fullwidth is-scrollable"
+            prop.className "table is-fullwidth is-scrollable is-striped"
             prop.style[
-                Feliz.style.maxHeight 300
+                Feliz.style.height 300
             ]
             prop.children[
                 Html.thead[

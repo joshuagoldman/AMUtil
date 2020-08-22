@@ -91,7 +91,7 @@ type Msg =
     | Batch of Msg[]
     | Get_New_Info_Msg of Git_Info
     | Change_File_Msg of Curr_Rco_File
-    | Change_Current_Branch_Msg of Branch_Name : string * Popup.Types.PopupPosition * (Msg -> unit) 
+    | Change_Current_Branch_Rco of Branch_Name : string * Popup.Types.PopupPosition * (Msg -> unit) 
     | Change_Current_Rco_Info of Curr_Rco_Info
     | Global_Msg of GlobalMsg
     | Get_Rco_Data_Msg of (Msg -> unit) * Types.Event 

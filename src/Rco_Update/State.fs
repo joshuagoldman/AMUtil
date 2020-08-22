@@ -31,7 +31,7 @@ let update msg (model:Model) : Types.Model * Global.Types.GlobalMsg * Cmd<Msg> =
     | Change_File_Msg fileOpt ->
         { model with CurrFile = fileOpt }, Global.Types.MsgNone,[]
 
-    | Change_Current_Branch_Msg(branch_name,positions,dispatch) ->
+    | Change_Current_Branch_Rco(branch_name,positions,dispatch) ->
         match model.Info with
         | No_Git_Info ->
             model, Global.Types.MsgNone,[]

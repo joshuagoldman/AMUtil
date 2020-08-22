@@ -9,6 +9,7 @@ let init result =
     {
         Info = Git_Info_Nuget.No_Git_Info_Nuget
         Projects_Table = Loganalyzer_Projects_Table_Status.Info_Not_Loaded
+        Nuget_Server = Nuget_Server_Is_Not_Available
     }
 
 
@@ -64,11 +65,15 @@ let update msg (model:Model) : Types.Model * Global.Types.GlobalMsg * Cmd<Msg> =
     | Get_Project_Info proj_name ->
         match model.Projects_Table with
         | Loganalyzer_Projects_Table_Status.Info_Is_Loading mix ->
-            let msg =
-                Logic.monitorEachProjectInfoExtraction mix proj_name
-                |> Cmd.fromAsync
-            
-            model, Global.Types.MsgNone, msg
+            match model.Nuget_Server with
+            | Nuget_Server_Is_Available info ->
+                let msg =
+                    Logic.monitorEachProjectInfoExtraction mix info proj_name
+                    |> Cmd.fromAsync
+                
+                model, Global.Types.MsgNone, msg
+            | _ ->
+                model, Global.Types.MsgNone, []
         | _ ->
             model, Global.Types.MsgNone, []
     | Change_Project_Status project ->
@@ -105,8 +110,33 @@ let update msg (model:Model) : Types.Model * Global.Types.GlobalMsg * Cmd<Msg> =
 
         model, activityMsg, []
 
+    | Check_Nuget_Server dispatch ->
+        Logic.getAllAvailablePackageVersions dispatch
+        |> Async.StartImmediate
+
+        model, Global.Types.GlobalMsg.MsgNone, []
+
     | Get_All_Projects_Info dispatch ->
         Logic.getNuGetTableInfo dispatch
         |> Async.StartImmediate
 
         model, Global.Types.MsgNone, []
+    | Change_Current_Branch_UpgradeNuget(branch_name,positions,dispatch) ->
+        match model.Info with
+        | No_Git_Info_Nuget ->
+            model, Global.Types.MsgNone,[]
+        | Yes_Git_Info_Nuget info ->
+            let newInfo =
+                { info with CurrBranch = branch_name }
+
+            let spreadMsg =
+                newInfo
+                |> Global.Types.GlobalMsg.Spread_New_Branch_Name
+
+            Logic.checkoutNewBranch branch_name dispatch positions  
+            |> Async.StartImmediate
+
+            model, spreadMsg,[]
+
+    | Change_Nuget_Server_Info info ->
+        { model with Nuget_Server = info}, Global.Types.MsgNone,[]

@@ -17,8 +17,7 @@ let getBranches info =
         |> Array.map (fun branch ->
             branch |> Rco_Update.View.branchAlt)
 
-let handleBranchNameChange gitRepo ( ev : Browser.Types.Event ) dispatch =
-    let branchName = ev.target?value |> string
+let handleBranchNameChange branchName gitRepo =
 
     match branchName with
     | "Choose Branch..." ->
@@ -48,7 +47,9 @@ let haveProjectsBeenLoaded projLoadingMixes =
         | Loganalyzer_Projects_Table_Mix.Project_Loading _ -> false
         | _ -> true)
 
-let monitorEachProjectInfoExtraction ( projectsLoadingInfo : Loganalyzer_Projects_Table_Mix [] ) projectName = async {
+let monitorEachProjectInfoExtraction ( projectsLoadingInfo : Loganalyzer_Projects_Table_Mix [] )
+                                     ( nugetServerInfo : string )
+                                       projectName = async {
     let fullProjectNameFolder = "project=Ericsson.AM." + projectName
 
     let nugetPackageVersionRegex = "(?<=<Version>).*(?=<\/Version>)"
@@ -154,6 +155,8 @@ let monitorEachProjectInfoExtraction ( projectsLoadingInfo : Loganalyzer_Project
 
     let! res = requestCustom "http://localhost:3001/projectInfo" fullProjectNameFolder
 
+    let standardFailMsg = "Loading was not successfull"
+
     match res.status with
     | 200.0 ->
         let foundNugetVersionOpt =
@@ -163,33 +166,82 @@ let monitorEachProjectInfoExtraction ( projectsLoadingInfo : Loganalyzer_Project
         | Some foundNugetVersion ->
             match foundNugetVersion with
             | true ->
-                let newInfo =
-                    {
-                        Name = projectName
-                        Is_Chosen = Project_Chosen_option.Project_Not_Chosen
-                        Changes = Project_Changes.Project_Has_No_Changes
-                        Nuget_Names =
+                let nugetServerRegex =
+                    String.Format(
+                        "(?<=Ericsson.AM.{0}',Version=').*(?=')",
+                        projectName
+                    )
+                let isPartOfNugetServerOpt = JsInterop.Regex.IsMatch nugetServerRegex nugetServerInfo
+
+                match isPartOfNugetServerOpt with
+                | Some isPartOfNugetServer ->
+                    match isPartOfNugetServer with
+                    | true ->
+                        let existingPackages =
+                            JsInterop.Regex.Matches nugetServerRegex nugetServerInfo
+                            
+                        let newInfo =
                             {
-                                CurrName =
-                                    JsInterop.Regex.Match nugetPackageVersionRegex res.responseText
-                                    |> fun x -> x.Value
-                                New_Nuget_Name = New_Nuget_Name.Has_No_Name
+                                Name = projectName
+                                Is_Chosen = Project_Chosen_option.Project_Not_Chosen
+                                Changes = Project_Changes.Project_Has_No_Changes
+                                Nuget_Names =
+                                    {
+                                        CurrName =
+                                            JsInterop.Regex.Match nugetPackageVersionRegex res.responseText
+                                            |> fun x -> x.Value
+                                        New_Nuget_Name = New_Nuget_Name.Has_No_Name
+                                    }
+                                Existing_Packages = existingPackages.Value
                             }
-                    }
-                    |> Loganalyzer_Projects_Table_Result.Loading_Was_Successfull
+                            |> Loganalyzer_Projects_Table_Result.Loading_Was_Successfull
+                            
+                        return(checkFinishLoading newInfo)
+                    | _ ->
+                        let asyncMsg2Dispatch =
+                            (
+                                (projectName,"Project is not part of NuGet server")
+                                |> Loganalyzer_Projects_Table_Result.Loading_Was_Not_Successfull
+                            )
+                            |> checkFinishLoading 
+
+                        return(asyncMsg2Dispatch)
                     
-                return(checkFinishLoading newInfo)
+                | _ ->
+                    let asyncMsg2Dispatch =
+                        (
+                            (projectName,"Project is not part of NuGet server")
+                            |> Loganalyzer_Projects_Table_Result.Loading_Was_Not_Successfull
+                        )
+                        |> checkFinishLoading 
+
+                    return(asyncMsg2Dispatch)
                 
             | _ ->
-                let asyncMsg2Dispatch = checkFinishLoading (projectName|> Loganalyzer_Projects_Table_Result.Loading_Was_Not_Successfull)
+                let asyncMsg2Dispatch =
+                    (
+                        (projectName,standardFailMsg)
+                        |> Loganalyzer_Projects_Table_Result.Loading_Was_Not_Successfull
+                    )
+                    |> checkFinishLoading 
 
                 return(asyncMsg2Dispatch)
         | _ ->
-            let asyncMsg2Dispatch = checkFinishLoading (projectName|> Loganalyzer_Projects_Table_Result.Loading_Was_Not_Successfull)
+            let asyncMsg2Dispatch =
+                (
+                    (projectName,standardFailMsg)
+                    |> Loganalyzer_Projects_Table_Result.Loading_Was_Not_Successfull
+                )
+                |> checkFinishLoading 
 
             return(asyncMsg2Dispatch)
     | _ ->
-        let asyncMsg2Dispatch = checkFinishLoading (projectName|> Loganalyzer_Projects_Table_Result.Loading_Was_Not_Successfull)
+        let asyncMsg2Dispatch =
+            (
+                (projectName,standardFailMsg)
+                |> Loganalyzer_Projects_Table_Result.Loading_Was_Not_Successfull
+            )
+            |> checkFinishLoading
 
         return(asyncMsg2Dispatch)
 }
@@ -260,47 +312,72 @@ let changeProjectStatus model project =
         | _ -> None
     | _ -> None
 
+let isWrittenNewNugetNameValid newName project =
+            let validNuGetVersionRegex = "\d{1,}.\d{1,}.\d{1,}($|-\w+)"
+            let validNugetNameOpt = JsInterop.Regex.IsMatch validNuGetVersionRegex newName
+            match validNugetNameOpt with
+            | Some validNugetName ->
+                match validNugetName with
+                | true ->
+                    let alreadyExistsInServer =
+                        project.Existing_Packages
+                        |> Array.exists (fun pckg ->
+                            pckg = newName)
+               
+                    match alreadyExistsInServer with
+                    | false ->
+                        match (newName = project.Nuget_Names.CurrName) with
+                         | false ->
+                            newName |>
+                            (
+                                Nuget_Name_Validity.Nuget_Name_Valid >>
+                                Some
+                            )
+                            
+                         | _ ->
+                            Not_Valid_Nuget_Reason.Has_Same_Nuget_Name |>
+                            (
+                                Nuget_Name_Not_Valid >>
+                                Some
+                            )
+                            
+                    | _ ->
+                        Not_Valid_Nuget_Reason.Nuget_Already_In_Server |>
+                        (
+                            Nuget_Name_Not_Valid >>
+                            Some
+                        )
+                | _ ->
+                    Not_Valid_Nuget_Reason.Has_Wrong_Pattern |>
+                    (
+                        Nuget_Name_Not_Valid >>
+                        Some
+                    )
+            | _ ->
+                Not_Valid_Nuget_Reason.Has_Wrong_Pattern |>
+                (
+                    Nuget_Name_Not_Valid >>
+                    Some
+                )
+
 let newNugetNameEvaluation projects_table info_chosen ( ev : Browser.Types.Event )=
     let newName = ev.target?value : string
-    
-    let NugetVersionValidRegex = "\d{1,}\.\d{1,}\.\d{1,}(-.*|$)"
-    
-    let isNameValidOpt = JsInterop.Regex.IsMatch NugetVersionValidRegex newName
-    
+
+    let validationRes = isWrittenNewNugetNameValid newName info_chosen
+
     let newInfo =
-        match isNameValidOpt with
-        | Some isNameValid ->
-            match isNameValid with
-            | true ->
-                let newNameAsType =
-                    JsInterop.Regex.Match NugetVersionValidRegex newName |>
-                    (
-                        (fun x -> x.Value) >>
-                        Nuget_Name_Valid >>
-                        New_Nuget_Name.Has_New_Name
-                    )
-                let newNewNugetName =
-                    { info_chosen.Nuget_Names with New_Nuget_Name = newNameAsType}
+        match validationRes with
+        | Some res ->
+            let newNewNugetName =
+                { info_chosen.Nuget_Names with New_Nuget_Name = res |> New_Nuget_Name.Has_New_Name}
     
-                let newProjInfo =
-                    { info_chosen with Nuget_Names = newNewNugetName}
+            let newProjInfo =
+                { info_chosen with Nuget_Names = newNewNugetName}
     
-                newProjInfo
-            | false ->
-                let newNewNugetName =
-                    { info_chosen.Nuget_Names with New_Nuget_Name =
-                                                    Nuget_Name_Not_Valid
-                                                    |> New_Nuget_Name.Has_New_Name }
-    
-                let newProjInfo =
-                    { info_chosen with Nuget_Names = newNewNugetName}
-    
-                newProjInfo
+            newProjInfo
         | _ ->
             let newNewNugetName =
-                { info_chosen.Nuget_Names with New_Nuget_Name =
-                                                    Nuget_Name_Not_Valid
-                                                    |> New_Nuget_Name.Has_New_Name }
+                { info_chosen.Nuget_Names with New_Nuget_Name = New_Nuget_Name.Has_No_Name}
     
             let newProjInfo =
                 { info_chosen with Nuget_Names = newNewNugetName}
@@ -377,7 +454,7 @@ let checkIfDotNetInstalled dispatch = async {
                 let getNugetInfoMsg =
                     dispatch |>
                     (
-                        Get_All_Projects_Info >>
+                        Check_Nuget_Server >>
                         dispatch
                     )
 
@@ -535,19 +612,23 @@ let getNuGetTableInfo dispatch = async {
 
 }
 
-let changeBranchNugetUpgrade model dispatch ev =
+let changeBranchNugetUpgrade model dispatch ( ev : Browser.Types.Event ) =
     match model.Info with
     | Yes_Git_Info_Nuget repo ->
+        let branchName = ev.target?value |> string
+
         let msgs =
             [|
-
-                dispatch |>
+                (branchName, Global.Types.getPositions ev,dispatch) |>
                 (
-                    handleBranchNameChange repo ev >>
-                    Global.Types.AsynSyncMix.Is_Not_Async
+                     Change_Current_Branch_UpgradeNuget >>
+                     Global.Types.AsynSyncMix.Is_Not_Async
                 )
 
-                "Waiting 5 sec after branch change..." |>
+                handleBranchNameChange branchName repo
+                |> Global.Types.AsynSyncMix.Is_Not_Async
+
+                "Updating table after branch change..." |>
                 (
                     Popup.View.getPopupMsgSpinner >>
                     checkingProcessPopupMsg Popup.Types.standardPositions >>
@@ -557,7 +638,7 @@ let changeBranchNugetUpgrade model dispatch ev =
                 (dispatch,Global.Types.App_Activity.NugetUpgrade) |>
                 (
                     Obtain_New_Nuget_Info >>
-                    Global.Types.delayedMessage 10000 >>
+                    Global.Types.delayedMessage 2000 >>
                     Global.Types.AsynSyncMix.Is_Async
                 )
                 
@@ -598,27 +679,128 @@ let updateNugetTable model dispatch =
                                 let msgs =
                                     [|
 
-                                        dispatch |>
-                                        (
-                                            handleBranchNameChange repo ev
-                                        )
+                                        changeBranchNugetUpgrade model dispatch ev
 
                                         (dispatch,Global.Types.App_Activity.NugetUpgrade) |>
                                         (
-                                            Obtain_New_Nuget_Info 
+                                            Obtain_New_Nuget_Info  >>
+                                            dispatch
                                         )
-                                        
                                         
                                     |]
 
                                 msgs
-                                |> Array.iter (fun msg -> msg |> dispatch))
+                                |> Array.iter (fun msg -> msg))
                         ]
                     ]
                 ]
             | _ -> Html.none
         | _ -> Html.none
     | _ -> Html.none
+
+
+let checkoutNewBranch ( newBranch : string ) dispatch positions = async{
+
+    do! Async.Sleep 2000
+
+    let prms =
+        String.Format(
+            "shellCommand=cd server;cd loganalyzer;git checkout {0}",
+            newBranch
+        )
+
+    let! res = request prms
+
+    match res.status with
+    | 200.0 -> ()
+            
+    | _ ->
+        let popupMsg =
+            res.responseText |>
+            (
+                Popup.View.getPopupMsg >>
+                checkingProcessPopupMsg positions
+            )
+
+        let exitMsg =
+            "You've been thrown out due to some error. Please refresh to return"
+            |> Popup.View.getPopupMsg
+
+        let button =
+            Popup.View.simpleOkButton
+                            killPopupMsg
+                            dispatch
+                        
+        let! kickedOutMsg =
+            (button,exitMsg) |>
+            (
+                GlobalMsg.Go_To_Failed_Page >>
+                Types.GlobalMsg_Upgrade_Nuget >>
+                delayedMessage 3000
+            )
+
+        let msgsCombined =
+            [|
+                popupMsg
+                kickedOutMsg
+            |]
+
+        msgsCombined
+        |> Array.iter (fun msg -> msg |> dispatch)
+}
+
+let getAllAvailablePackageVersions dispatch = async {
+
+    let popupMsg =
+        "Getting all NuGet package versions from http://segaeesw04.eipu.ericsson.se/nuget/Packages..."
+        |> Popup.View.getPopupMsgSpinner
+        |> checkingProcessPopupMsg standardPositions
+        |> dispatch
+
+    popupMsg
+
+    do! Async.Sleep 2000
+
+    let! res = simpleGetRequest "http://localhost:3001/nugetinfo"
+
+    match res.status with
+    | 200.0 ->
+        [|
+            res.responseText |>
+            (
+                Nuget_Server_Is_Available >>
+                Change_Nuget_Server_Info
+            )
+
+            dispatch |>
+            (
+                Get_All_Projects_Info
+            )
+        |]
+        |> Array.iter (fun msg -> dispatch msg)
+        
+    | _ ->
+        let exitMsg =
+            res.responseText + " Couldn't reach NuGet server. Please refresh to return"
+            |> Popup.View.getPopupMsg
+
+        let button =
+            Popup.View.simpleOkButton
+                            killPopupMsg
+                            dispatch
+
+        let kickedOutMsg =
+            (button,exitMsg) |>
+            (
+                GlobalMsg.Go_To_Failed_Page >>
+                Upgrade_NuGet.Types.GlobalMsg_Upgrade_Nuget >>
+                dispatch
+            )
+
+        kickedOutMsg
+}
+        
+
 
 
 

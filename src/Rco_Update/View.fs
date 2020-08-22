@@ -178,7 +178,7 @@ let handleBranchNameChange ( ev : Browser.Types.Event ) dispatch =
                 Popup.Types.PosX = ( ev?pageX : float )
                 Popup.Types.PosY = ( ev?pageY : float )
             }
-        [|(branchName,positions,dispatch) |> Types.Msg.Change_Current_Branch_Msg|]
+        [|(branchName,positions,dispatch) |> Types.Msg.Change_Current_Branch_Rco|]
         
 
 let branchDropDown model dispatch =
