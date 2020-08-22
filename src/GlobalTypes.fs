@@ -91,6 +91,11 @@ let toHash page =
     | VerificationPage -> "#verify"
     | HomePage option -> option |> tohashPageoptions
 
+type TypeString<'t> = {
+    ObjType : 't
+    ObjString : string
+}
+
 type CheckProcess<'a,'b> =
     | CheckProcessStarted of 'a
     | CheckProcessEnded of 'b

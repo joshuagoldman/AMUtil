@@ -183,7 +183,6 @@ let monitorEachProjectInfoExtraction ( projectsLoadingInfo : Loganalyzer_Project
                         let newInfo =
                             {
                                 Name = projectName
-                                Is_Chosen = Project_Chosen_option.Project_Not_Chosen
                                 Changes = Project_Changes.Project_Has_No_Changes
                                 Nuget_Names =
                                     {
@@ -326,24 +325,16 @@ let isWrittenNewNugetNameValid newName project =
                
                     match alreadyExistsInServer with
                     | false ->
-                        match (newName = project.Nuget_Names.CurrName) with
-                         | false ->
-                            newName |>
-                            (
-                                Nuget_Name_Validity.Nuget_Name_Valid >>
-                                Some
-                            )
-                            
-                         | _ ->
-                            Not_Valid_Nuget_Reason.Has_Same_Nuget_Name |>
-                            (
-                                Nuget_Name_Not_Valid >>
-                                Some
-                            )
+                        (newName,NuGet_Not_To_Be_Pushed) |>
+                        (
+                            Nuget_Name_Validity.Nuget_Name_Valid >>
+                            Some
+                        )
                             
                     | _ ->
-                        Not_Valid_Nuget_Reason.Nuget_Already_In_Server |>
+                        Server_Options.No_Server_Actions |>
                         (
+                            Not_Valid_Nuget_Reason.Nuget_Already_In_Server >>
                             Nuget_Name_Not_Valid >>
                             Some
                         )

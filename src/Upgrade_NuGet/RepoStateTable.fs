@@ -25,11 +25,183 @@ let newRstatInInput fault rcoObjArr dispatch =
         ]
     ]
 
-let isUpdateRow ( project : Project_Info ) dispatch =
-    let isChecked =
-        match project.Is_Chosen with
-        | Project_Chosen -> true
-        | _ -> false
+let currChoiceWithName =
+    [|
+        {
+            Global.Types.ObjType = Server_Options.No_Server_Actions
+            Global.Types.ObjString = "No Actions"
+        }
+        {
+            Global.Types.ObjType = Server_Options.Is_To_Be_Deleted
+            Global.Types.ObjString = "Delete"
+        }
+        {
+            Global.Types.ObjType = Server_Options.Is_To_Be_Updated
+            Global.Types.ObjString = "Replace"
+        }
+        {
+            Global.Types.ObjType = Server_Options.Push_Nuget
+            Global.Types.ObjString = "Push"
+        }
+    |]
+
+let getServerActionButton project ( option : Global.Types.TypeString<Server_Options>) dispatch =
+    Html.a[
+        prop.className "dropdown-item"
+        prop.text option.ObjString
+        prop.onClick (fun _ ->
+            (option.ObjType,project) |>
+            (
+                Change_Server_Action_Option >>
+                dispatch
+            ))
+    ]
+
+let getActionsList ( arr : Global.Types.TypeString<Server_Options> [])
+                   ( obj : Global.Types.TypeString<Server_Options> ) =
+    match obj.ObjType with
+    | Server_Options.Push_Nuget ->
+        arr
+        |> Array.choose (fun opt ->
+            match (opt.ObjString = obj.ObjString) with
+            | true ->
+                None
+            | _ ->
+                opt
+                |> Some)
+    | _ ->
+        arr
+        |> Array.choose (fun opt ->
+            match opt.ObjType with
+            | Server_Options.Push_Nuget ->
+                None
+            | _ ->
+                match (opt.ObjString = obj.ObjString) with
+                | true ->
+                    None
+                | _ ->
+                    opt
+                    |> Some)
+
+let currentServerActionItem ( name : string ) =
+    Html.span[
+        prop.className "dropdown-item"
+        prop.text name
+    ]
+
+let nugetServerOptionsViewItems project dispatch =
+    match project.Server_Options with
+    | Server_Options.No_Server_Actions ->
+        {
+            Global.Types.ObjType = Server_Options.No_Server_Actions
+            Global.Types.ObjString = "No Actions"
+        } |>
+        (
+            getActionsList currChoiceWithName >>
+            Array.map (fun option ->
+                getServerActionButton
+                                    project
+                                    option
+                                    dispatch)
+        )
+    | Server_Options.Is_To_Be_Deleted ->
+        {
+            Global.Types.ObjType = Server_Options.Is_To_Be_Deleted
+            Global.Types.ObjString = "Delete"
+        } |>
+        (
+            getActionsList currChoiceWithName >>
+            Array.map (fun option ->
+                getServerActionButton
+                                    project
+                                    option
+                                    dispatch)
+        )
+    | Server_Options.Is_To_Be_Updated ->
+        {
+            Global.Types.ObjType = Server_Options.Is_To_Be_Updated
+            Global.Types.ObjString = "Replace"
+        } |>
+        (
+            getActionsList currChoiceWithName >>
+            Array.map (fun option ->
+                getServerActionButton
+                                    project
+                                    option
+                                    dispatch)
+        )
+    | Server_Options.Push_Nuget ->
+        {
+            Global.Types.ObjType = Server_Options.Push_Nuget
+            Global.Types.ObjString = "Push"
+        } |>
+        (
+            getActionsList currChoiceWithName >>
+            Array.map (fun option ->
+                getServerActionButton
+                                    project
+                                    option
+                                    dispatch)
+        )
+
+let nugetServerOptionsViewSelectedItem project =
+    match project.Server_Options with
+    | Server_Options.No_Server_Actions ->
+        currentServerActionItem "No Actions"
+    | Server_Options.Is_To_Be_Deleted ->
+        currentServerActionItem "Delete"
+    | Server_Options.Is_To_Be_Updated ->
+        currentServerActionItem "Replace"
+    | Server_Options.Push_Nuget ->
+        currentServerActionItem "Push"
+
+let nugetServerOptionsView project dispatch =
+    Html.div[
+        prop.className "dropdown is-active"
+        prop.children[
+            Html.div[
+                prop.className "dropdown-trigger"
+                prop.children[
+                    Html.button[
+                        prop.className "button"
+                        prop.ariaHasPopup true
+                        prop.children[
+                            nugetServerOptionsViewSelectedItem project
+                            Html.span[
+                                prop.className "icon is-small"
+                                prop.children[
+                                    Html.i[
+                                        prop.className "fas fa-angle-down"
+                                        prop.ariaHidden true
+                                    ]
+                                ]
+
+                            ]
+                        ]
+                    ]
+                ]
+            ]
+            Html.div[
+                prop.className "dropdown-menu"
+                prop.id "dropdown-menu"
+                prop.role.menu
+                prop.children[
+                    Html.div[
+                        prop.className "dropdown-content"
+
+                        dispatch |>
+                        (
+                            nugetServerOptionsViewItems project >>
+                            prop.children
+                        )
+                        
+                    ]
+                ]
+            ]
+        ]
+    ]
+
+let isInfoRow ( project : Project_Info ) dispatch =
 
     match project.Nuget_Names.New_Nuget_Name with
     | New_Nuget_Name.Has_New_Name res ->
@@ -40,14 +212,7 @@ let isUpdateRow ( project : Project_Info ) dispatch =
                 Html.div[
                     prop.text "NuGet version has wrong format."
                 ]
-            | Not_Valid_Nuget_Reason.Has_Same_Nuget_Name ->
-                Html.div[
-                    prop.style[
-                        Feliz.style.maxWidth 200
-                    ]
-                    prop.text "Can't use same NuGet version name as the current."
-                ]
-            | Not_Valid_Nuget_Reason.Nuget_Already_In_Server ->
+            | Not_Valid_Nuget_Reason.Nuget_Already_In_Server _ ->
                 Html.div[
                     prop.text "This name already exists in NuGet server."
                     prop.style[
@@ -55,23 +220,10 @@ let isUpdateRow ( project : Project_Info ) dispatch =
                     ]
                 ]
         | Nuget_Name_Validity.Nuget_Name_Valid _ ->
-            Html.label[
-                prop.className "checkbox"
-                prop.children[
-                    Html.input[
-                        prop.isChecked isChecked
-                        prop.type'.checkbox
-                        prop.onClick (fun _ ->
-                            let newStatus =
-                                Logic.changeNugetStatus project.Is_Chosen
-                            { project with Is_Chosen = newStatus } |>
-                            (
-                        
-                                Change_Project_Status >>
-                                dispatch
-                            )
-                        )
-                    ]
+            Html.div[
+                prop.text "Change option to 'Push Nuget' if you'd like to push NuGet to server!"
+                prop.style[
+                    Feliz.style.maxWidth 200
                 ]
             ]
     | _ ->
@@ -121,6 +273,9 @@ let tableRow project dispatch =
                 prop.text project.Name
             ]
             Html.th[
+                isInfoRow project dispatch
+            ]
+            Html.th[
                 isUpdateRow project dispatch
             ]
             Html.th[
@@ -149,7 +304,10 @@ let root ( projects_table : Loganalyzer_Projects_Table ) dispatch =
                                 prop.text "Project Name"
                             ]
                             Html.th[
-                                prop.text "Update"
+                                prop.text "Info"
+                            ]
+                            Html.th[
+                                prop.text "Options"
                             ]
                             Html.th[
                                 prop.text "Current NuGet Name"

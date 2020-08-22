@@ -27,16 +27,22 @@ type Project_Chosen_option =
     | Project_Chosen
     | Project_Not_Chosen
 
+type Server_Options =
+    | Is_To_Be_Deleted
+    | Is_To_Be_Updated
+    | Push_Nuget
+    | No_Server_Actions
+
 type Not_Valid_Nuget_Reason =
-    | Has_Same_Nuget_Name
-    | Nuget_Already_In_Server
+    | Nuget_Already_In_Server 
     | Has_Wrong_Pattern
+
 type Nuget_Name_Validity =
     | Nuget_Name_Valid of string
     | Nuget_Name_Not_Valid of Not_Valid_Nuget_Reason
 
 type New_Nuget_Name =
-    | Has_No_Name
+    | Has_No_Name of Server_Options
     | Has_New_Name of Nuget_Name_Validity
 
 type Nuget_Names = {
@@ -46,10 +52,10 @@ type Nuget_Names = {
 
 type Project_Info = {
     Name : string
-    Is_Chosen : Project_Chosen_option
     Changes : Project_Changes
     Nuget_Names : Nuget_Names
     Existing_Packages : string []
+    Server_Options : Server_Options
 }
 
 type Loganalyzer_Projects_Table =
@@ -93,6 +99,7 @@ type Msg =
     | Change_Current_Branch_UpgradeNuget of Branch_Name : string * Popup.Types.PopupPosition * (Msg -> unit)
     | Change_Nuget_Server_Info of Nuget_Server_Options
     | Check_Nuget_Server  of (Msg -> unit)
+    | Change_Server_Action_Option of Server_Options * Project_Info
 type Model = {
     Info : Git_Info_Nuget
     Projects_Table : Loganalyzer_Projects_Table_Status
