@@ -92,6 +92,36 @@ let getPopupMsgSpinner ( msg : string ) =
         ]
     |]
 
+let getPopupMsgSpinnerBeside ( msg : string ) =
+    [|
+        Html.div[
+            prop.className "columns is-centered"
+            prop.style[
+                Feliz.style.margin 10
+            ]
+            prop.children[
+                Html.div[
+                    prop.className "column is-4"
+                    prop.text msg
+                    prop.style[
+                        Feliz.style.fontSize 15
+                    ]
+                ]
+                Html.div[
+                    prop.className "column is-4"
+                    prop.style[
+                        Feliz.style.margin 10
+                    ]
+                    prop.children[
+                        Html.i[
+                            prop.className "fa fa-cog fa-spin fa-2x"
+                        ]
+                    ]
+                ]
+            ]
+        ]
+    |]
+
 let getPopupMsg ( msg : string ) =
     [|
         Html.div[

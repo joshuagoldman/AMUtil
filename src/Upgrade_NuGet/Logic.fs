@@ -284,7 +284,7 @@ let cretateLoadingPopup msgs dispatch  =
     let allMsgsCollected =
         msgs
         |> Array.collect (fun msg ->
-            Popup.View.getPopupMsgSpinner msg)
+            Popup.View.getPopupMsgSpinnerBeside msg)
 
     let popupMsg2Dispatch =
         (allMsgsCollected,Popup.Types.standardPositions) |>
@@ -791,6 +791,8 @@ let getAllAvailablePackageVersions dispatch = async {
 
         kickedOutMsg
 }
+
+
         
 
 

@@ -100,6 +100,7 @@ type Msg =
     | Change_Nuget_Server_Info of Nuget_Server_Options
     | Check_Nuget_Server  of (Msg -> unit)
     | Change_Server_Action_Option of Project_Info * Server_Options
+
 type Model = {
     Info : Git_Info_Nuget
     Projects_Table : Loganalyzer_Projects_Table_Status
