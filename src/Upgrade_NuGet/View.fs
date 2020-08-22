@@ -136,6 +136,7 @@ let root model dispatch =
                         ]
                     ]
                     Logic.updateNugetTable model dispatch
+                    Logic.saveChanges model dispatch
                 ]
             ]
             Html.div[

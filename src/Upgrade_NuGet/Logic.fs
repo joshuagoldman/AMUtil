@@ -690,6 +690,55 @@ let updateNugetTable model dispatch =
         | _ -> Html.none
     | _ -> Html.none
 
+let saveChanges model dispatch =
+    match model.Info with
+    | Types.Git_Info_Nuget.Yes_Git_Info_Nuget repo ->
+        match model.Projects_Table with
+        | Loganalyzer_Projects_Table_Status.Info_Has_Been_Loaded res ->
+            match res with
+            |Loganalyzer_Projects_Table.Yes_Projects_Table_Info proj_infos ->
+                let areAnyProjsReady4Change =
+                    proj_infos
+                    |> Array.exists (fun proj ->
+                        match proj.Server_Options with
+                        | Server_Options.No_Server_Actions ->
+                            false
+                        | _ ->
+                            true)
+
+                match areAnyProjsReady4Change with
+                | true ->
+                    Html.div[
+                        prop.className "column is-2"
+                        prop.children[
+                            Html.div[
+                                prop.className "button"
+                                prop.text "Save NuGet changes"
+                                prop.onClick (fun ev ->
+                                    let msgs =
+                                        [|
+
+                                            changeBranchNugetUpgrade model dispatch ev
+
+                                            (dispatch,Global.Types.App_Activity.NugetUpgrade) |>
+                                            (
+                                                Obtain_New_Nuget_Info  >>
+                                                dispatch
+                                            )
+                                            
+                                        |]
+
+                                    msgs
+                                    |> Array.iter (fun msg -> msg))
+                            ]
+                        ]
+                    ]
+                | _ ->
+                    Html.none
+            | _ -> Html.none
+        | _ -> Html.none
+    | _ -> Html.none
+
 
 let checkoutNewBranch ( newBranch : string ) dispatch positions = async{
 
