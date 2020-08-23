@@ -28,7 +28,6 @@ type Project_Chosen_option =
     | Project_Not_Chosen
 
 type Server_Options =
-    | Loading_To_Server
     | Is_To_Be_Deleted
     | Is_To_Be_Updated
     | Push_Nuget
@@ -57,13 +56,22 @@ type Msg_With_Name = {
 }
 
 type Loading_To_Server_Result =
-    | Loading_To_Server_Succeeded of string
-    | Loading_To_Server_Failed of Msg_With_Name
+    | Loading_To_Server_Succeeded
+    | Loading_To_Server_Failed of string
+
+type Loading_To_Nuget_Server_Alternatives =
+    | Changing_Nuget_Name
+    | Building
+    | Executing_Nuget_Server_Command
+
+type Loading_Nuget_Status =
+    | Loading_Nuget_Info_Is_Done of Loading_To_Server_Result
+    | Loading_Nuget_Info_Is_Not_Done of Loading_To_Nuget_Server_Alternatives
+
 
 type Info_Loaded_Options =
     | Not_Loading_Info_To_Server
-    | Loading_Info_To_Server of Msg_With_Name
-    | Loading_Is_Done of Loading_To_Server_Result
+    | Loading_Info_To_Server of Loading_Nuget_Status
     
 
 type Project_Info = {
@@ -117,7 +125,7 @@ type Msg =
     | Change_Nuget_Server_Info of Nuget_Server_Options
     | Check_Nuget_Server  of (Msg -> unit)
     | Change_Server_Action_Option of Project_Info * Server_Options
-    | Save_Nuget_Info_To_Server of Project_Info * Server_Options
+    | Save_Nuget_Info_To_Server of Project_Info [] * (Msg -> unit)
 
 type Model = {
     Info : Git_Info_Nuget

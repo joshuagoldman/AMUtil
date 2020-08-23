@@ -693,44 +693,38 @@ let updateNugetTable model dispatch =
 
 let saveChanges model dispatch =
     match model.Info with
-    | Types.Git_Info_Nuget.Yes_Git_Info_Nuget repo ->
+    | Types.Git_Info_Nuget.Yes_Git_Info_Nuget _ ->
         match model.Projects_Table with
         | Loganalyzer_Projects_Table_Status.Info_Has_Been_Loaded res ->
             match res with
             |Loganalyzer_Projects_Table.Yes_Projects_Table_Info proj_infos ->
                 let areAnyProjsReady4Change =
                     proj_infos
-                    |> Array.exists (fun proj ->
+                    |> Array.choose (fun proj ->
                         match proj.Server_Options with
                         | Server_Options.No_Server_Actions ->
-                            false
+                            Some proj
                         | _ ->
-                            true)
+                            None)
+                    |> function
+                        | res when (res |> Array.length) <> 0 ->
+                            res |> Some
+                        | _ -> None
 
                 match areAnyProjsReady4Change with
-                | true ->
+                | Some projsReady4Change ->
                     Html.div[
                         prop.className "column is-2"
                         prop.children[
                             Html.div[
                                 prop.className "button"
                                 prop.text "Save NuGet changes"
-                                prop.onClick (fun ev ->
-                                    let msgs =
-                                        [|
-
-                                            changeBranchNugetUpgrade model dispatch ev
-
-                                            (dispatch,Global.Types.App_Activity.NugetUpgrade) |>
-                                            (
-                                                Obtain_New_Nuget_Info  >>
-                                                dispatch
-                                            )
-                                            
-                                        |]
-
-                                    msgs
-                                    |> Array.iter (fun msg -> msg))
+                                prop.onClick (fun _ ->
+                                    (projsReady4Change,dispatch) |>
+                                    (
+                                        Types.Msg.Save_Nuget_Info_To_Server >>
+                                        dispatch
+                                    ))
                             ]
                         ]
                     ]
@@ -997,10 +991,11 @@ let getTableLoadPopup model dispatch =
                 projs
                 |> Array.choose (fun proj ->
                     match proj.Loading_To_Server with
-                    | Loading_Info_To_Server info ->
-                        Some proj.Loading_To_Server
-                    | Loading_Is_Done _ ->
-                        Some proj.Loading_To_Server
+                    | Loading_Info_To_Server status ->
+                        match status with
+                        | Loading_Nuget_Status.Loading_Nuget_Info_Is_Not_Done alternatives ->
+                            Some alternatives
+                        | _ -> None
                     |  _ -> None)
                 |> function
                     | res when (res|>Array.length) <> 0 ->
@@ -1008,53 +1003,164 @@ let getTableLoadPopup model dispatch =
                     | _ -> None
 
             match anyProjsNugetServerLoading with
-            | Some infos ->
-                let allMsgs =
-                    infos
-                    |> Array.choose (fun info ->
-                        match info with
-                        | Loading_Info_To_Server info ->
-                            String.Format(
-                                "{0} -> {1}",
-                                info.Name,
-                                info.Msg
-                            )
-                            |> Some
-                        | Loading_Is_Done res ->
-                            match res with
-                            | Loading_To_Server_Succeeded name ->
-                                String.Format(
-                                    "{0} -> {1}",
-                                    name,
-                                    "Changes to server succeeded!"
-                                )
-                                |> Some
-                            | Loading_To_Server_Failed info ->
-                                String.Format(
-                                    "{0} -> {1}",
-                                    info.Name,
-                                    info.Msg
-                                )
-                                |> Some
-                        | _ -> None)      
-
-                let allInfosHaveLoaded =
-                    infos
-                    |> Array.forall (fun info ->
-                        match info with
-                        | Info_Loaded_Options.Loading_Is_Done _ ->
+            | Some alternatives ->
+                let allIsAtBuild =
+                    alternatives
+                    |> Array.forall (fun alt ->
+                        match alt with
+                        | Loading_To_Nuget_Server_Alternatives.Building ->
                             true
                         | _ -> false)
-                match allInfosHaveLoaded with
+
+                match allIsAtBuild with
                 | true ->
-                    cretateLoadingFinishedPopup allMsgs dispatch
-                | _ ->
-                    cretateLoadingPopup allMsgs dispatch
+                    let buildMsg = [|"Building Ericsson.AM solution..."|]
+                    cretateLoadingPopup buildMsg dispatch
+                | false ->
+                    let allMsgsOpt =
+                        projs
+                        |> Array.choose (fun info ->
+                            match info.Loading_To_Server with
+                            | Info_Loaded_Options.Loading_Info_To_Server status ->
+                                match status with
+                                | Loading_Nuget_Status.Loading_Nuget_Info_Is_Not_Done alternatives ->
+                                    match alternatives with
+                                    | Loading_To_Nuget_Server_Alternatives.Changing_Nuget_Name ->
+                                        String.Format(
+                                            "{0} -> {1}",
+                                                info.Name,
+                                                "Changing NuGet version name"
+                                        )
+                                        |> Some
+                                    | Loading_To_Nuget_Server_Alternatives.Executing_Nuget_Server_Command ->
+                                        String.Format(
+                                            "{0} -> {1}",
+                                            info.Name,
+                                            "Executing NuGet server command"
+                                        )
+                                        |> Some
+                                    | _ -> None
+                                    
+                                | Loading_Nuget_Status.Loading_Nuget_Info_Is_Done res ->
+                                    match res with
+                                    | Loading_To_Server_Result.Loading_To_Server_Failed msg ->
+                                        String.Format(
+                                            "{0} -> {1}: {2}",
+                                            info.Name,
+                                            "Loading failed",
+                                            msg
+                                        )
+                                        |> Some
+                                    | Loading_To_Server_Result.Loading_To_Server_Succeeded ->
+                                        String.Format(
+                                            "{0} -> {1}",
+                                            info.Name,
+                                            "Changes to server succeeded!"
+                                        )
+                                        |> Some
+                            | _ -> None   )
+                        |> function
+                            | res when (res |> Array.length) <> 0 ->
+                                Some res
+                            | _ -> None
+
+                    let someIsStillLoading =
+                        projs
+                        |> Array.choose (fun proj ->
+                            match proj.Loading_To_Server with
+                            | Loading_Info_To_Server status ->
+                                match status with
+                                | Loading_Nuget_Status.Loading_Nuget_Info_Is_Not_Done alternatives ->
+                                    Some alternatives
+                                | _ -> None
+                            |  _ -> None)
+                        |> function
+                            | res when (res|>Array.length) <> 0 ->
+                                true
+                            | _ -> false
+                    match allMsgsOpt with
+                    | Some allMsgs ->
+                        match someIsStillLoading with
+                        | false ->
+                            cretateLoadingFinishedPopup allMsgs dispatch
+                        | _ ->
+                            cretateLoadingPopup allMsgs dispatch
+                    | _ -> ()
                 
             | _ -> ()
         | _ -> ()
             
     | _ -> ()
+
+let ChangeNugetNameAndBuildSolution projects dispatch =
+    let allProjsQuestionPopup =
+        projects
+        |> Array.choose (fun proj ->
+            match proj.Server_Options with
+            | Server_Options.No_Server_Actions ->
+                None
+            | Server_Options.Push_Nuget ->
+                match proj.Nuget_Names.New_Nuget_Name with
+                | New_Nuget_Name.Has_New_Name validity ->
+                    match validity with
+                    | Nuget_Name_Validity.Nuget_Name_Valid version ->
+                        String.Format(
+                            "{0} -> Push NuGet with version {1}",
+                            proj.Name,
+                            version
+                        )
+                        |> Some
+                    | _ -> None
+                | _ ->
+                    None
+            | Server_Options.Is_To_Be_Deleted ->
+                String.Format(
+                    "{0} -> version {1} is about to be deleted from NuGet server",
+                    proj.Name,
+                    proj.Nuget_Names.CurrName
+                )
+                |> Some
+            | Server_Options.Is_To_Be_Updated ->
+                String.Format(
+                    "{0} -> version {1} is about to be replaced from NuGet server",
+                    proj.Name,
+                    proj.Nuget_Names.CurrName
+                )
+                |> Some)
+        |> Array.collect (fun projMsg ->
+            Popup.View.getPopupMsg projMsg)
+
+    let killPopup =
+        Popup.Types.Popup_Is_Dead |>
+        (
+            Global.Types.Popup_Msg_Global >>
+            Types.GlobalMsg_Upgrade_Nuget
+        )
+
+    let yesNoPopupButtons =
+        Popup.View.yesNoButtons killPopup killPopup dispatch
+
+    let popupType =
+        (yesNoPopupButtons,allProjsQuestionPopup)
+        |> Popup.Types.Alternative_Popup_Otpions.Several_Alternatives
+
+    let yesNoButton =
+        (
+            (popupType,Popup.Types.standardPositions)
+            |> Popup.Types.Has_Alternatives
+        )
+        
+    let yesNoPopupMsg =
+        yesNoButton |>
+        (
+            Global.Types.Popup_Msg_Global >>
+            Types.GlobalMsg_Upgrade_Nuget
+        )
+    
+
+    let changeNamesAndBuildAsync = async {
+        
+    }
     
 
 
