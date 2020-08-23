@@ -864,8 +864,6 @@ let getActionsList project
             arr
         | _ ->
             standardAnswer
-            | _ ->
-                standardAnswer
     | _ ->
         standardAnswer
 
@@ -1366,7 +1364,51 @@ let ChangeNugetNameAndBuildSolution projects dispatch =
             requests
             |> Batch_Upgrade_Nuget_Async
 
-        yesNoPopupMsg msgWithRequests
+        let loadingProjsToChangeToBuild =
+            projects
+            |> Array.choose (fun proj ->
+                match proj.Server_Options with
+                | Server_Options.Push_Nuget ->
+                    None
+                | _ -> proj |> Some)
+            |> function
+                | res when (res |> Array.length) <> 0 ->
+                    res |> Some
+                | _ -> None
+
+        match loadingProjsToChangeToBuild with
+        | Some buildProjs ->
+            let changeToBuildingMsgs =
+                buildProjs
+                |> Array.map (fun proj ->
+                    let newStatus =
+                        Loading_To_Nuget_Server_Alternatives.Building |>
+                        (
+                            Loading_Nuget_Info_Is_Not_Done >>
+                            Loading_Info_To_Server
+                        )
+                     
+                    let newLoadingStatusMsg =
+                        { proj with Loading_To_Server = newStatus} |>
+                        (
+                            Types.Change_Project_Info 
+                        )
+
+                    newLoadingStatusMsg
+                    )
+                |> Upgrade_NuGet.Types.Batch
+
+            let buildAndChangeNameMsgs =
+                [|
+                    changeToBuildingMsgs
+                    msgWithRequests
+                |]
+                |> Upgrade_NuGet.Types.Batch
+
+            yesNoPopupMsg buildAndChangeNameMsgs
+                    
+        | _ -> 
+            yesNoPopupMsg msgWithRequests
         
     | _ ->
         let changeToBuildingMsgs =
@@ -1387,11 +1429,11 @@ let ChangeNugetNameAndBuildSolution projects dispatch =
 
                 newLoadingStatusMsg
                 )
-        let msgWithRequests =
+        let buildMsgs =
             changeToBuildingMsgs
             |> Upgrade_NuGet.Types.Batch
 
-        yesNoPopupMsg msgWithRequests
+        yesNoPopupMsg buildMsgs
 
 let buildSolution projs = async {
 

@@ -15,7 +15,7 @@ let currentServerActionItem ( name : string ) =
     ]
 
 let nugetServerOptionsViewSelectedItem project =
-    let spanWhenNugetNameInvalid =
+    let spanWhenNugetNameInvalid = 
         match project.Server_Options with
         | Server_Options.No_Server_Actions ->
             currentServerActionItem "No Actions"
