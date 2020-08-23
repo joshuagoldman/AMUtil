@@ -198,5 +198,11 @@ let update msg (model:Model) : Types.Model * Global.Types.GlobalMsg * Cmd<Msg> =
             )
 
         model, Global.Types.MsgNone, msg
+    | Perform_Nuget_Action_To_Server(proj,version) ->
+        let msg =
+            Logic.performNugetActionToServerAsync proj version
+            |> Cmd.fromAsync
+
+        model, Global.Types.MsgNone, msg
         
         

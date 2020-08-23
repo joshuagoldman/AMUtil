@@ -1050,9 +1050,7 @@ let getTableLoadPopup model dispatch =
 
                             (
                                 alternatives_projs
-                                |> Array.map (fun (_,y) -> y),
-
-                                dispatch
+                                |> Array.map (fun (_,y) -> y)
                             ) |>
                             (
                                 Build_Solution_Msg >>
@@ -1467,9 +1465,6 @@ let buildSolution projs = async {
 }
 
 let performNugetActionsToServer projs =
-    do! Async.Sleep 2000
-
-    let reqStrBase = "shellCommand=cd server;cd loganalyzer/Ericsson.AM.sln;"
 
     let getProjNameAndVersion =
         projs
@@ -1480,11 +1475,29 @@ let performNugetActionsToServer projs =
                 | New_Nuget_Name.Has_New_Name validity ->
                     match validity with
                     | Nuget_Name_Validity.Nuget_Name_Valid newName ->
-                    | _ -> 
+                        (proj,newName)
+                        |> Perform_Nuget_Action_To_Server
+                    | _ ->
+                        MsgNone
+                        |> Types.GlobalMsg_Upgrade_Nuget
                 | _ ->
+                    MsgNone
+                    |> Types.GlobalMsg_Upgrade_Nuget
             | Server_Options.Is_To_Be_Deleted ->
-            | Server_Options.Is_To_Be_Updated ->)
-            | _ ->)
+                (proj,proj.Nuget_Names.CurrName)
+                |> Perform_Nuget_Action_To_Server
+            | Server_Options.Is_To_Be_Updated ->
+                (proj,proj.Nuget_Names.CurrName)
+                |> Perform_Nuget_Action_To_Server
+            | _ ->
+                MsgNone
+                |> Types.GlobalMsg_Upgrade_Nuget)
+
+    getProjNameAndVersion
+    |> Array.map (fun msg ->
+        msg
+        |> delayedMessage 2000)
+    |> Batch_Upgrade_Nuget_Async
     
 
 let performNugetActionToServerAsync proj version = async {
@@ -1567,7 +1580,7 @@ let performNugetActionToServerAsync proj version = async {
         reqStrBase + (nugetDeleteTemplate proj.Name version)
 
     let pushReqString =
-        reqStrBase + (nugetDeleteTemplate proj.Name version)
+        reqStrBase + (nugetPushTemplate proj.Name version)
 
     match proj.Server_Options with
     | Server_Options.Is_To_Be_Updated ->

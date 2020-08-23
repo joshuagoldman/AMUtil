@@ -127,7 +127,7 @@ type Msg =
     | Change_Server_Action_Option of Project_Info * Server_Options
     | Save_Nuget_Info_To_Server of Project_Info [] * (Msg -> unit)
     | Build_Solution_Msg of Project_Info []
-    | Perform_Nuget_Action_To_Server of Project_Info
+    | Perform_Nuget_Action_To_Server of Project_Info * Version : string
 
 type Model = {
     Info : Git_Info_Nuget
