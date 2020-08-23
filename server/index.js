@@ -50,7 +50,7 @@ app.post("/save", (req, res, next) => {
     const rcoPathFromRepo = `Ericsson.AM.RcoHandler/EmbeddedResources/RBS6000/Aftermarket/RBS RCO List.csv` 
     let pathRcoFile = __dirname.replace(/\\/g,"/") + `/../public/loganalyzer/${rcoPathFromRepo}`;
 
-     var buffer = new Buffer(req.body.file, 'base64');
+    var buffer = new Buffer(req.body.file, 'base64');
 
     var myReadableStreamBuffer = new streamBuffers.ReadableStreamBuffer({
         frequency: 1000,      // in milliseconds.
@@ -251,4 +251,65 @@ app.get("/nugetinfo", (req, res) => {
       };
     request.send();
     
+});  
+
+// --------------------------------------------------------------------------------------------------------------
+// Get Project File and Change Name
+// --------------------------------------------------------------------------------------------------------------
+app.post("/ChangeName", (req, res) => {
+    var projectName = req.body.project;
+    var newNugetVersionName = req.body.version;
+
+    const generalPath = __dirname.replace(/\\/g,"/") + '/../public/loganalyzer';
+    const specificPath = `${generalPath}/${projectName}/${projectName}.csproj`
+
+    var newClient = clientSocket.connect('http://localhost:3001');
+
+    fs.readFile(specificPath, function read(err,data){
+        if(err){
+            newClient.emit(`finished`,{ Status: 404, Msg: err.message});
+        }
+        else{
+            const dataAsString = data.toString();
+            const pattern = "(?<=<Version>).*(?=<\/Version>)";
+            var result = dataAsString.match(pattern)[0];
+            const newDataAsString = dataAsString.replace(`<Version>${result}</Version>`,`<Version>${newNugetVersionName}</Version>`);
+            var buffer = Buffer.from(newDataAsString, 'utf8'); 
+
+            var myReadableStreamBuffer = new streamBuffers.ReadableStreamBuffer({
+                frequency: 1000,      // in milliseconds.
+                chunkSize: 100     // in bytes.
+                }); 
+
+            var wrStr = fs.createWriteStream(specificPath) ;
+            var str = progress({
+                length: buffer.length,
+                time: 1 /* ms */
+            });
+        
+            str.on('progress', function(pr) {
+                if(pr.remaining === 0){
+                    newClient.emit(`finished`,{ Status: 200, Msg: `Project ${req.body.project} saved!`});
+                    console.log(`finished uploading`);
+                }
+                else{
+                    newClient.emit(`message`,{ Progress : pr.percentage, Remaining: pr.remaining });
+                    console.log(`${pr.percentage} completed`);
+                }
+                downloaded = pr.percentage;
+            });
+        
+            myReadableStreamBuffer.put(newDataAsString);
+            myReadableStreamBuffer
+            .on('error', (error) =>{
+                newClient.emit(`finished`,{ Status: 404, Msg: error.message});
+            })
+            .pipe(str)
+            .pipe(wrStr);
+            }
+    });
+
+    //newClient.close();
+
+    return res.send("done!");
 });  

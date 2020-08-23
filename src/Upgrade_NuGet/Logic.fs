@@ -1158,7 +1158,7 @@ let ChangeNugetNameAndBuildSolution projects dispatch =
         )
     
 
-    let changeNamesAndBuildAsync = async {
+    let changeNamesAndBuildAsync projName = async {
         
     }
     
