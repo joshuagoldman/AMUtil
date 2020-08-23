@@ -1016,7 +1016,7 @@ let getTableLoadPopup model dispatch =
                     | Loading_Info_To_Server status ->
                         match status with
                         | Loading_Nuget_Status.Loading_Nuget_Info_Is_Not_Done alternatives ->
-                            Some alternatives
+                            Some (alternatives,proj)
                         | _ -> None
                     |  _ -> None)
                 |> function
@@ -1025,10 +1025,10 @@ let getTableLoadPopup model dispatch =
                     | _ -> None
 
             match anyProjsNugetServerLoading with
-            | Some alternatives ->
+            | Some alternatives_projs ->
                 let allIsAtBuild =
-                    alternatives
-                    |> Array.forall (fun alt ->
+                    alternatives_projs
+                    |> Array.forall (fun (alt,_) ->
                         match alt with
                         | Loading_To_Nuget_Server_Alternatives.Building ->
                             true
@@ -1036,12 +1036,33 @@ let getTableLoadPopup model dispatch =
 
                 match allIsAtBuild with
                 | true ->
+                    
                     let buildMsg =
                         [|
                             "Building Ericsson.AM solution...",
                             Loading_Popup_Options.Spinner_Popup
                         |]
-                    cretateLoadingPopup buildMsg dispatch
+                    
+
+                    let msgs =
+                        [|
+                            cretateLoadingPopup buildMsg dispatch
+
+                            (
+                                alternatives_projs
+                                |> Array.map (fun (_,y) -> y),
+
+                                dispatch
+                            ) |>
+                            (
+                                Build_Solution_Msg >>
+                                dispatch
+                            )
+                        |]
+
+                    msgs
+                    |> Array.iter(fun msg -> msg)
+
                 | false ->
                     let allMsgsOpt =
                         projs
@@ -1373,6 +1394,242 @@ let ChangeNugetNameAndBuildSolution projects dispatch =
             |> Upgrade_NuGet.Types.Batch
 
         yesNoPopupMsg msgWithRequests
+
+let buildSolution projs = async {
+
+    do! Async.Sleep 2000
+
+    let reqStr = "shellCommand=cd server;cd loganalyzer;dotnet build Ericsson.AM.sln"
+
+    let! res = request reqStr
+
+    let buildFailedMsgs msg =
+        projs
+        |> Array.map (fun proj ->
+            let newStatus =
+                msg |>
+                (
+                    Loading_To_Server_Failed >>
+                    Loading_Nuget_Info_Is_Done >>
+                    Loading_Info_To_Server
+                )
+     
+            let newLoadingStatusMsg =
+                { proj with Loading_To_Server = newStatus} |>
+                (
+                    Types.Change_Project_Info 
+                )
+            newLoadingStatusMsg
+            )
+
+    match res.status with
+    | 200.0 ->
+        match (res.responseText.Contains("Build FAILED.")) with
+        | true ->
+
+            let res =
+                "Build failed. Make sure you solution compiles clean!" |>
+                (
+                    buildFailedMsgs >>
+                    Types.Batch 
+                )
+            return(res)
+
+        | _ ->
+            let buildFailedMsgs =
+                projs
+                |> Array.map (fun proj ->
+                    let newStatus =
+                        Loading_To_Nuget_Server_Alternatives.Executing_Nuget_Server_Command |>
+                        (
+                            Loading_Nuget_Status.Loading_Nuget_Info_Is_Not_Done >>
+                            Loading_Info_To_Server
+                        )
+             
+                    let newLoadingStatusMsg =
+                        { proj with Loading_To_Server = newStatus} |>
+                        (
+                            Types.Change_Project_Info 
+                        )
+                    newLoadingStatusMsg
+                    )
+            let res = buildFailedMsgs |> Types.Batch
+
+            return(res)
+    | _ ->
+        let res =
+            res.responseText |>
+            (
+                buildFailedMsgs >>
+                Types.Batch 
+            )
+        return(res)
+}
+
+let performNugetActionsToServer projs =
+    do! Async.Sleep 2000
+
+    let reqStrBase = "shellCommand=cd server;cd loganalyzer/Ericsson.AM.sln;"
+
+    let getProjNameAndVersion =
+        projs
+        |> Array.map (fun proj ->
+            match proj.Server_Options with
+            | Server_Options.Push_Nuget ->
+                match proj.Nuget_Names.New_Nuget_Name with
+                | New_Nuget_Name.Has_New_Name validity ->
+                    match validity with
+                    | Nuget_Name_Validity.Nuget_Name_Valid newName ->
+                    | _ -> 
+                | _ ->
+            | Server_Options.Is_To_Be_Deleted ->
+            | Server_Options.Is_To_Be_Updated ->)
+            | _ ->)
+    
+
+let performNugetActionToServerAsync proj version = async {
+    do! Async.Sleep 2000
+
+    let reqStrBase = "shellCommand=cd server;cd loganalyzer;"
+
+    let nugetPushTemplate projName version =
+        String.Format(
+            "dotnet nuget push \"Ericsson.AM.{0}/bin/Debug/Ericsson.AM.{0}.{1}.nupkg\" -k 875e5930-56d2-4f06-9fe9-f3f5a8c09aa2 -s http://segaeesw04.eipu.ericsson.se/nuget",
+            projName,
+            version
+        )
+
+    let nugetDeleteTemplate projName version =
+        String.Format(
+            "yes|dotnet nuget delete Ericsson.AM.{0}.{1} -k 875e5930-56d2-4f06-9fe9-f3f5a8c09aa2 -s http://segaeesw04.eipu.ericsson.se/nuget;y",
+            projName,
+            version
+        )
+
+    let failedMsg msg =
+        let newStatus =
+            msg |>
+            (
+                Loading_To_Server_Failed >>
+                Loading_Nuget_Status.Loading_Nuget_Info_Is_Done >>
+                Loading_Info_To_Server
+            )
+             
+        let newLoadingStatusMsg =
+            { proj with Loading_To_Server = newStatus} |>
+            (
+                Types.Change_Project_Info 
+            )
+
+        newLoadingStatusMsg
+
+    let getErrorMsg txt altMsg =
+        JsInterop.Regex.Match "(?<=error:)(.|\n)*?(?=\n\s)" txt
+        |> fun x ->
+            match x with
+            | Some m -> m
+            | _ -> altMsg
+
+    let pusProcedure pushReqString = async {
+        let! pushRes = request pushReqString
+        
+        match pushRes.status with
+        | 200.0 ->
+            match (pushRes.responseText.Contains("Your package was pushed.")) with
+            | false ->
+                
+                let errorMsg =
+                    getErrorMsg pushRes.responseText "couldn't push NuGet package"
+
+                return(failedMsg errorMsg)
+        
+            | _ ->
+                let newStatus =
+                    Loading_To_Server_Result.Loading_To_Server_Succeeded |>
+                    (
+                        Loading_Nuget_Status.Loading_Nuget_Info_Is_Done >>
+                        Loading_Info_To_Server
+                    )
+                     
+                let newLoadingStatusMsg =
+                    { proj with Loading_To_Server = newStatus} |>
+                    (
+                        Types.Change_Project_Info 
+                    )
+
+                return(newLoadingStatusMsg)
+        | _ ->
+
+            return(failedMsg pushRes.responseText)
+    }
+        
+    let deleteReqString =
+        reqStrBase + (nugetDeleteTemplate proj.Name version)
+
+    let pushReqString =
+        reqStrBase + (nugetDeleteTemplate proj.Name version)
+
+    match proj.Server_Options with
+    | Server_Options.Is_To_Be_Updated ->
+
+        let! deleteResp = request deleteReqString
+        
+        match deleteResp.status with
+        | 200.0 ->
+            match (deleteResp.responseText.Contains("was deleted successfully.")) with
+            | false ->
+                
+                let errorMsg =
+                    getErrorMsg deleteResp.responseText "couldn't delete NuGet before pushing"
+
+                return(failedMsg errorMsg)
+        
+            | _ ->
+                let! res = pusProcedure pushReqString
+
+                return(res)
+        | _ ->
+            return(failedMsg deleteResp.responseText)
+            
+    | Server_Options.Push_Nuget ->
+        let! res = pusProcedure pushReqString
+        
+        return(res)
+    | Server_Options.Is_To_Be_Deleted ->
+        let! deleteResp = request deleteReqString
+        
+        match deleteResp.status with
+        | 200.0 ->
+            match (deleteResp.responseText.Contains("was deleted successfully.")) with
+            | false ->
+                
+                let errorMsg =
+                    getErrorMsg deleteResp.responseText "couldn't delete NuGet before pushing"
+
+                return(failedMsg errorMsg)
+        
+            | _ ->
+                let newStatus =
+                    Loading_To_Server_Result.Loading_To_Server_Succeeded |>
+                    (
+                        Loading_Nuget_Status.Loading_Nuget_Info_Is_Done >>
+                        Loading_Info_To_Server
+                    )
+                     
+                let newLoadingStatusMsg =
+                    { proj with Loading_To_Server = newStatus} |>
+                    (
+                        Types.Change_Project_Info 
+                    )
+
+                return(newLoadingStatusMsg)
+        | _ ->
+            return(failedMsg deleteResp.responseText)
+    | _ ->
+        return(MsgNone |> Types.GlobalMsg_Upgrade_Nuget)
+        
+}
+
     
     
 
