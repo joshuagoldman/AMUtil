@@ -194,6 +194,7 @@ let monitorEachProjectInfoExtraction ( projectsLoadingInfo : Loganalyzer_Project
                                     }
                                 Existing_Packages = existingPackages.Value
                                 Server_Options = No_Server_Actions
+                                Loading_To_Server = Not_Loading_Info_To_Server
                             }
                             |> Loganalyzer_Projects_Table_Result.Loading_Was_Successfull
                             
@@ -946,6 +947,114 @@ let serverActionChanged project ( ev : Browser.Types.Event ) dispatch =
             )
         | _ ->
             ()
+
+let getTableLoadPopup model dispatch =
+    match model.Projects_Table with
+    | Loganalyzer_Projects_Table_Status.Info_Is_Loading mix ->
+        let allProjectsLoaded = haveProjectsBeenLoaded mix
+
+        let allMsgs =
+            mix
+            |> Array.map (fun proj ->
+                match proj with
+                | Loganalyzer_Projects_Table_Mix.Project_Not_Loading proj_not_loading ->
+                    match proj_not_loading with
+                    | Loganalyzer_Projects_Table_Result.Loading_Was_Successfull proj_not_loading ->
+                        let msg =
+                            String.Format(
+                                "{0} -> Loading was successfull",
+                                proj_not_loading.Name
+                            )
+                        msg
+                    | Loganalyzer_Projects_Table_Result.Loading_Was_Not_Successfull (name, msg) ->
+                        let msg =
+                            String.Format(
+                                "{0} -> {1}",
+                                name,
+                                msg
+                            )
+                        msg
+
+                | Loganalyzer_Projects_Table_Mix.Project_Loading proj_loading ->
+                    let msg =
+                        String.Format(
+                            "{0} -> {1}",
+                            proj_loading.Project_Name,
+                            proj_loading.Loading_Msg
+                        )
+
+                    msg)
+
+        match allProjectsLoaded with
+        | true ->
+            cretateLoadingFinishedPopup allMsgs dispatch
+        | _ ->
+            cretateLoadingPopup allMsgs dispatch
+    | Info_Has_Been_Loaded table ->
+        match table with
+        | Loganalyzer_Projects_Table.Yes_Projects_Table_Info projs ->
+            let anyProjsNugetServerLoading =
+                projs
+                |> Array.choose (fun proj ->
+                    match proj.Loading_To_Server with
+                    | Loading_Info_To_Server info ->
+                        Some proj.Loading_To_Server
+                    | Loading_Is_Done _ ->
+                        Some proj.Loading_To_Server
+                    |  _ -> None)
+                |> function
+                    | res when (res|>Array.length) <> 0 ->
+                        res |> Some
+                    | _ -> None
+
+            match anyProjsNugetServerLoading with
+            | Some infos ->
+                let allMsgs =
+                    infos
+                    |> Array.choose (fun info ->
+                        match info with
+                        | Loading_Info_To_Server info ->
+                            String.Format(
+                                "{0} -> {1}",
+                                info.Name,
+                                info.Msg
+                            )
+                            |> Some
+                        | Loading_Is_Done res ->
+                            match res with
+                            | Loading_To_Server_Succeeded name ->
+                                String.Format(
+                                    "{0} -> {1}",
+                                    name,
+                                    "Changes to server succeeded!"
+                                )
+                                |> Some
+                            | Loading_To_Server_Failed info ->
+                                String.Format(
+                                    "{0} -> {1}",
+                                    info.Name,
+                                    info.Msg
+                                )
+                                |> Some
+                        | _ -> None)      
+
+                let allInfosHaveLoaded =
+                    infos
+                    |> Array.forall (fun info ->
+                        match info with
+                        | Info_Loaded_Options.Loading_Is_Done _ ->
+                            true
+                        | _ -> false)
+                match allInfosHaveLoaded with
+                | true ->
+                    cretateLoadingFinishedPopup allMsgs dispatch
+                | _ ->
+                    cretateLoadingPopup allMsgs dispatch
+                
+            | _ -> ()
+        | _ -> ()
+            
+    | _ -> ()
     
 
 

@@ -28,6 +28,7 @@ type Project_Chosen_option =
     | Project_Not_Chosen
 
 type Server_Options =
+    | Loading_To_Server
     | Is_To_Be_Deleted
     | Is_To_Be_Updated
     | Push_Nuget
@@ -50,12 +51,28 @@ type Nuget_Names = {
     New_Nuget_Name : New_Nuget_Name
 }
 
+type Msg_With_Name = {
+    Name : string
+    Msg : string
+}
+
+type Loading_To_Server_Result =
+    | Loading_To_Server_Succeeded of string
+    | Loading_To_Server_Failed of Msg_With_Name
+
+type Info_Loaded_Options =
+    | Not_Loading_Info_To_Server
+    | Loading_Info_To_Server of Msg_With_Name
+    | Loading_Is_Done of Loading_To_Server_Result
+    
+
 type Project_Info = {
     Name : string
     Changes : Project_Changes
     Nuget_Names : Nuget_Names
     Existing_Packages : string []
     Server_Options : Server_Options
+    Loading_To_Server : Info_Loaded_Options
 }
 
 type Loganalyzer_Projects_Table =
@@ -100,6 +117,7 @@ type Msg =
     | Change_Nuget_Server_Info of Nuget_Server_Options
     | Check_Nuget_Server  of (Msg -> unit)
     | Change_Server_Action_Option of Project_Info * Server_Options
+    | Save_Nuget_Info_To_Server of Project_Info * Server_Options
 
 type Model = {
     Info : Git_Info_Nuget
