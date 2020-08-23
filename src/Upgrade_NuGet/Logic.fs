@@ -1133,7 +1133,94 @@ let getTableLoadPopup model dispatch =
             
     | _ -> ()
 
-let ChangeNugetNameAndBuildSolution projects dispatch =
+let changeNameAsync project version dispatch = async {
+    let reqBody =
+        String.Format(
+            "project=Ericsson.AM.{0}&version{1}",
+            project.Name,
+            version
+        )
+
+    let url = "http://localhost:3001/ChangeName"
+
+    let! request =
+        Async.FromContinuations <| fun (resolve,_,_) ->
+
+            let xhr = Browser.XMLHttpRequest.Create()
+            xhr.``open``(method = "POST", url = url)
+            xhr.timeout <- 10000.0
+
+            let socketResponse = ProgressSocket.connect("http://localhost:3001")
+    
+            match socketResponse.ErrorMessage with
+            | None  ->
+                socketResponse.Socket.Value
+                |> ProgressSocket.addEventListener_message(fun scktMsg ->
+                    let eventResult = (scktMsg :?> Global.Types.MessageType)
+
+                    let msg =
+                        String.Format(
+                            "{0} -> Saving project file with NuGet version {1}",
+                            project.Name,
+                            version
+                        )
+
+                    let newStatus =
+                        eventResult.Progress |>
+                        (
+                            Loading_To_Nuget_Server_Alternatives.Changing_Nuget_Name >>
+                            Loading_Nuget_Info_Is_Not_Done >>
+                            Loading_Info_To_Server
+                        )
+                         
+
+                    let newLoadingStatusMsg =
+                        { project with Loading_To_Server = newStatus} |>
+                        (
+                            Types.Change_Project_Info >>
+                            dispatch
+                        )
+
+                    newLoadingStatusMsg
+                            
+                    ) "message"
+                |> ProgressSocket.addEventListener_message(fun scktMsg ->
+                    let response = (scktMsg :?> FinishedType)
+            
+                    socketResponse.Socket.Value 
+                    |> ProgressSocket.disconnect
+                    |> ignore
+
+                    resolve response
+                    
+                    ) "finished"
+                |> ignore
+
+            | Some error ->
+
+                resolve
+                    {
+                        Status = 404
+                        Msg = error
+                    }
+
+            xhr.ontimeout <- fun _ ->
+                let error =
+                    "Connection timed out."
+
+                resolve
+                    {
+                        Status = 404
+                        Msg = error
+                    }
+
+            xhr.send(reqBody) |> fun  _ -> ()
+
+    return(request)
+
+}
+
+let ChangeNugetNameAndBuildSolution projects dispatch = 
     let allProjsQuestionPopup =
         projects
         |> Array.choose (fun proj ->
@@ -1178,105 +1265,115 @@ let ChangeNugetNameAndBuildSolution projects dispatch =
             Types.GlobalMsg_Upgrade_Nuget
         )
 
-    let yesNoPopupButtons =
-        Popup.View.yesNoButtons killPopup killPopup dispatch
-
-    let popupType =
-        (yesNoPopupButtons,allProjsQuestionPopup)
-        |> Popup.Types.Alternative_Popup_Otpions.Several_Alternatives
-
-    let yesNoButton =
-        (
-            (popupType,Popup.Types.standardPositions)
-            |> Popup.Types.Has_Alternatives
-        )
+    let existsProjectsWithNewNames =
+        projects
+        |> Array.choose (fun proj ->
+            match proj.Server_Options with
+            | Server_Options.Push_Nuget ->
+                match proj.Nuget_Names.New_Nuget_Name with
+                | New_Nuget_Name.Has_New_Name validity ->
+                    match validity with
+                    | Nuget_Name_Valid newName ->
+                        (proj,newName) |> Some
+                    | _ -> None
+                | _ -> None
+            | _ -> None)
+        |> function
+            | res when (res |> Array.length) <> 0 ->
+                res |> Some
+            | _ -> None
         
-    let yesNoPopupMsg =
+    let yesNoPopupMsg yesMsg =
+        let yesNoPopupButtons =
+            Popup.View.yesNoButtons yesMsg killPopup dispatch
+
+        let popupType =
+            (yesNoPopupButtons |> List.toArray,allProjsQuestionPopup)
+            |> Popup.Types.Alternative_Popup_Otpions.Several_Alternatives
+
+        let yesNoButton =
+            (
+                (popupType,Popup.Types.standardPositions)
+                |> Popup.Types.Has_Alternatives
+            )
+
         yesNoButton |>
         (
             Global.Types.Popup_Msg_Global >>
             Types.GlobalMsg_Upgrade_Nuget
         )
-    
 
-    let changeNameAsync projName version = async {
-        let reqBody =
-            String.Format(
-                "project=Ericsson.AM.{0}&version{1}",
-                projName,
-                version
-            )
+    match existsProjectsWithNewNames with
+    | Some projectsWithNewNames ->
+        let requests =
+            projectsWithNewNames
+            |> Array.map (fun (proj,version) ->
+                async {
+                    let! res = changeNameAsync proj version dispatch
 
-        let url = "http://localhost:3001/ChangeName"
-
-        let! res = Global.Types.requestFormDataStyle url reqBody
-
-        let! request =
-            Async.FromContinuations <| fun (resolve,_,_) ->
-
-                let xhr = Browser.XMLHttpRequest.Create()
-                xhr.``open``(method = "POST", url = url)
-                xhr.timeout <- 10000.0
-
-                let socketResponse = ProgressSocket.connect("http://localhost:3001")
-        
-                match socketResponse.ErrorMessage with
-                | None  ->
-                    socketResponse.Socket.Value
-                    |> ProgressSocket.addEventListener_message(fun scktMsg ->
-                        let eventResult = (scktMsg :?> Global.Types.MessageType)
-
-                        let msg =
-                            String.Format(
-                                "{0} -> Saving project file with NuGet version {1}",
-                                projName,
-                                version
-                            )
-
-                        let popupInfoStr =
-                            eventResult.Progress |>
+                    match res.Status with
+                    | 200 ->
+                        let newStatus =
+                            Loading_To_Nuget_Server_Alternatives.Building |>
                             (
-                                Popup.View.getPopupMsgProgress msg eventResult.Progress >>
-                                checkingProcessPopupMsg popupPosition >>
-                                dispatch
+                                Loading_Nuget_Info_Is_Not_Done >>
+                                Loading_Info_To_Server
                             )
+                             
+                        let newLoadingStatusMsg =
+                            { proj with Loading_To_Server = newStatus} |>
+                            (
+                                Types.Change_Project_Info
+                            )
+                        return(newLoadingStatusMsg)
+                    | _ ->
+                        let newStatus =
+                            res.Msg |>
+                            (
+                                Loading_To_Server_Result.Loading_To_Server_Failed >>
+                                Loading_Nuget_Info_Is_Done >>
+                                Loading_Info_To_Server 
+                            )
+                             
+                        let newLoadingStatusMsg =
+                            { proj with Loading_To_Server = newStatus} |>
+                            (
+                                Types.Change_Project_Info
+                            )
+                        return(newLoadingStatusMsg)
+                })
 
-                        popupInfoStr
-                                
-                        ) "message"
-                    |> ProgressSocket.addEventListener_message(fun scktMsg ->
-                        let response = (scktMsg :?> FinishedType)
-                
-                        socketResponse.Socket.Value 
-                        |> ProgressSocket.disconnect
-                        |> ignore
+        let msgWithRequests =
+            requests
+            |> Batch_Upgrade_Nuget_Async
 
-                        resolve response
-                        
-                        ) "finished"
-                    |> ignore
+        yesNoPopupMsg msgWithRequests
+        
+    | _ ->
+        let changeToBuildingMsgs =
+            projects
+            |> Array.map (fun proj ->
+                let newStatus =
+                    Loading_To_Nuget_Server_Alternatives.Building |>
+                    (
+                        Loading_Nuget_Info_Is_Not_Done >>
+                        Loading_Info_To_Server
+                    )
+                 
+                let newLoadingStatusMsg =
+                    { proj with Loading_To_Server = newStatus} |>
+                    (
+                        Types.Change_Project_Info 
+                    )
 
-                | Some error ->
+                newLoadingStatusMsg
+                )
+        let msgWithRequests =
+            changeToBuildingMsgs
+            |> Upgrade_NuGet.Types.Batch
 
-                    resolve
-                        {
-                            Status = 404
-                            Msg = error
-                        }
-
-                xhr.ontimeout <- fun _ ->
-                    let error =
-                        "Connection timed out."
-
-                    resolve
-                        {
-                            Status = 404
-                            Msg = error
-                        }
-
-                xhr.send(fData) |> fun  _ -> ()
-
-    }
+        yesNoPopupMsg msgWithRequests
+    
     
 
 

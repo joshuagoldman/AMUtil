@@ -185,5 +185,8 @@ let update msg (model:Model) : Types.Model * Global.Types.GlobalMsg * Cmd<Msg> =
     | Change_Nuget_Server_Info info ->
         { model with Nuget_Server = info}, Global.Types.MsgNone,[]
     | Save_Nuget_Info_To_Server(projs,dispatch) ->
-        { model with Nuget_Server = info}, Global.Types.MsgNone,[]
+        let msg =
+            Logic.ChangeNugetNameAndBuildSolution projs dispatch
+            |> Cmd.ofMsg
+        model, Global.Types.MsgNone, msg
         
