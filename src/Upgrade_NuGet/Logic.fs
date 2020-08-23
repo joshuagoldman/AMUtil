@@ -841,6 +841,113 @@ let getAllAvailablePackageVersions dispatch = async {
         kickedOutMsg
 }
 
+let getActionsList project
+                   ( arr : Global.Types.TypeString<Server_Options> [])
+                   ( obj : Global.Types.TypeString<Server_Options> ) =
+
+    let standardAnswer =
+        arr
+        |> Array.choose (fun opt ->
+            match opt.ObjType with
+            | Server_Options.Push_Nuget ->
+                None
+            | _ ->
+                opt
+                |> Some)
+
+    match project.Nuget_Names.New_Nuget_Name with
+    | New_Nuget_Name.Has_New_Name validity ->
+        match validity with
+        | Nuget_Name_Validity.Nuget_Name_Valid _ ->
+            arr
+        | _ ->
+            standardAnswer
+            | _ ->
+                standardAnswer
+    | _ ->
+        standardAnswer
+
+let getServerActionButton ( option : Global.Types.TypeString<Server_Options>) =
+    Html.option[
+        prop.text option.ObjString
+    ]
+
+let currChoiceWithName =
+    [|
+        {
+            Global.Types.ObjType = Server_Options.No_Server_Actions
+            Global.Types.ObjString = "No Actions"
+        }
+        {
+            Global.Types.ObjType = Server_Options.Is_To_Be_Deleted
+            Global.Types.ObjString = "Delete"
+        }
+        {
+            Global.Types.ObjType = Server_Options.Is_To_Be_Updated
+            Global.Types.ObjString = "Replace"
+        }
+        {
+            Global.Types.ObjType = Server_Options.Push_Nuget
+            Global.Types.ObjString = "Push"
+        }
+    |]
+
+let nugetServerOptionsViewItems project =
+    match project.Server_Options with
+    | Server_Options.No_Server_Actions ->
+        {
+            Global.Types.ObjType = Server_Options.No_Server_Actions
+            Global.Types.ObjString = "No Actions"
+        } |>
+        (
+            getActionsList project currChoiceWithName >>
+            Array.map (fun option -> getServerActionButton option )
+        )
+    | Server_Options.Is_To_Be_Deleted ->
+        {
+            Global.Types.ObjType = Server_Options.Is_To_Be_Deleted
+            Global.Types.ObjString = "Delete"
+        } |>
+        (
+            getActionsList project currChoiceWithName >>
+            Array.map (fun option -> getServerActionButton option )
+        )
+    | Server_Options.Is_To_Be_Updated ->
+        {
+            Global.Types.ObjType = Server_Options.Is_To_Be_Updated
+            Global.Types.ObjString = "Replace"
+        } |>
+        (
+            getActionsList project currChoiceWithName >>
+            Array.map (fun option -> getServerActionButton option )
+        )
+    | Server_Options.Push_Nuget ->
+        {
+            Global.Types.ObjType = Server_Options.Push_Nuget
+            Global.Types.ObjString = "Push"
+        } |>
+        (
+            getActionsList project currChoiceWithName >>
+            Array.map (fun option -> getServerActionButton option )
+        )
+
+let serverActionChanged project ( ev : Browser.Types.Event ) dispatch =
+    let name = ev.target?value : string
+
+    currChoiceWithName
+    |> Array.tryFind (fun o ->
+        o.ObjString = name)
+    |> function
+        | res when res.IsSome ->
+            (project,res.Value.ObjType) |>
+            (
+                Change_Server_Action_Option >>
+                dispatch
+            )
+        | _ ->
+            ()
+    
+
 
         
 

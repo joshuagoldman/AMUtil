@@ -7,162 +7,12 @@ open Fable.Core.JsInterop
 open Types
 open Feliz
 open Feliz.style
-
-let currChoiceWithName =
-    [|
-        {
-            Global.Types.ObjType = Server_Options.No_Server_Actions
-            Global.Types.ObjString = "No Actions"
-        }
-        {
-            Global.Types.ObjType = Server_Options.Is_To_Be_Deleted
-            Global.Types.ObjString = "Delete"
-        }
-        {
-            Global.Types.ObjType = Server_Options.Is_To_Be_Updated
-            Global.Types.ObjString = "Replace"
-        }
-        {
-            Global.Types.ObjType = Server_Options.Push_Nuget
-            Global.Types.ObjString = "Push"
-        }
-    |]
-
-let getServerActionButton project ( option : Global.Types.TypeString<Server_Options>) dispatch =
-    Html.div[
-        prop.className "dropdown-item"
-        prop.children[
-            Html.div[
-                prop.className "button"
-                prop.text option.ObjString
-                prop.onClick (fun _ ->
-                    (project,option.ObjType) |>
-                    (
-                        Change_Server_Action_Option >>
-                        dispatch
-                    ))
-            ]
-        ]
-        
-    ]
-
-let getActionsList project
-                   ( arr : Global.Types.TypeString<Server_Options> [])
-                   ( obj : Global.Types.TypeString<Server_Options> ) =
-
-        match project.Nuget_Names.New_Nuget_Name with
-           | New_Nuget_Name.Has_New_Name validity ->
-               match validity with
-               | Nuget_Name_Validity.Nuget_Name_Valid _ ->
-                   arr
-                   |> Array.choose (fun opt ->
-                       match (opt.ObjString = obj.ObjString) with
-                       | true ->
-                           None
-                       | _ ->
-                           opt
-                           |> Some)
-               | _ ->
-                    match obj.ObjType with
-                    | Push_Nuget ->
-                       arr
-                       |> Array.choose (fun opt ->
-                           match opt.ObjType with
-                           | Server_Options.Push_Nuget ->
-                               None
-                           | _ ->
-                               match opt.ObjType with
-                               | Server_Options.No_Server_Actions ->
-                                   None
-                               | _ ->
-                                   opt
-                                   |> Some)
-                    | _ ->
-                        arr
-                        |> Array.choose (fun opt ->
-                            match opt.ObjType with
-                            | Server_Options.Push_Nuget ->
-                                None
-                            | _ ->
-                                match (opt.ObjString = obj.ObjString) with
-                                | true ->
-                                    None
-                                | _ ->
-                                    opt
-                                    |> Some)
-            | _ ->
-                arr
-                |> Array.choose (fun opt ->
-                    match opt.ObjType with
-                    | Server_Options.Push_Nuget ->
-                        None
-                    | _ ->
-                        match (opt.ObjString = obj.ObjString) with
-                        | true ->
-                            None
-                        | _ ->
-                            opt
-                            |> Some)
-        
+      
 let currentServerActionItem ( name : string ) =
-    Html.span[
+    Html.option[
+        prop.selected true
         prop.text name
     ]
-
-let nugetServerOptionsViewItems project dispatch =
-    match project.Server_Options with
-    | Server_Options.No_Server_Actions ->
-        {
-            Global.Types.ObjType = Server_Options.No_Server_Actions
-            Global.Types.ObjString = "No Actions"
-        } |>
-        (
-            getActionsList project currChoiceWithName >>
-            Array.map (fun option ->
-                getServerActionButton
-                                    project
-                                    option
-                                    dispatch)
-        )
-    | Server_Options.Is_To_Be_Deleted ->
-        {
-            Global.Types.ObjType = Server_Options.Is_To_Be_Deleted
-            Global.Types.ObjString = "Delete"
-        } |>
-        (
-            getActionsList project currChoiceWithName >>
-            Array.map (fun option ->
-                getServerActionButton
-                                    project
-                                    option
-                                    dispatch)
-        )
-    | Server_Options.Is_To_Be_Updated ->
-        {
-            Global.Types.ObjType = Server_Options.Is_To_Be_Updated
-            Global.Types.ObjString = "Replace"
-        } |>
-        (
-            getActionsList project currChoiceWithName >>
-            Array.map (fun option ->
-                getServerActionButton
-                                    project
-                                    option
-                                    dispatch)
-        )
-    | Server_Options.Push_Nuget ->
-        {
-            Global.Types.ObjType = Server_Options.Push_Nuget
-            Global.Types.ObjString = "Push"
-        } |>
-        (
-            getActionsList project currChoiceWithName >>
-            Array.map (fun option ->
-                getServerActionButton
-                                    project
-                                    option
-                                    dispatch)
-        )
 
 let nugetServerOptionsViewSelectedItem project =
     let spanWhenNugetNameInvalid =
@@ -196,51 +46,28 @@ let nugetServerOptionsViewSelectedItem project =
 
 let nugetServerOptionsView project dispatch =
     Html.div[
-        prop.className "dropdown is-active"
+        prop.className "field"
         prop.children[
             Html.div[
-                prop.className "dropdown-trigger"
+                prop.className "control"
                 prop.children[
-                    Html.button[
-                        prop.className "button"
-                        prop.ariaHasPopup true
-                        prop.ariaControls "dropdown-menu2"
+                    Html.div[
+                        prop.className "select is-rounded"
                         prop.children[
-                            nugetServerOptionsViewSelectedItem project
-                            Html.span[
-                                prop.className "icon is-small"
-                                prop.children[
-                                    Html.i[
-                                        prop.className "fas fa-angle-down"
-                                        prop.ariaHidden true
-                                    ]
-                                ]
-
+                            Html.select[
+                                prop.onChange (fun ev ->
+                                    Logic.serverActionChanged project ev dispatch)
+                                Logic.nugetServerOptionsViewItems project |>
+                                (
+                                    prop.children
+                                )
                             ]
                         ]
                     ]
                 ]
             ]
-            Html.div[
-                prop.className "dropdown-menu"
-                prop.id "dropdown-menu2"
-                prop.role.menu
-                prop.children[
-                    Html.div[
-                        prop.className "dropdown-content"
-
-                        dispatch |>
-                        (
-                            nugetServerOptionsViewItems project >>
-                            prop.children
-                        )
-                        
-                    ]
-                ]
-            ]
         ]
     ]
-
 let isInfoRow ( project : Project_Info ) =
 
     match project.Nuget_Names.New_Nuget_Name with
@@ -341,7 +168,7 @@ let root ( projects_table : Loganalyzer_Projects_Table ) dispatch =
         Html.table[
             prop.className "table is-fullwidth is-scrollable is-striped"
             prop.style[
-                Feliz.style.height 900
+                Feliz.style.height 300
             ]
             prop.children[
                 Html.thead[
