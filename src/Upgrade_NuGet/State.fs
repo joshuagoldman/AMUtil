@@ -189,15 +189,9 @@ let update msg (model:Model) : Types.Model * Global.Types.GlobalMsg * Cmd<Msg> =
             Logic.ChangeNugetNameAndBuildSolution projs dispatch
             |> Cmd.ofMsg
         model, Global.Types.MsgNone, msg
-    | Build_Solution_Msg projs ->
-        let msg =
-            projs |>
-            (
-                Logic.buildSolution  >>
-                Cmd.fromAsync
-            )
-
-        model, Global.Types.MsgNone, msg
+    | Build_Solution_If_Ready_Msg ->
+        Logic.decideifBuild model
+                
     | Perform_Nuget_Action_To_Server(proj,version) ->
         let msg =
             Logic.performNugetActionToServerAsync proj version
