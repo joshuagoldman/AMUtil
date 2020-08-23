@@ -284,8 +284,15 @@ let cretateLoadingPopup msgs dispatch  =
 
     let allMsgsCollected =
         msgs
-        |> Array.collect (fun msg ->
-            Popup.View.getPopupMsgSpinnerBeside msg)
+        |> Array.collect (fun (msg,msgType) ->
+            match msgType with
+            | Global.Types.Spinner_Popup ->
+                Popup.View.getPopupMsgSpinnerBeside msg
+            | Global.Types.No_Loading_Popup_Type ->
+                Popup.View.getPopupMsg msg
+            | Global.Types.Progress_Popup progress ->
+                Popup.View.getPopupMsgProgress msg progress
+            )
 
     let popupMsg2Dispatch =
         (allMsgsCollected,Popup.Types.standardPositions) |>
@@ -955,33 +962,48 @@ let getTableLoadPopup model dispatch =
                     match proj_not_loading with
                     | Loganalyzer_Projects_Table_Result.Loading_Was_Successfull proj_not_loading ->
                         let msg =
-                            String.Format(
-                                "{0} -> Loading was successfull",
-                                proj_not_loading.Name
+                            (
+                                String.Format(
+                                    "{0} -> Loading was successfull",
+                                    proj_not_loading.Name
+                                ),
+                                Loading_Popup_Options.No_Loading_Popup_Type
                             )
+                            
                         msg
                     | Loganalyzer_Projects_Table_Result.Loading_Was_Not_Successfull (name, msg) ->
                         let msg =
-                            String.Format(
-                                "{0} -> {1}",
-                                name,
-                                msg
+                            (
+                                String.Format(
+                                    "{0} -> {1}",
+                                    name,
+                                    msg
+                                ),
+                                Loading_Popup_Options.No_Loading_Popup_Type
                             )
+                            
                         msg
 
                 | Loganalyzer_Projects_Table_Mix.Project_Loading proj_loading ->
                     let msg =
-                        String.Format(
-                            "{0} -> {1}",
-                            proj_loading.Project_Name,
-                            proj_loading.Loading_Msg
+                        (
+                            String.Format(
+                                "{0} -> {1}",
+                                proj_loading.Project_Name,
+                                proj_loading.Loading_Msg
+                            ),
+                            Loading_Popup_Options.No_Loading_Popup_Type
                         )
+                        
 
                     msg)
 
         match allProjectsLoaded with
         | true ->
-            cretateLoadingFinishedPopup allMsgs dispatch
+            let allMsgsNoTypeConsideration =
+                allMsgs
+                |> Array.map (fun (x,_) -> x)
+            cretateLoadingFinishedPopup allMsgsNoTypeConsideration dispatch
         | _ ->
             cretateLoadingPopup allMsgs dispatch
     | Info_Has_Been_Loaded table ->
@@ -1014,7 +1036,11 @@ let getTableLoadPopup model dispatch =
 
                 match allIsAtBuild with
                 | true ->
-                    let buildMsg = [|"Building Ericsson.AM solution..."|]
+                    let buildMsg =
+                        [|
+                            "Building Ericsson.AM solution...",
+                            Loading_Popup_Options.Spinner_Popup
+                        |]
                     cretateLoadingPopup buildMsg dispatch
                 | false ->
                     let allMsgsOpt =
@@ -1025,18 +1051,24 @@ let getTableLoadPopup model dispatch =
                                 match status with
                                 | Loading_Nuget_Status.Loading_Nuget_Info_Is_Not_Done alternatives ->
                                     match alternatives with
-                                    | Loading_To_Nuget_Server_Alternatives.Changing_Nuget_Name ->
-                                        String.Format(
-                                            "{0} -> {1}",
-                                                info.Name,
-                                                "Changing NuGet version name"
+                                    | Loading_To_Nuget_Server_Alternatives.Changing_Nuget_Name progress ->
+                                        (
+                                            String.Format(
+                                                "{0} -> {1}",
+                                                    info.Name,
+                                                    "Changing NuGet version name"
+                                            ),
+                                            Progress_Popup(progress)
                                         )
                                         |> Some
                                     | Loading_To_Nuget_Server_Alternatives.Executing_Nuget_Server_Command ->
-                                        String.Format(
-                                            "{0} -> {1}",
-                                            info.Name,
-                                            "Executing NuGet server command"
+                                        (
+                                            String.Format(
+                                                "{0} -> {1}",
+                                                info.Name,
+                                                "Executing NuGet server command"
+                                            ),
+                                            Spinner_Popup
                                         )
                                         |> Some
                                     | _ -> None
@@ -1044,18 +1076,24 @@ let getTableLoadPopup model dispatch =
                                 | Loading_Nuget_Status.Loading_Nuget_Info_Is_Done res ->
                                     match res with
                                     | Loading_To_Server_Result.Loading_To_Server_Failed msg ->
-                                        String.Format(
-                                            "{0} -> {1}: {2}",
-                                            info.Name,
-                                            "Loading failed",
-                                            msg
+                                        (
+                                            String.Format(
+                                                "{0} -> {1}: {2}",
+                                                info.Name,
+                                                "Loading failed",
+                                                msg
+                                            ),
+                                            No_Loading_Popup_Type
                                         )
                                         |> Some
                                     | Loading_To_Server_Result.Loading_To_Server_Succeeded ->
-                                        String.Format(
-                                            "{0} -> {1}",
-                                            info.Name,
-                                            "Changes to server succeeded!"
+                                        (
+                                            String.Format(
+                                                "{0} -> {1}",
+                                                info.Name,
+                                                "Changes to server succeeded!"
+                                            ),
+                                            No_Loading_Popup_Type
                                         )
                                         |> Some
                             | _ -> None   )
@@ -1082,7 +1120,10 @@ let getTableLoadPopup model dispatch =
                     | Some allMsgs ->
                         match someIsStillLoading with
                         | false ->
-                            cretateLoadingFinishedPopup allMsgs dispatch
+                            let allMsgsNoTypeConsideration =
+                                allMsgs
+                                |> Array.map (fun (x,_) -> x)
+                            cretateLoadingFinishedPopup allMsgsNoTypeConsideration dispatch
                         | _ ->
                             cretateLoadingPopup allMsgs dispatch
                     | _ -> ()
@@ -1158,8 +1199,83 @@ let ChangeNugetNameAndBuildSolution projects dispatch =
         )
     
 
-    let changeNamesAndBuildAsync projName = async {
+    let changeNameAsync projName version = async {
+        let reqBody =
+            String.Format(
+                "project=Ericsson.AM.{0}&version{1}",
+                projName,
+                version
+            )
+
+        let url = "http://localhost:3001/ChangeName"
+
+        let! res = Global.Types.requestFormDataStyle url reqBody
+
+        let! request =
+            Async.FromContinuations <| fun (resolve,_,_) ->
+
+                let xhr = Browser.XMLHttpRequest.Create()
+                xhr.``open``(method = "POST", url = url)
+                xhr.timeout <- 10000.0
+
+                let socketResponse = ProgressSocket.connect("http://localhost:3001")
         
+                match socketResponse.ErrorMessage with
+                | None  ->
+                    socketResponse.Socket.Value
+                    |> ProgressSocket.addEventListener_message(fun scktMsg ->
+                        let eventResult = (scktMsg :?> Global.Types.MessageType)
+
+                        let msg =
+                            String.Format(
+                                "{0} -> Saving project file with NuGet version {1}",
+                                projName,
+                                version
+                            )
+
+                        let popupInfoStr =
+                            eventResult.Progress |>
+                            (
+                                Popup.View.getPopupMsgProgress msg eventResult.Progress >>
+                                checkingProcessPopupMsg popupPosition >>
+                                dispatch
+                            )
+
+                        popupInfoStr
+                                
+                        ) "message"
+                    |> ProgressSocket.addEventListener_message(fun scktMsg ->
+                        let response = (scktMsg :?> FinishedType)
+                
+                        socketResponse.Socket.Value 
+                        |> ProgressSocket.disconnect
+                        |> ignore
+
+                        resolve response
+                        
+                        ) "finished"
+                    |> ignore
+
+                | Some error ->
+
+                    resolve
+                        {
+                            Status = 404
+                            Msg = error
+                        }
+
+                xhr.ontimeout <- fun _ ->
+                    let error =
+                        "Connection timed out."
+
+                    resolve
+                        {
+                            Status = 404
+                            Msg = error
+                        }
+
+                xhr.send(fData) |> fun  _ -> ()
+
     }
     
 

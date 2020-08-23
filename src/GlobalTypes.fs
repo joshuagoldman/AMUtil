@@ -8,6 +8,11 @@ type AsynSyncMix<'a> =
     | Is_Async of Async<'a>
     | Is_Not_Async of 'a
 
+type Loading_Popup_Options =
+    | Spinner_Popup
+    | Progress_Popup of float
+    | No_Loading_Popup_Type
+
 let sleepAsync time = async {
     do! Async.Sleep time
 }
@@ -66,6 +71,40 @@ let requestCustom url ( data : obj ) =
                 resolve(xhr)
 
         xhr.send(data)
+
+type HttpResponse =
+    | TimedOut of string
+    | Success of Browser.XMLHttpRequest
+
+type MessageType = {
+    Progress : float
+    Remaining : int
+}
+
+type FinishedType = {
+    Status : int
+    Msg : string
+}
+
+let requestFormDataStyle ( fData : Browser.FormData ) url =
+    Async.FromContinuations <| fun (resolve,_,_) ->
+
+        let xhr = Browser.XMLHttpRequest.Create()
+        xhr.``open``(method = "POST", url = url)
+        xhr.timeout <- 8000.0
+    
+
+        xhr.onreadystatechange <- fun _ ->
+            if xhr.readyState = (4 |> float)
+            then
+                resolve (xhr |> HttpResponse.Success)
+
+        xhr.ontimeout <-fun _ ->
+            let timeoutStr =
+                "Connection timed out."
+            resolve (timeoutStr |> HttpResponse.TimedOut)
+
+        xhr.send(fData)
 
 type App_Activity =
     | Activity_None

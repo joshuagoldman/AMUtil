@@ -105,10 +105,6 @@ let killPopupMsg =
         Types.Global_Msg
     )
 
-type HttpResponse =
-    | TimedOut of string
-    | Success of Browser.XMLHttpRequest
-
 let requestFormDataStyle ( fData : Browser.FormData ) =
     Async.FromContinuations <| fun (resolve,_,_) ->
 
@@ -330,16 +326,6 @@ let findFaultsInRcoFile rcoObjectArr ( popupPosition : Popup.Types.PopupPosition
                 popupPosition
     
         return([|faultsFoundMsg|])
-}
-
-type MessageType = {
-    Progress : float
-    Remaining : int
-}
-
-type FinishedType = {
-    Status : int
-    Msg : string
 }
 
 let createRcoFileInfo rcoObjArr =
