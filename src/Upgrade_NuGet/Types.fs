@@ -112,6 +112,7 @@ type Nuget_Server_Options =
 type Msg =
     | Batch of Msg[]
     | Batch_Upgrade_Nuget_Async of Async<Msg>[]
+    | Upgrade_Nuget_Async of Async<Msg>
     | Popup_Msg_Upgrade_Nuget of Popup.Types.PopupStyle
     | GlobalMsg_Upgrade_Nuget of GlobalMsg
     | Change_Project_Info of Project_Info
@@ -126,8 +127,8 @@ type Msg =
     | Check_Nuget_Server  of (Msg -> unit)
     | Change_Server_Action_Option of Project_Info * Server_Options
     | Save_Nuget_Info_To_Server of Project_Info [] * (Msg -> unit)
-    | Build_Solution_If_Ready_Msg 
-    | Perform_Nuget_Action_To_Server of Project_Info * Version : string
+    | Build_Solution_If_Ready_Msg of (Msg -> unit)
+    | Perform_Nuget_Action_To_Server of Project_Info * Version : string * (Msg -> unit)
     | Send_Popup_With_New_State of Msg * (Msg -> unit)
     | Send_Popup of (Msg -> unit)
     | Change_LogAnalyzer_Loading_Mix of Loganalyzer_Projects_Table_Result * (Msg -> unit)

@@ -9,6 +9,10 @@ open Global.Types
 open Feliz
 open Fable.Core.JsInterop
 
+let turnIntoSendPopupWithNewState dispatch msg =
+    (msg,dispatch)
+    |> Send_Popup_With_New_State
+
 let getBranches info =
     match info with
     | Types.No_Git_Info_Nuget -> [|Html.none|]
@@ -1105,7 +1109,12 @@ let getTableLoadPopup model dispatch =
         match table with
         | Loganalyzer_Projects_Table.Yes_Projects_Table_Info projs ->
             match (allisBuild projs) with
-            | true -> ()
+            | true ->
+                dispatch |>
+                (
+                    Build_Solution_If_Ready_Msg >>
+                    dispatch
+                )
             | false ->
                 match (anyProjsNugetServerLoading projs) with
                 | true ->
@@ -1140,7 +1149,7 @@ let getTableLoadPopup model dispatch =
             
     | _ -> ()
 
-let changeNameAsync project version dispatch = async {
+let changeNameAsync project ( version : string ) dispatch = async {
     let reqBody =
         String.Format(
             "project=Ericsson.AM.{0}&version={1}",
@@ -1243,10 +1252,9 @@ let changeNameRequestToMsgArray projectsWithNewNames dispatch =
                         (
                             Types.Change_Project_Info
                         )
-
-                        Types.Build_Solution_If_Ready_Msg
                     |]
                     |> Types.Batch
+                    |> turnIntoSendPopupWithNewState dispatch
                     
                 return(newLoadingStatusMsg)
             | _ ->
@@ -1263,6 +1271,8 @@ let changeNameRequestToMsgArray projectsWithNewNames dispatch =
                     (
                         Types.Change_Project_Info
                     )
+                    |> turnIntoSendPopupWithNewState dispatch
+
                 return(newLoadingStatusMsg)
         })
 
@@ -1409,7 +1419,7 @@ let ChangeNugetNameAndBuildSolution projects dispatch =
     | _ ->
         yesNoPopupMsg buildMsgs
 
-let buildSolution projectsLoading = async {
+let buildSolution projectsLoading dispatch = async {
 
     do! Async.Sleep 2000
 
@@ -1433,6 +1443,7 @@ let buildSolution projectsLoading = async {
                 (
                     Types.Change_Project_Info 
                 )
+                |> turnIntoSendPopupWithNewState dispatch
             newLoadingStatusMsg
             )
 
@@ -1453,6 +1464,37 @@ let buildSolution projectsLoading = async {
             let buildSuccededMsgs =
                 projectsLoading
                 |> Array.map (fun proj ->
+
+                    let performNugetActionMsgAsync =
+                        let performNugetActionMsg =
+                            match proj.Server_Options with
+                            | Server_Options.Push_Nuget ->
+                                match proj.Nuget_Names.New_Nuget_Name with
+                                | New_Nuget_Name.Has_New_Name validity ->
+                                    match validity with
+                                    | Nuget_Name_Validity.Nuget_Name_Valid newName ->
+                                        (proj,newName,dispatch)
+                                        |> Perform_Nuget_Action_To_Server
+                                    | _ ->
+                                        MsgNone
+                                        |> Types.GlobalMsg_Upgrade_Nuget
+                                | _ ->
+                                    MsgNone
+                                    |> Types.GlobalMsg_Upgrade_Nuget
+                            | Server_Options.Is_To_Be_Deleted ->
+                                (proj,proj.Nuget_Names.CurrName,dispatch)
+                                |> Perform_Nuget_Action_To_Server
+                            | Server_Options.Is_To_Be_Updated ->
+                                (proj,proj.Nuget_Names.CurrName,dispatch)
+                                |> Perform_Nuget_Action_To_Server
+                            | _ ->
+                                MsgNone
+                                |> Types.GlobalMsg_Upgrade_Nuget
+
+                        performNugetActionMsg
+                        |> delayedMessage 2000
+                        |> Upgrade_Nuget_Async
+                    
                     let newStatus =
                         Loading_To_Nuget_Server_Alternatives.Executing_Nuget_Server_Command |>
                         (
@@ -1461,10 +1503,17 @@ let buildSolution projectsLoading = async {
                         )
              
                     let newLoadingStatusMsg =
-                        { proj with Loading_To_Server = newStatus} |>
-                        (
-                            Types.Change_Project_Info 
-                        )
+                        [|
+                            { proj with Loading_To_Server = newStatus} |>
+                            (
+                                Types.Change_Project_Info 
+                            )
+                            |> turnIntoSendPopupWithNewState dispatch
+
+                            performNugetActionMsgAsync
+
+                        |]
+                        |> Types.Batch
                     newLoadingStatusMsg
                     )
             let res = buildSuccededMsgs |> Types.Batch
@@ -1479,44 +1528,8 @@ let buildSolution projectsLoading = async {
             )
         return(res)
 }
-
-let performNugetActionsToServer projs =
-
-    let getProjNameAndVersion =
-        projs
-        |> Array.map (fun proj ->
-            match proj.Server_Options with
-            | Server_Options.Push_Nuget ->
-                match proj.Nuget_Names.New_Nuget_Name with
-                | New_Nuget_Name.Has_New_Name validity ->
-                    match validity with
-                    | Nuget_Name_Validity.Nuget_Name_Valid newName ->
-                        (proj,newName)
-                        |> Perform_Nuget_Action_To_Server
-                    | _ ->
-                        MsgNone
-                        |> Types.GlobalMsg_Upgrade_Nuget
-                | _ ->
-                    MsgNone
-                    |> Types.GlobalMsg_Upgrade_Nuget
-            | Server_Options.Is_To_Be_Deleted ->
-                (proj,proj.Nuget_Names.CurrName)
-                |> Perform_Nuget_Action_To_Server
-            | Server_Options.Is_To_Be_Updated ->
-                (proj,proj.Nuget_Names.CurrName)
-                |> Perform_Nuget_Action_To_Server
-            | _ ->
-                MsgNone
-                |> Types.GlobalMsg_Upgrade_Nuget)
-
-    getProjNameAndVersion
-    |> Array.map (fun msg ->
-        msg
-        |> delayedMessage 2000)
-    |> Batch_Upgrade_Nuget_Async
     
-
-let performNugetActionToServerAsync proj version = async {
+let performNugetActionToServerAsync proj version dispatch = async {
     do! Async.Sleep 2000
 
     let reqStrBase = "shellCommand=cd server;cd loganalyzer;"
@@ -1549,6 +1562,7 @@ let performNugetActionToServerAsync proj version = async {
             (
                 Types.Change_Project_Info 
             )
+            |> turnIntoSendPopupWithNewState dispatch
 
         newLoadingStatusMsg
 
@@ -1585,6 +1599,7 @@ let performNugetActionToServerAsync proj version = async {
                     (
                         Types.Change_Project_Info 
                     )
+                    |> turnIntoSendPopupWithNewState dispatch
 
                 return(newLoadingStatusMsg)
         | _ ->
@@ -1659,7 +1674,7 @@ let performNugetActionToServerAsync proj version = async {
         
 }
 
-let decideifBuild model =
+let decideifBuild model dispatch =
     match model.Projects_Table with
     | Loganalyzer_Projects_Table_Status.Info_Has_Been_Loaded res ->
         match res with
@@ -1690,9 +1705,9 @@ let decideifBuild model =
                         [|
                             buildingInformation
 
-                            projectsLoading |>
+                            dispatch |>
                             (
-                                buildSolution 
+                                buildSolution projectsLoading
                             )
                         |] |>
                         (

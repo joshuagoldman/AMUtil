@@ -15,6 +15,11 @@ let init result =
 
 let update msg (model:Model) : Types.Model * Global.Types.GlobalMsg * Cmd<Msg> =
     match msg with
+    | Upgrade_Nuget_Async asyncMsg ->
+        let msg =
+            asyncMsg
+            |> Cmd.fromAsync
+        model, Global.Types.MsgNone, msg
     | Batch msgs ->
         let msgsIntoOneCmd =
             msgs
@@ -188,12 +193,12 @@ let update msg (model:Model) : Types.Model * Global.Types.GlobalMsg * Cmd<Msg> =
             Logic.ChangeNugetNameAndBuildSolution projs dispatch
             |> Cmd.ofMsg
         model, Global.Types.MsgNone, msg
-    | Build_Solution_If_Ready_Msg ->
-        Logic.decideifBuild model
+    | Build_Solution_If_Ready_Msg dispatch ->
+        Logic.decideifBuild model dispatch
                 
-    | Perform_Nuget_Action_To_Server(proj,version) ->
+    | Perform_Nuget_Action_To_Server(proj,version,dispatch) ->
         let msg =
-            Logic.performNugetActionToServerAsync proj version
+            Logic.performNugetActionToServerAsync proj version dispatch
             |> Cmd.fromAsync
 
         model, Global.Types.MsgNone, msg
