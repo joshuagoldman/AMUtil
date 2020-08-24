@@ -64,7 +64,6 @@ let currentBranchInfo model =
     | _ -> Html.none
 
 let root model dispatch =
-    Logic.getTableLoadPopup model dispatch
     Html.div[
         prop.children[
             Html.div[

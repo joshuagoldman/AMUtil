@@ -103,56 +103,35 @@ let monitorEachProjectInfoExtraction ( projectsLoadingInfo : Loganalyzer_Project
                     Some (res |> Array.head)
                 | _ -> None
         
-        match pickNewLoadingProject with
-        | None ->
-            let successInfo =
-                newMix
-                |> pickSuccessProjectInfoLoads
 
-            match successInfo with
-            | Some info ->
-                [|
-                    info |>
-                    (
-                        Yes_Projects_Table_Info >>
-                        Info_Has_Been_Loaded >>
-                        Upgrade_NuGet.Types.Msg.Change_NuGet_Status >>
-                        delayedMessage 500
-                    )
-                |]
-                |> Batch_Upgrade_Nuget_Async
-                
-            | _ ->
-                [|
-                    No_Projects_Table_Info |>
-                    (
-                        Info_Has_Been_Loaded >>
-                        Upgrade_NuGet.Types.Msg.Change_NuGet_Status >>
-                        delayedMessage 500
-                    )
-                |]
-                |> Batch_Upgrade_Nuget_Async
-                
-                                
-        | Some proj_to_load ->
+        let successInfo =
+            newMix
+            |> pickSuccessProjectInfoLoads
+
+        match successInfo with
+        | Some info ->
             [|
-                newMix |>
+                info |>
                 (
-                    Info_Is_Loading >>
+                    Yes_Projects_Table_Info >>
+                    Info_Has_Been_Loaded >>
                     Upgrade_NuGet.Types.Msg.Change_NuGet_Status >>
                     delayedMessage 500
                 )
-
-                proj_to_load.Project_Name |>
+            |]
+            |> Batch_Upgrade_Nuget_Async
+                
+        | _ ->
+            [|
+                No_Projects_Table_Info |>
                 (
-                    Upgrade_NuGet.Types.Get_Project_Info >>
+                    Info_Has_Been_Loaded >>
+                    Upgrade_NuGet.Types.Msg.Change_NuGet_Status >>
                     delayedMessage 500
                 )
             |]
             |> Batch_Upgrade_Nuget_Async
             
-        
-
     let! res = requestCustom "http://localhost:3001/projectInfo" fullProjectNameFolder
 
     let standardFailMsg = "Loading was not successfull"
@@ -248,7 +227,7 @@ let monitorEachProjectInfoExtraction ( projectsLoadingInfo : Loganalyzer_Project
         return(asyncMsg2Dispatch)
 }
 
-let cretateLoadingFinishedPopup msgs dispatch  =
+let cretateLoadingFinishedPopup msgs dispatch =
     let killPopupMsg =
         Popup.Types.PopupStyle.Popup_Is_Dead |>
         (
@@ -582,24 +561,31 @@ let getNuGetTableInfo dispatch = async {
                     }
                     |> Upgrade_NuGet.Types.Loganalyzer_Projects_Table_Mix.Project_Loading)
 
-            let! startGetProjInfoChain =
-                let firstProj = matches |> Array.head
-                
-                firstProj |>
+            let getProjectsmsgs =
+                matches
+                |> Array.map (fun proj ->
+                    proj |>
+                    (
+                        Upgrade_NuGet.Types.Get_Project_Info >>
+                        delayedMessage 2000
+                    ))
+                    |> Batch_Upgrade_Nuget_Async
+
+            let changeStatusMsgWithPopuWrapped =
                 (
-                    Upgrade_NuGet.Types.Get_Project_Info >>
-                    delayedMessage 2000
-                )
-                
-            let msgs =
-                [|
                     projectNotTest |>
                     (
                         Upgrade_NuGet.Types.Loganalyzer_Projects_Table_Status.Info_Is_Loading >>
                         Upgrade_NuGet.Types.Change_NuGet_Status
-                    )
-
-                    startGetProjInfoChain
+                    ),
+                    dispatch
+                )
+                |> Send_Popup_With_New_State
+                
+            let msgs =
+                [|
+                    changeStatusMsgWithPopuWrapped
+                    getProjectsmsgs
                 |]
 
             msgs
@@ -1522,7 +1508,7 @@ let buildSolution projectsLoading = async {
 
         | _ ->
             let buildSuccededMsgs =
-                projs
+                projectsLoading
                 |> Array.map (fun proj ->
                     let newStatus =
                         Loading_To_Nuget_Server_Alternatives.Executing_Nuget_Server_Command |>

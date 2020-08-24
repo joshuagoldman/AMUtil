@@ -128,6 +128,9 @@ type Msg =
     | Save_Nuget_Info_To_Server of Project_Info [] * (Msg -> unit)
     | Build_Solution_If_Ready_Msg 
     | Perform_Nuget_Action_To_Server of Project_Info * Version : string
+    | Send_Popup_With_New_State of Msg * (Msg -> unit)
+    | Action_Msg of unit
+    | Change_LogAnalyzer_Loading_Mix of Loganalyzer_Projects_Table_Result * (Msg -> unit)
 
 type Model = {
     Info : Git_Info_Nuget

@@ -198,5 +198,75 @@ let update msg (model:Model) : Types.Model * Global.Types.GlobalMsg * Cmd<Msg> =
             |> Cmd.fromAsync
 
         model, Global.Types.MsgNone, msg
+
+    | Send_Popup_With_New_State(msg,dispatch) ->
+        let popupMsg =
+            Logic.getTableLoadPopup model dispatch
+            |> Action_Msg
+
+        let msgsBatched =
+            [|
+                msg
+                popupMsg
+            |] |>
+            (
+                Batch >>
+                Cmd.ofMsg
+            )
         
-        
+        model, Global.Types.MsgNone, msgsBatched
+
+    | Action_Msg action ->
+
+        action
+
+        model, Global.Types.MsgNone, []
+
+    | Change_LogAnalyzer_Loading_Mix(result,dispatch) ->
+        let newProjName =
+            match result with
+            | Loganalyzer_Projects_Table_Result.Loading_Was_Not_Successfull(name,_) ->
+                name
+            | Loganalyzer_Projects_Table_Result.Loading_Was_Successfull proj ->
+                proj.Name
+
+        match model.Projects_Table with
+        | Loganalyzer_Projects_Table_Status.Info_Is_Loading mix ->
+            let newStatusMsg =
+                mix
+                |> Array.map (fun mix_object ->
+                    match mix_object with
+                    | Loganalyzer_Projects_Table_Mix.Project_Not_Loading result_compare ->
+                        match result_compare with
+                        | Loganalyzer_Projects_Table_Result.Loading_Was_Not_Successfull(name_comp,msg) ->
+                            if name_comp = newProjName
+                            then
+                                result
+                                |> Loganalyzer_Projects_Table_Mix.Project_Not_Loading
+                            else
+                                mix_object
+
+                        | Loganalyzer_Projects_Table_Result.Loading_Was_Successfull proj_comp ->
+                            if proj_comp.Name = newProjName
+                            then
+                                result
+                                |> Loganalyzer_Projects_Table_Mix.Project_Not_Loading
+                            else
+                                mix_object
+                    | _ -> mix_object)
+                |>
+                (
+                    Loganalyzer_Projects_Table_Status.Info_Is_Loading >>
+                    Change_NuGet_Status
+                )
+
+            let msgWithSentPopup =
+                (newStatusMsg,dispatch) |>
+                (
+                    Send_Popup_With_New_State >>
+                    Cmd.ofMsg
+                )
+
+            model, Global.Types.MsgNone, msgWithSentPopup
+        | _ ->
+            model, Global.Types.MsgNone, []
