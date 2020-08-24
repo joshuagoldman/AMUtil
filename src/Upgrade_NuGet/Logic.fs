@@ -1748,7 +1748,7 @@ let changeLoadingMix model result dispatch =
             model, Global.Types.MsgNone, msgWithSentPopup
 
 
-        match (haveProjectsBeenLoaded mix) with
+        match (haveProjectsBeenLoaded newMix) with
         | true ->
             let successProjsOpt =
                 newMix
@@ -1767,17 +1767,37 @@ let changeLoadingMix model result dispatch =
 
             match successProjsOpt with
             | Some succesProjs ->
-                let newStatusMsg  =
-                    succesProjs |>
+                let finishedStatusMsg  =
                     (
-                        Loganalyzer_Projects_Table.Yes_Projects_Table_Info >>
-                        Loganalyzer_Projects_Table_Status.Info_Has_Been_Loaded >>
-                        Change_NuGet_Status
+                        succesProjs |>
+                        (
+                            Loganalyzer_Projects_Table.Yes_Projects_Table_Info >>
+                            Loganalyzer_Projects_Table_Status.Info_Has_Been_Loaded >>
+                            Change_NuGet_Status
+                        ),
+                        dispatch
                     )
-                let msgWithSentPopup =
-                    (newStatusMsg,dispatch) |>
+                    |> Send_Popup_With_New_State
+                    
+
+                let newStatusMsg =
                     (
-                        Send_Popup_With_New_State >>
+                        newMix |>
+                        (
+                            Loganalyzer_Projects_Table_Status.Info_Is_Loading >>
+                            Change_NuGet_Status
+                        ),
+                        dispatch
+                    )
+                    |> Send_Popup_With_New_State
+
+                let msgWithSentPopup =
+                    [|
+                        newStatusMsg
+                        finishedStatusMsg
+                    |] |>
+                    (
+                        Types.Batch >>
                         Cmd.ofMsg
                     )
 
