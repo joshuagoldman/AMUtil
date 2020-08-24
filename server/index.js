@@ -278,7 +278,7 @@ app.post("/ChangeName", (req, res) => {
 
             var myReadableStreamBuffer = new streamBuffers.ReadableStreamBuffer({
                 frequency: 1000,      // in milliseconds.
-                chunkSize: 100     // in bytes.
+                chunkSize: 200     // in bytes.
                 }); 
 
             var wrStr = fs.createWriteStream(specificPath) ;
