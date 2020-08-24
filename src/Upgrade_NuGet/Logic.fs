@@ -47,90 +47,13 @@ let haveProjectsBeenLoaded projLoadingMixes =
         | Loganalyzer_Projects_Table_Mix.Project_Loading _ -> false
         | _ -> true)
 
-let monitorEachProjectInfoExtraction ( projectsLoadingInfo : Loganalyzer_Projects_Table_Mix [] )
-                                     ( nugetServerInfo : string )
-                                       projectName = async {
+let monitorEachProjectInfoExtraction ( nugetServerInfo : string )
+                                       projectName
+                                       dispatch = async {
+
     let fullProjectNameFolder = "project=Ericsson.AM." + projectName
 
     let nugetPackageVersionRegex = "(?<=<Version>).*(?=<\/Version>)"
-
-    let modifyProjectsLoadingInfo newInfo =
-        projectsLoadingInfo
-        |> Array.map (fun proj ->
-            match proj with
-            | Loganalyzer_Projects_Table_Mix.Project_Loading proj_loading ->
-                if proj_loading.Project_Name = projectName
-                then
-                    newInfo
-                    |> Loganalyzer_Projects_Table_Mix.Project_Not_Loading
-                else
-                    proj
-            | _ -> proj)
-
-    let pickSuccessProjectInfoLoads projLoadingMixes =
-        projLoadingMixes
-        |> Array.choose (fun proj ->
-            match proj with
-            | Loganalyzer_Projects_Table_Mix.Project_Loading _ ->
-                None
-            | Loganalyzer_Projects_Table_Mix.Project_Not_Loading res ->
-                match res with
-                | Loganalyzer_Projects_Table_Result.Loading_Was_Successfull projInfo ->
-                    Some projInfo
-                | _ -> None)
-        |> function
-            | res when res |> Array.length <> 0 ->
-                Some res
-            | _ -> None
-
-    let checkFinishLoading newInfo =
-        let newMix = newInfo |> modifyProjectsLoadingInfo
-
-        let pickNewLoadingProject =
-            projectsLoadingInfo
-            |> Array.tail
-            |> Array.choose (fun proj ->
-                match proj with
-                | Loganalyzer_Projects_Table_Mix.Project_Loading proj_loading ->
-                    Some proj_loading
-                | Loganalyzer_Projects_Table_Mix.Project_Not_Loading res ->
-                    match res with
-                    | Loganalyzer_Projects_Table_Result.Loading_Was_Successfull projInfo ->
-                        None
-                    | _ -> None)
-            |> function
-                | res when res |> Array.length <> 0 ->
-                    Some (res |> Array.head)
-                | _ -> None
-        
-
-        let successInfo =
-            newMix
-            |> pickSuccessProjectInfoLoads
-
-        match successInfo with
-        | Some info ->
-            [|
-                info |>
-                (
-                    Yes_Projects_Table_Info >>
-                    Info_Has_Been_Loaded >>
-                    Upgrade_NuGet.Types.Msg.Change_NuGet_Status >>
-                    delayedMessage 500
-                )
-            |]
-            |> Batch_Upgrade_Nuget_Async
-                
-        | _ ->
-            [|
-                No_Projects_Table_Info |>
-                (
-                    Info_Has_Been_Loaded >>
-                    Upgrade_NuGet.Types.Msg.Change_NuGet_Status >>
-                    delayedMessage 500
-                )
-            |]
-            |> Batch_Upgrade_Nuget_Async
             
     let! res = requestCustom "http://localhost:3001/projectInfo" fullProjectNameFolder
 
@@ -159,7 +82,7 @@ let monitorEachProjectInfoExtraction ( projectsLoadingInfo : Loganalyzer_Project
                         let existingPackages =
                             JsInterop.Regex.Matches nugetServerRegex nugetServerInfo
                             
-                        let newInfo =
+                        let! newMixItem =
                             {
                                 Name = projectName
                                 Changes = Project_Changes.Project_Has_No_Changes
@@ -176,55 +99,69 @@ let monitorEachProjectInfoExtraction ( projectsLoadingInfo : Loganalyzer_Project
                                 Loading_To_Server = Not_Loading_Info_To_Server
                             }
                             |> Loganalyzer_Projects_Table_Result.Loading_Was_Successfull
+                            |> fun mix ->
+                                (mix,dispatch)
+                                |> Types.Change_LogAnalyzer_Loading_Mix
+                                |> delayedMessage 2000
                             
-                        return(checkFinishLoading newInfo)
+                        return(newMixItem)
                     | _ ->
-                        let asyncMsg2Dispatch =
+                        let newMixItem =
                             (
                                 (projectName,"Project is not part of NuGet server")
                                 |> Loganalyzer_Projects_Table_Result.Loading_Was_Not_Successfull
                             )
-                            |> checkFinishLoading 
+                            |> fun mix ->
+                                (mix,dispatch)
+                                |> Types.Change_LogAnalyzer_Loading_Mix
 
-                        return(asyncMsg2Dispatch)
+                        return(newMixItem)
                     
                 | _ ->
-                    let asyncMsg2Dispatch =
+                    let newMixItem =
                         (
                             (projectName,"Project is not part of NuGet server")
                             |> Loganalyzer_Projects_Table_Result.Loading_Was_Not_Successfull
                         )
-                        |> checkFinishLoading 
+                        |> fun mix ->
+                            (mix,dispatch)
+                            |> Types.Change_LogAnalyzer_Loading_Mix
 
-                    return(asyncMsg2Dispatch)
+                    return(newMixItem)
                 
             | _ ->
-                let asyncMsg2Dispatch =
+                let newMixItem =
                     (
                         (projectName,standardFailMsg)
                         |> Loganalyzer_Projects_Table_Result.Loading_Was_Not_Successfull
                     )
-                    |> checkFinishLoading 
+                    |> fun mix ->
+                        (mix,dispatch)
+                        |> Types.Change_LogAnalyzer_Loading_Mix
 
-                return(asyncMsg2Dispatch)
+                return(newMixItem)
         | _ ->
-            let asyncMsg2Dispatch =
+            let newMixItem =
                 (
                     (projectName,standardFailMsg)
                     |> Loganalyzer_Projects_Table_Result.Loading_Was_Not_Successfull
                 )
-                |> checkFinishLoading 
+                |> fun mix ->
+                    (mix,dispatch)
+                    |> Types.Change_LogAnalyzer_Loading_Mix
 
-            return(asyncMsg2Dispatch)
+            return(newMixItem) 
     | _ ->
-        let asyncMsg2Dispatch =
+        let newMixItem =
             (
                 (projectName,standardFailMsg)
                 |> Loganalyzer_Projects_Table_Result.Loading_Was_Not_Successfull
             )
-            |> checkFinishLoading
+            |> fun mix ->
+                (mix,dispatch)
+                |> Types.Change_LogAnalyzer_Loading_Mix
 
-        return(asyncMsg2Dispatch)
+        return(newMixItem)
 }
 
 let cretateLoadingFinishedPopup msgs dispatch =
@@ -259,7 +196,7 @@ let cretateLoadingFinishedPopup msgs dispatch =
 
     popupMsg2Dispatch
 
-let cretateLoadingPopup msgs dispatch  =
+let cretateLoadingPopup dispatch msgs =
 
     let allMsgsCollected =
         msgs
@@ -564,7 +501,7 @@ let getNuGetTableInfo dispatch = async {
             let getProjectsmsgs =
                 matches
                 |> Array.map (fun proj ->
-                    proj |>
+                    (proj,dispatch) |>
                     (
                         Upgrade_NuGet.Types.Get_Project_Info >>
                         delayedMessage 2000
@@ -1101,63 +1038,69 @@ let newStatuses projsNotLoadingAnymore dispatch =
         newLoadingStatusMsg 
         )
 
+let getAllMsgs mix =
+    mix
+    |> Array.map (fun proj ->
+        match proj with
+        | Loganalyzer_Projects_Table_Mix.Project_Not_Loading proj_not_loading ->
+            match proj_not_loading with
+            | Loganalyzer_Projects_Table_Result.Loading_Was_Successfull proj_not_loading ->
+                let msg =
+                    (
+                        String.Format(
+                            "{0} -> Loading was successfull",
+                            proj_not_loading.Name
+                        ),
+                        Loading_Popup_Options.Spinner_Popup
+                    )
+                    
+                msg
+            | Loganalyzer_Projects_Table_Result.Loading_Was_Not_Successfull (name, msg) ->
+                let msg =
+                    (
+                        String.Format(
+                            "{0} -> {1}",
+                            name,
+                            msg
+                        ),
+                        Loading_Popup_Options.Spinner_Popup
+                    )
+                    
+                msg
+
+        | Loganalyzer_Projects_Table_Mix.Project_Loading proj_loading ->
+            let msg =
+                (
+                    String.Format(
+                        "{0} -> {1}",
+                        proj_loading.Project_Name,
+                        proj_loading.Loading_Msg
+                    ),
+                    Loading_Popup_Options.Spinner_Popup
+                )
+                
+
+            msg)
+
 let getTableLoadPopup model dispatch =
     match model.Projects_Table with
     | Loganalyzer_Projects_Table_Status.Info_Is_Loading mix ->
         let allProjectsLoaded = haveProjectsBeenLoaded mix
 
-        let allMsgs =
-            mix
-            |> Array.map (fun proj ->
-                match proj with
-                | Loganalyzer_Projects_Table_Mix.Project_Not_Loading proj_not_loading ->
-                    match proj_not_loading with
-                    | Loganalyzer_Projects_Table_Result.Loading_Was_Successfull proj_not_loading ->
-                        let msg =
-                            (
-                                String.Format(
-                                    "{0} -> Loading was successfull",
-                                    proj_not_loading.Name
-                                ),
-                                Loading_Popup_Options.Spinner_Popup
-                            )
-                            
-                        msg
-                    | Loganalyzer_Projects_Table_Result.Loading_Was_Not_Successfull (name, msg) ->
-                        let msg =
-                            (
-                                String.Format(
-                                    "{0} -> {1}",
-                                    name,
-                                    msg
-                                ),
-                                Loading_Popup_Options.Spinner_Popup
-                            )
-                            
-                        msg
-
-                | Loganalyzer_Projects_Table_Mix.Project_Loading proj_loading ->
-                    let msg =
-                        (
-                            String.Format(
-                                "{0} -> {1}",
-                                proj_loading.Project_Name,
-                                proj_loading.Loading_Msg
-                            ),
-                            Loading_Popup_Options.Spinner_Popup
-                        )
-                        
-
-                    msg)
-
         match allProjectsLoaded with
         | true ->
             let allMsgsNoTypeConsideration =
-                allMsgs
+                mix
+                |> getAllMsgs
                 |> Array.map (fun (x,_) -> x)
             cretateLoadingFinishedPopup allMsgsNoTypeConsideration dispatch
         | _ ->
-            cretateLoadingPopup allMsgs dispatch
+            mix |>
+            (
+                getAllMsgs >>
+                cretateLoadingPopup dispatch
+            )
+            
     | Info_Has_Been_Loaded table ->
         match table with
         | Loganalyzer_Projects_Table.Yes_Projects_Table_Info projs ->
@@ -1175,7 +1118,7 @@ let getTableLoadPopup model dispatch =
                                 |> Array.map (fun (x,_) -> x)
                             cretateLoadingFinishedPopup allMsgsNoTypeConsideration dispatch
                         | _ ->
-                            cretateLoadingPopup allMsgs dispatch
+                            cretateLoadingPopup dispatch allMsgs 
                     | _ -> ()
                     
                 | _ ->
@@ -1765,7 +1708,87 @@ let decideifBuild model =
     | _ ->
         model, Global.Types.MsgNone, []
 
-    
+let changeLoadingMix model result dispatch =
+    let projName =
+        match result with
+        | Loganalyzer_Projects_Table_Result.Loading_Was_Not_Successfull(name,_) ->
+            name
+        | Loganalyzer_Projects_Table_Result.Loading_Was_Successfull proj ->
+            proj.Name
+
+    match model.Projects_Table with
+    | Loganalyzer_Projects_Table_Status.Info_Is_Loading mix ->
+        let newMix =
+            mix
+            |> Array.map (fun mix_object ->
+                match mix_object with
+                | Loganalyzer_Projects_Table_Mix.Project_Loading info ->
+                    if info.Project_Name = projName
+                    then
+                        result
+                        |> Loganalyzer_Projects_Table_Mix.Project_Not_Loading
+                    else
+                        mix_object
+                | _ -> mix_object)
+
+        let standardAnswer =
+            let newStatusMsg  =
+                newMix |>
+                (
+                    Loganalyzer_Projects_Table_Status.Info_Is_Loading >>
+                    Change_NuGet_Status
+                )
+            let msgWithSentPopup =
+                (newStatusMsg,dispatch) |>
+                (
+                    Send_Popup_With_New_State >>
+                    Cmd.ofMsg
+                )
+
+            model, Global.Types.MsgNone, msgWithSentPopup
+
+
+        match (haveProjectsBeenLoaded mix) with
+        | true ->
+            let successProjsOpt =
+                newMix
+                |> Array.choose (fun mix_object ->
+                    match mix_object with
+                    | Loganalyzer_Projects_Table_Mix.Project_Not_Loading res ->
+                        match res with
+                        | Loganalyzer_Projects_Table_Result.Loading_Was_Successfull proj ->
+                            Some proj
+                        | _ -> None
+                    | _ -> None)
+                |> function
+                    | res when (res |> Array.length) <> 0 ->
+                        Some res
+                    | _ -> None
+
+            match successProjsOpt with
+            | Some succesProjs ->
+                let newStatusMsg  =
+                    succesProjs |>
+                    (
+                        Loganalyzer_Projects_Table.Yes_Projects_Table_Info >>
+                        Loganalyzer_Projects_Table_Status.Info_Has_Been_Loaded >>
+                        Change_NuGet_Status
+                    )
+                let msgWithSentPopup =
+                    (newStatusMsg,dispatch) |>
+                    (
+                        Send_Popup_With_New_State >>
+                        Cmd.ofMsg
+                    )
+
+                model, Global.Types.MsgNone, msgWithSentPopup
+            | _ -> 
+                standardAnswer
+            
+        | _ ->
+            standardAnswer
+    | _ ->
+        model, Global.Types.MsgNone, []
     
 
 

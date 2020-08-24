@@ -62,18 +62,17 @@ let update msg (model:Model) : Types.Model * Global.Types.GlobalMsg * Cmd<Msg> =
 
     | Change_NuGet_Status status ->
         { model with Projects_Table = status}, Global.Types.MsgNone, []
-    | Get_Project_Info proj_name ->
-        match model.Projects_Table with
-        | Loganalyzer_Projects_Table_Status.Info_Is_Loading mix ->
-            match model.Nuget_Server with
-            | Nuget_Server_Is_Available info ->
-                let msg =
-                    Logic.monitorEachProjectInfoExtraction mix info proj_name
-                    |> Cmd.fromAsync
+    | Get_Project_Info(proj_name,dispatch)->
+        match model.Nuget_Server with
+        | Nuget_Server_Is_Available info ->
+            let msg =
+                dispatch |>
+                (
+                    Logic.monitorEachProjectInfoExtraction info proj_name >>
+                    Cmd.fromAsync
+                )
                 
-                model, Global.Types.MsgNone, msg
-            | _ ->
-                model, Global.Types.MsgNone, []
+            model, Global.Types.MsgNone, msg
         | _ ->
             model, Global.Types.MsgNone, []
     | Change_Project_Status project ->
@@ -201,8 +200,8 @@ let update msg (model:Model) : Types.Model * Global.Types.GlobalMsg * Cmd<Msg> =
 
     | Send_Popup_With_New_State(msg,dispatch) ->
         let popupMsg =
-            Logic.getTableLoadPopup model dispatch
-            |> Action_Msg
+            dispatch
+            |> Send_Popup
 
         let msgsBatched =
             [|
@@ -216,57 +215,12 @@ let update msg (model:Model) : Types.Model * Global.Types.GlobalMsg * Cmd<Msg> =
         
         model, Global.Types.MsgNone, msgsBatched
 
-    | Action_Msg action ->
+    | Send_Popup dispatch ->
 
-        action
+        Logic.getTableLoadPopup model dispatch
 
         model, Global.Types.MsgNone, []
 
     | Change_LogAnalyzer_Loading_Mix(result,dispatch) ->
-        let newProjName =
-            match result with
-            | Loganalyzer_Projects_Table_Result.Loading_Was_Not_Successfull(name,_) ->
-                name
-            | Loganalyzer_Projects_Table_Result.Loading_Was_Successfull proj ->
-                proj.Name
-
-        match model.Projects_Table with
-        | Loganalyzer_Projects_Table_Status.Info_Is_Loading mix ->
-            let newStatusMsg =
-                mix
-                |> Array.map (fun mix_object ->
-                    match mix_object with
-                    | Loganalyzer_Projects_Table_Mix.Project_Not_Loading result_compare ->
-                        match result_compare with
-                        | Loganalyzer_Projects_Table_Result.Loading_Was_Not_Successfull(name_comp,msg) ->
-                            if name_comp = newProjName
-                            then
-                                result
-                                |> Loganalyzer_Projects_Table_Mix.Project_Not_Loading
-                            else
-                                mix_object
-
-                        | Loganalyzer_Projects_Table_Result.Loading_Was_Successfull proj_comp ->
-                            if proj_comp.Name = newProjName
-                            then
-                                result
-                                |> Loganalyzer_Projects_Table_Mix.Project_Not_Loading
-                            else
-                                mix_object
-                    | _ -> mix_object)
-                |>
-                (
-                    Loganalyzer_Projects_Table_Status.Info_Is_Loading >>
-                    Change_NuGet_Status
-                )
-
-            let msgWithSentPopup =
-                (newStatusMsg,dispatch) |>
-                (
-                    Send_Popup_With_New_State >>
-                    Cmd.ofMsg
-                )
-
-            model, Global.Types.MsgNone, msgWithSentPopup
-        | _ ->
-            model, Global.Types.MsgNone, []
+        Logic.changeLoadingMix model result dispatch 
+            

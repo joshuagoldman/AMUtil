@@ -118,7 +118,7 @@ type Msg =
     | New_Nuget_Name_Change of Project_Info * Types.Event
     | Change_NuGet_Status of Loganalyzer_Projects_Table_Status
     | Change_Project_Status of Project_Info
-    | Get_Project_Info of string
+    | Get_Project_Info of string * (Msg -> unit)
     | Obtain_New_Nuget_Info of (Msg -> unit) * App_Activity
     | Get_All_Projects_Info of (Msg -> unit)
     | Change_Current_Branch_UpgradeNuget of Branch_Name : string * Popup.Types.PopupPosition * (Msg -> unit)
@@ -129,7 +129,7 @@ type Msg =
     | Build_Solution_If_Ready_Msg 
     | Perform_Nuget_Action_To_Server of Project_Info * Version : string
     | Send_Popup_With_New_State of Msg * (Msg -> unit)
-    | Action_Msg of unit
+    | Send_Popup of (Msg -> unit)
     | Change_LogAnalyzer_Loading_Mix of Loganalyzer_Projects_Table_Result * (Msg -> unit)
 
 type Model = {
