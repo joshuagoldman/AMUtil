@@ -139,10 +139,6 @@ let getPopupMsg ( msg : string ) =
     |]
 
 let createButtons dispatch buttons =
-    let buttonAmount =
-        buttons
-        |> Array.length
-        |> string
     buttons
     |> Array.map (fun button ->
         Html.div[
@@ -255,16 +251,17 @@ let popup_view popup_Style =
                     standardPopupAppearance >>
                     prop.style
                 )
-                prop.children[
-                    Html.div[
-                        prop.className "columns is-centered"
-                        prop.children msg
-                    ]
-                    Html.div[
-                        prop.className "columns is-centered"
-                        prop.children buttons
-                    ]
-                ]   
+
+                Html.div[
+                    prop.className "columns is-centered"
+                    prop.children buttons
+                ] |>
+                (
+                    (fun x -> [|x|]) >>
+                    Array.append msg >>
+                    prop.children 
+                )
+
             ]
     | Has_No_Alternatives(msgs,position) ->
         Html.div[

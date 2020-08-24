@@ -1374,6 +1374,26 @@ let allProjsLoadingDecisionQuestionPopup projects =
     |> Array.collect (fun projMsg ->
         Popup.View.getPopupMsg projMsg)
 
+let changeToBuildingMsgs projs =
+    projs
+    |> Array.map (fun proj ->
+        let newStatus =
+            Loading_To_Nuget_Server_Alternatives.Building |>
+            (
+                Loading_Nuget_Info_Is_Not_Done >>
+                Loading_Info_To_Server
+            )
+         
+        let newLoadingStatusMsg =
+            { proj with Loading_To_Server = newStatus} |>
+            (
+                Types.Change_Project_Info 
+            )
+
+        newLoadingStatusMsg
+        )
+    |> Upgrade_NuGet.Types.Batch
+
 let ChangeNugetNameAndBuildSolution projects dispatch = 
     let killPopup =
         Popup.Types.Popup_Is_Dead |>
@@ -1420,6 +1440,8 @@ let ChangeNugetNameAndBuildSolution projects dispatch =
                 res |> Some
             | _ -> None
 
+    let buildMsgs = changeToBuildingMsgs projects
+
     match existsProjectsWithNewNames with
     | Some projectsWithNewNames ->
         let msgWithRequests =
@@ -1443,29 +1465,10 @@ let ChangeNugetNameAndBuildSolution projects dispatch =
 
         match loadingProjsToChangeToBuild with
         | Some buildProjs ->
-            let changeToBuildingMsgs =
-                buildProjs
-                |> Array.map (fun proj ->
-                    let newStatus =
-                        Loading_To_Nuget_Server_Alternatives.Building |>
-                        (
-                            Loading_Nuget_Info_Is_Not_Done >>
-                            Loading_Info_To_Server
-                        )
-                     
-                    let newLoadingStatusMsg =
-                        { proj with Loading_To_Server = newStatus} |>
-                        (
-                            Types.Change_Project_Info 
-                        )
-
-                    newLoadingStatusMsg
-                    )
-                |> Upgrade_NuGet.Types.Batch
 
             let buildAndChangeNameMsgs =
                 [|
-                    changeToBuildingMsgs
+                    changeToBuildingMsgs buildProjs
                     msgWithRequests
                 |]
                 |> Upgrade_NuGet.Types.Batch
@@ -1474,33 +1477,10 @@ let ChangeNugetNameAndBuildSolution projects dispatch =
                     
         | _ -> 
             yesNoPopupMsg msgWithRequests
-        
     | _ ->
-        let changeToBuildingMsgs =
-            projects
-            |> Array.map (fun proj ->
-                let newStatus =
-                    Loading_To_Nuget_Server_Alternatives.Building |>
-                    (
-                        Loading_Nuget_Info_Is_Not_Done >>
-                        Loading_Info_To_Server
-                    )
-                 
-                let newLoadingStatusMsg =
-                    { proj with Loading_To_Server = newStatus} |>
-                    (
-                        Types.Change_Project_Info 
-                    )
-
-                newLoadingStatusMsg
-                )
-        let buildMsgs =
-            changeToBuildingMsgs
-            |> Upgrade_NuGet.Types.Batch
-
         yesNoPopupMsg buildMsgs
 
-let buildSolution projs = async {
+let buildSolution projectsLoading = async {
 
     do! Async.Sleep 2000
 
@@ -1509,7 +1489,7 @@ let buildSolution projs = async {
     let! res = request reqStr
 
     let buildFailedMsgs msg =
-        projs
+        projectsLoading
         |> Array.map (fun proj ->
             let newStatus =
                 msg |>
@@ -1769,13 +1749,28 @@ let decideifBuild model =
             | _ ->
                 match (allisBuild projectsLoading) with
                 | true ->
-                    let msg =
-                        projs |>
+                    let buildingInformation =
+                        "Building Ericsson.AM solution..." |>
                         (
-                            buildSolution  >>
-                            Cmd.fromAsync
+                            Popup.View.getPopupMsgSpinner >>
+                            checkingProcessPopupMsg standardPositions >>
+                            delayedMessage 2000
                         )
 
+                    let msg =
+                        [|
+                            buildingInformation
+
+                            projectsLoading |>
+                            (
+                                buildSolution 
+                            )
+                        |] |>
+                        (
+                            Batch_Upgrade_Nuget_Async >>
+                            Cmd.ofMsg
+                        )
+                        
                     model, Global.Types.MsgNone, msg
                 | _ ->
                     model, Global.Types.MsgNone, []
