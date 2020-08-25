@@ -52,9 +52,13 @@ let nugetServerOptionsView project dispatch =
                 prop.className "control"
                 prop.children[
                     Html.div[
-                        prop.className "select is-rounded"
+                        prop.className "select is-rounded is-primary"
                         prop.children[
                             Html.select[
+                                prop.style[
+                                    style.backgroundColor.saddleBrown
+                                    style.color.white
+                                ]
                                 prop.onChange (fun ev ->
                                     Logic.serverActionChanged project ev dispatch)
                                 Logic.nugetServerOptionsViewItems project |>
@@ -166,9 +170,10 @@ let root ( projects_table : Loganalyzer_Projects_Table ) dispatch =
     match projects_table with
     | Yes_Projects_Table_Info projects ->
         Html.table[
-            prop.className "table is-fullwidth is-scrollable is-striped"
+            prop.className "table is-fullwidth"
             prop.style[
                 Feliz.style.height 300
+                style.backgroundColor.beige
             ]
             prop.children[
                 Html.thead[
@@ -184,10 +189,10 @@ let root ( projects_table : Loganalyzer_Projects_Table ) dispatch =
                                 prop.text "Options"
                             ]
                             Html.th[
-                                prop.text "Current NuGet Name"
+                                prop.text "Current NuGet Version"
                             ]
                             Html.th[
-                                prop.text "New NuGet Name"
+                                prop.text "New NuGet Version"
                             ]
                         ]
                     ]
