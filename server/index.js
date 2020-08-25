@@ -259,6 +259,7 @@ app.get("/nugetinfo", (req, res) => {
 app.post("/ChangeName", (req, res) => {
     var projectName = req.body.project;
     var newNugetVersionName = req.body.version;
+    var projectNameNoEricssonAM = projectName.replace("Ericsson.AM.","");
 
     const generalPath = __dirname.replace(/\\/g,"/") + '/../public/loganalyzer';
     const specificPath = `${generalPath}/${projectName}/${projectName}.csproj`
@@ -267,7 +268,7 @@ app.post("/ChangeName", (req, res) => {
 
     fs.readFile(specificPath, function read(err,data){
         if(err){
-            newClient.emit(`finished`,{ Status: 404, Msg: err.message});
+            newClient.emit(`finished`,{ Status: 404, Msg: err.message, ID: projectNameNoEricssonAM});
         }
         else{
             const dataAsString = data.toString();
@@ -289,11 +290,11 @@ app.post("/ChangeName", (req, res) => {
         
             str.on('progress', function(pr) {
                 if(pr.remaining === 0){
-                    newClient.emit(`finished`,{ Status: 200, Msg: `Project ${req.body.project} saved!`});
+                    newClient.emit(`finished`,{ Status: 200, Msg: `Project ${req.body.project} saved!`, ID: projectNameNoEricssonAM});
                     console.log(`finished uploading`);
                 }
                 else{
-                    newClient.emit(`message`,{ Progress : pr.percentage, Remaining: pr.remaining });
+                    newClient.emit(`message`,{ Progress : pr.percentage, Remaining: pr.remaining, ID: projectNameNoEricssonAM });
                     console.log(`${pr.percentage} completed`);
                 }
                 downloaded = pr.percentage;

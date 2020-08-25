@@ -86,6 +86,18 @@ type FinishedType = {
     Msg : string
 }
 
+type MessageTypeID = {
+    Progress : float
+    Remaining : int
+    ID : string
+}
+
+type FinishedTypeID = {
+    Status : int
+    Msg : string
+    ID : string
+}
+
 let requestFormDataStyle ( fData : Browser.FormData ) url =
     Async.FromContinuations <| fun (resolve,_,_) ->
 

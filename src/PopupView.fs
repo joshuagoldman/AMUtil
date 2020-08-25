@@ -208,7 +208,6 @@ let popup_view popup_Style =
             Feliz.style.backgroundColor "white"
             Feliz.style.fontSize 18
             Feliz.style.borderRadius 20
-            Feliz.style.opacity 0.90
             Feliz.style.margin 5
         ]
     match popup_Style with
