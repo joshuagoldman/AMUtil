@@ -56,8 +56,7 @@ let nugetServerOptionsView project dispatch =
                         prop.children[
                             Html.select[
                                 prop.style[
-                                    style.backgroundColor.saddleBrown
-                                    style.color.white
+                                    style.backgroundColor.azure
                                 ]
                                 prop.onChange (fun ev ->
                                     Logic.serverActionChanged project ev dispatch)
@@ -113,15 +112,16 @@ let newNugetNameInput project dispatch =
                     Html.input[
                         prop.className "input is-primary"
                         prop.style[
-                            Feliz.style.color(
-                                match project.Nuget_Names.New_Nuget_Name with
-                                | New_Nuget_Name.Has_New_Name res ->
-                                    match res with
-                                    | Nuget_Name_Validity.Nuget_Name_Valid _ ->
-                                        "black"
-                                    | _ -> "red"
+                            match project.Nuget_Names.New_Nuget_Name with
+                            | New_Nuget_Name.Has_New_Name res ->
+                                match res with
+                                | Nuget_Name_Validity.Nuget_Name_Valid _ ->
+                                    "black"
                                 | _ -> "red"
-                            )
+                            | _ -> "red"
+                            |> Feliz.style.color
+
+                            style.backgroundColor.azure
                         ]
                         prop.type' "text"
                         prop.placeholder "Enter new NuGet version"
