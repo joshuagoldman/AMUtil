@@ -11,6 +11,7 @@ var readline = require('readline');
 const fileUpload = require('express-fileupload');
 var clientSocket = require('socket.io-client');
 const xhr = require('xmlhttprequest');
+const stream = require('stream');
 
 const app = express();
 app.use(cors())
@@ -19,8 +20,8 @@ app.use(express.urlencoded(({extended:true})));
 app.use(bodyParser.json());
 app.use(fileUpload());
 app.use('/files', express.static(__dirname + '/../public'))
-app.use(bodyParser.json({limit: '200mb'}));
-app.use(bodyParser.urlencoded({limit: '200mb', extended: true}));
+app.use(bodyParser.json({limit: '900mb'}));
+app.use(bodyParser.urlencoded({limit: '900mb', extended: true}));
 
 var server = app.listen(PORT, () => {
     console.log( `Server listening on port ${PORT}...`);
@@ -266,51 +267,40 @@ app.post("/ChangeName", (req, res) => {
 
     var newClient = clientSocket.connect('http://localhost:3001');
 
-    fs.readFile(specificPath, function read(err,data){
-        if(err){
-            newClient.emit(`finished`,{ Status: 404, Msg: err.message, ID: projectNameNoEricssonAM});
-        }
-        else{
-            const dataAsString = data.toString();
-            const pattern = "(?<=<Version>).*(?=<\/Version>)";
-            var result = dataAsString.match(pattern)[0];
-            const newDataAsString = dataAsString.replace(`<Version>${result}</Version>`,`<Version>${newNugetVersionName}</Version>`);
-            var buffer = Buffer.from(newDataAsString, 'utf8'); 
+    let data = fs.readFileSync(specificPath,'utf8');
 
-            var myReadableStreamBuffer = new streamBuffers.ReadableStreamBuffer({
-                frequency: 1000,      // in milliseconds.
-                chunkSize: 200     // in bytes.
-                }); 
+    const pattern = "(?<=<Version>).*(?=<\/Version>)";
+    var result = data.match(pattern)[0];
+    const newDataAsString = data.replace(`<Version>${result}</Version>`,`<Version>${newNugetVersionName}</Version>`);
+    var buffer = Buffer.from(newDataAsString, 'utf8'); 
 
-            var wrStr = fs.createWriteStream(specificPath) ;
-            var str = progress({
-                length: buffer.length,
-                time: 1 /* ms */
-            });
-        
-            str.on('progress', function(pr) {
-                if(pr.remaining === 0){
-                    newClient.emit(`finished`,{ Status: 200, Msg: `Project ${req.body.project} saved!`, ID: projectNameNoEricssonAM});
-                    console.log(`finished uploading`);
-                }
-                else{
-                    newClient.emit(`message`,{ Progress : pr.percentage, Remaining: pr.remaining, ID: projectNameNoEricssonAM });
-                    console.log(`${pr.percentage} completed`);
-                }
-                downloaded = pr.percentage;
-            });
-        
-            myReadableStreamBuffer.put(newDataAsString);
-            myReadableStreamBuffer
-            .on('error', (error) =>{
-                newClient.emit(`finished`,{ Status: 404, Msg: error.message});
-            })
-            .pipe(str)
-            .pipe(wrStr);
-            }
+    var str = progress({
+        length: buffer.length,
+        time: 1 /* ms */
     });
 
-    //newClient.close();
+    str.on('progress', function(pr) {
+        if(pr.remaining === 0){
+            newClient.emit(`finished`,{ Status: 200, Msg: `Project ${req.body.project} saved!`, ID: projectNameNoEricssonAM});
+            console.log(`finished`);
+        }
+        else{
+            newClient.emit(`message`,{ Progress : pr.percentage, Remaining: pr.remaining, ID: projectNameNoEricssonAM });
+            console.log(`${pr.percentage} completed`);
+        }
+        downloaded = pr.percentage;
+    });
+
+    var bufferStream = new stream.PassThrough({highWaterMark:5});
+    bufferStream.end(buffer);
+
+    bufferStream
+    .pipe(str)
+    .pipe(fs.createWriteStream(specificPath, {highWaterMark:5}))
+    .on('error', (error) =>{
+        newClient.emit(`finished`,{ Status: 404, Msg: error.message});
+        return res.send("done!")
+    });
 
     return res.send("done!");
 });  

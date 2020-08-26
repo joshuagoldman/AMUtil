@@ -1141,6 +1141,28 @@ let getTableLoadPopup model dispatch =
             
     | _ -> ()
 
+let getNewStatus progress project dispatch = 
+
+    let newStatus =
+        progress |>
+        (
+            Loading_To_Nuget_Server_Alternatives.Changing_Nuget_Name >>
+            Loading_Nuget_Info_Is_Not_Done >>
+            Loading_Info_To_Server
+        )
+
+    let newLoadingStatusMsg =
+        { project with Loading_To_Server = newStatus} |>
+        (
+            Types.Change_Project_Info
+        ) |>
+        (
+            turnIntoSendPopupWithNewState dispatch >>
+            dispatch
+        )
+
+    newLoadingStatusMsg
+
 let changeNameAsync project ( version : string ) dispatch = async {
     let reqBody =
         String.Format(
@@ -1169,25 +1191,7 @@ let changeNameAsync project ( version : string ) dispatch = async {
 
                     match (eventResult.ID = project.Name) with
                     | true ->
-                        let newStatus =
-                            eventResult.Progress |>
-                            (
-                                Loading_To_Nuget_Server_Alternatives.Changing_Nuget_Name >>
-                                Loading_Nuget_Info_Is_Not_Done >>
-                                Loading_Info_To_Server
-                            )
-
-                        let newLoadingStatusMsg =
-                            { project with Loading_To_Server = newStatus} |>
-                            (
-                                Types.Change_Project_Info
-                            ) |>
-                            (
-                                turnIntoSendPopupWithNewState dispatch >>
-                                dispatch
-                            )
-
-                        newLoadingStatusMsg
+                        getNewStatus eventResult.Progress project dispatch
                     | _ ->
                         ()
                             
@@ -1200,6 +1204,8 @@ let changeNameAsync project ( version : string ) dispatch = async {
                         socketResponse.Socket.Value 
                         |> ProgressSocket.disconnect
                         |> ignore
+
+                        getNewStatus 100.0 project dispatch
 
                         resolve
                             {
@@ -1256,15 +1262,17 @@ let changeNameRequestToMsgArray projectsWithNewNames dispatch =
                     [|
                         { proj with Loading_To_Server = newStatus} |>
                         (
-                            Types.Change_Project_Info
+                            Types.Change_Project_Info >>
+                            delayedMessage 3000
                         )
 
                         dispatch |>
                         (
-                            Build_Solution_If_Ready_Msg
+                            Build_Solution_If_Ready_Msg >>
+                            delayedMessage 3000
                         )
                     |]
-                    |> Types.Batch
+                    |> Types.Batch_Upgrade_Nuget_Async
                     |> turnIntoSendPopupWithNewState dispatch
                     
                 return(newLoadingStatusMsg)
@@ -1280,8 +1288,10 @@ let changeNameRequestToMsgArray projectsWithNewNames dispatch =
                 let newLoadingStatusMsg =
                     { proj with Loading_To_Server = newStatus} |>
                     (
-                        Types.Change_Project_Info
+                        Types.Change_Project_Info >>
+                        delayedMessage 2000
                     )
+                    |> Types.Upgrade_Nuget_Async
                     |> turnIntoSendPopupWithNewState dispatch
 
                 return(newLoadingStatusMsg)
@@ -1427,15 +1437,23 @@ let ChangeNugetNameAndBuildSolution projects dispatch =
         | _ -> 
             yesNoPopupMsg msgWithRequests
     | _ ->
-        dispatch |>
-        (
-            changeToBuildingMsgs projects >>
-            yesNoPopupMsg
-        ) 
+        let buildMsg =
+            dispatch |>
+            (
+                Build_Solution_If_Ready_Msg >>
+                delayedMessage 3000 >>
+                Types.Upgrade_Nuget_Async
+            )
+        let buildAndChangeNameMsgs =
+            [|
+                changeToBuildingMsgs projects dispatch
+                buildMsg
+            |]
+            |> Upgrade_NuGet.Types.Batch
+
+        yesNoPopupMsg buildAndChangeNameMsgs
 
 let buildSolution projectsLoading dispatch = async {
-
-    do! Async.Sleep 2000
 
     let reqStr = "shellCommand=cd server;cd loganalyzer;dotnet build Ericsson.AM.sln"
 
@@ -1463,8 +1481,8 @@ let buildSolution projectsLoading dispatch = async {
 
     match res.status with
     | 200.0 ->
-        match (res.responseText.Contains("Build FAILED.")) with
-        | true ->
+        match (res.responseText.Contains("Build succeeded.")) with
+        | false ->
 
             let res =
                 "Build failed. Make sure you solution compiles clean!" |>
@@ -1487,8 +1505,10 @@ let buildSolution projectsLoading dispatch = async {
                                 | New_Nuget_Name.Has_New_Name validity ->
                                     match validity with
                                     | Nuget_Name_Validity.Nuget_Name_Valid newName ->
-                                        (proj,newName,dispatch)
-                                        |> Perform_Nuget_Action_To_Server
+                                        (proj,newName,dispatch) |>
+                                        (
+                                            Perform_Nuget_Action_To_Server
+                                        )
                                     | _ ->
                                         MsgNone
                                         |> Types.GlobalMsg_Upgrade_Nuget
@@ -1496,11 +1516,15 @@ let buildSolution projectsLoading dispatch = async {
                                     MsgNone
                                     |> Types.GlobalMsg_Upgrade_Nuget
                             | Server_Options.Is_To_Be_Deleted ->
-                                (proj,proj.Nuget_Names.CurrName,dispatch)
-                                |> Perform_Nuget_Action_To_Server
+                                (proj,proj.Nuget_Names.CurrName,dispatch) |>
+                                (
+                                    Perform_Nuget_Action_To_Server
+                                )
                             | Server_Options.Is_To_Be_Updated ->
-                                (proj,proj.Nuget_Names.CurrName,dispatch)
-                                |> Perform_Nuget_Action_To_Server
+                                (proj,proj.Nuget_Names.CurrName,dispatch) |>
+                                (
+                                    Perform_Nuget_Action_To_Server
+                                )
                             | _ ->
                                 MsgNone
                                 |> Types.GlobalMsg_Upgrade_Nuget
@@ -1523,6 +1547,7 @@ let buildSolution projectsLoading dispatch = async {
                                 Types.Change_Project_Info 
                             )
                             |> turnIntoSendPopupWithNewState dispatch
+                            
 
                             performNugetActionMsgAsync
 
@@ -1557,7 +1582,7 @@ let performNugetActionToServerAsync proj version dispatch = async {
 
     let nugetDeleteTemplate projName version =
         String.Format(
-            "yes|dotnet nuget delete Ericsson.AM.{0}.{1} -k 875e5930-56d2-4f06-9fe9-f3f5a8c09aa2 -s http://segaeesw04.eipu.ericsson.se/nuget;y",
+            "yes|dotnet nuget delete Ericsson.AM.{0} {1} -k 875e5930-56d2-4f06-9fe9-f3f5a8c09aa2 -s http://segaeesw04.eipu.ericsson.se/nuget",
             projName,
             version
         )
@@ -1581,7 +1606,7 @@ let performNugetActionToServerAsync proj version dispatch = async {
         newLoadingStatusMsg
 
     let getErrorMsg txt altMsg =
-        JsInterop.Regex.Match "(?<=error:)(.|\n)*?(?=\n\s)" txt
+        JsInterop.Regex.Match "(?<=error:)(.|\n)*?(?=Usage)" txt
         |> fun x ->
             match x with
             | Some m -> m
@@ -1662,7 +1687,7 @@ let performNugetActionToServerAsync proj version dispatch = async {
             | false ->
                 
                 let errorMsg =
-                    getErrorMsg deleteResp.responseText "couldn't delete NuGet before pushing"
+                    getErrorMsg deleteResp.responseText "couldn't delete NuGet"
 
                 return(failedMsg errorMsg)
         
@@ -1715,8 +1740,7 @@ let decideifBuild model dispatch =
                         "Building Ericsson.AM solution..." |>
                         (
                             Popup.View.getPopupMsgSpinner >>
-                            checkingProcessPopupMsg standardPositions >>
-                            delayedMessage 2000
+                            checkingProcessPopupMsg standardPositions
                         )
 
                     let msg =
@@ -1725,11 +1749,12 @@ let decideifBuild model dispatch =
 
                             dispatch |>
                             (
-                                buildSolution projectsLoading
+                                buildSolution projectsLoading >>
+                                Types.Upgrade_Nuget_Async
                             )
                         |] |>
                         (
-                            Batch_Upgrade_Nuget_Async >>
+                            Types.Batch >>
                             Cmd.ofMsg
                         )
                         
