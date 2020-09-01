@@ -65,9 +65,13 @@ type Git_Info =
     | No_Git_Info
     | Yes_Git_info of Git_Repository
 
+type RCO_File_Type =
+    | ERS
+    | RBS_6000
+
 type Curr_Rco_File =
     | No_Rco_File
-    | Yes_Rco_File of Types.File
+    | Yes_Rco_File of Types.File * RCO_File_Type
 
 type CorrectionValue<'a> =
     | Correction of 'a
@@ -98,7 +102,8 @@ type Msg =
     | Investigate_Issues_Rco_Files_Msg of Popup.Types.PopupPosition * RcoObject[] * (Msg -> unit)
     | Update_Rco_Changes of RcoObject[] * RcoFaultInfo[] * Popup.Types.PopupPosition * (Msg -> unit)
     | Save_New_Rco_Info of RcoObject[] * Popup.Types.PopupPosition * (Msg -> unit)
-    | Change_RCO_Fault_Arr of RcoFaultInfo 
+    | Change_RCO_Fault_Arr of RcoFaultInfo
+    | Change_RCO_File_Type of Browser.Types.Event
 
 type Model = {
     Info : Git_Info

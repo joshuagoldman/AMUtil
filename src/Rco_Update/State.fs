@@ -67,10 +67,13 @@ let update msg (model:Model) : Types.Model * Global.Types.GlobalMsg * Cmd<Msg> =
 
         model, Global.Types.MsgNone, msgs
     | Save_New_Rco_Info(rcoObjArr,postions,dispatch) ->
-        rcoObjArr
-        |> Logic.updateFile dispatch postions
-        |> Async.StartImmediate
-
+        match model.CurrFile with
+        | Yes_Rco_File(_,rco_type) ->
+            rcoObjArr
+            |> Logic.updateFile rco_type dispatch postions
+            |> Async.StartImmediate
+        | _ ->
+            ()
         model, Global.Types.MsgNone,[]
 
     | Update_Rco_Changes(info,faults,positions,dispatch) ->
@@ -107,6 +110,23 @@ let update msg (model:Model) : Types.Model * Global.Types.GlobalMsg * Cmd<Msg> =
                     
             | _ ->
                 model,Global.Types.MsgNone,[]
+        | _ ->
+            model,Global.Types.MsgNone,[]
+
+    | Change_RCO_File_Type ev ->
+        let newRcoType = ev.target?value : string
+
+        let rcoTypeConverter ( strVal  : string ) =
+            match (strVal.Replace(" ","")) with
+            |  "RBS6000" -> RBS_6000
+            | _ -> ERS
+        match model.CurrFile with
+        | Yes_Rco_File(file,_) ->
+            let newFile =
+                (file,newRcoType |> rcoTypeConverter)
+                |> Yes_Rco_File
+
+            {model with CurrFile = newFile},Global.Types.MsgNone,[]
         | _ ->
             model,Global.Types.MsgNone,[]
 

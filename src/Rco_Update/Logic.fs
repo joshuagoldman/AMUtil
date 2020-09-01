@@ -138,7 +138,7 @@ let getFileListData model dispatch popupPosition = async {
 
 
     match model.CurrFile with
-    | Yes_Rco_File file ->
+    | Yes_Rco_File(file,file_type) ->
 
         let fData = Browser.FormData.Create()
             
@@ -330,25 +330,25 @@ let findFaultsInRcoFile rcoObjectArr ( popupPosition : Popup.Types.PopupPosition
 
 let createRcoFileInfo rcoObjArr =
     let header = {
-        ReleaseDate = "ReleaseDate"
+        ReleaseDate = "Release Date"
         RcoDocument = "RCOdoc"
-        RcoRevision = "RCOrev"
-        BarcodeText = "MatchthestringinRCO-doc(Barcodetext)"
+        RcoRevision = "RCO rev"
+        BarcodeText = "Match the string in RCO-doc(Barcodetext)"
         Slogan = "Slogan"
         ProductNumber = "Productnumber"
-        ProductGroup = "ProductGroup"
+        ProductGroup = "Product Group"
         RStateIn = "R-stateIN"
         RStateOut = "R-stateOUT"
-        RcLatEvaluate = "RCLAT-Evaluate"
-        RcLatTextOut = "RCLAT-Textout"
-        ScPrttEvaluate = "SCPRTT-Evaluate"
-        ScPrttTextOut = "SCPRTT�Textout"
-        CloudLatEvaluate = "CloudLAT-Evaluate"
-        CloudLatTextOut = "CloudLAT-Textout"
-        ExecutionOrder = "Executionorder"
-        MfgDateFrom = "Manucfacturingdate(From)"
-        MfgDateTo = "Manucfacturingdate(To)"
-        ProductFamily = "Prod.Family"
+        RcLatEvaluate = "RC LAT - Evaluate"
+        RcLatTextOut = "RC LAT - Textout"
+        ScPrttEvaluate = "SC PRTT - Evaluate"
+        ScPrttTextOut = "SC PRTT – Textout"
+        CloudLatEvaluate = "Cloud LAT - Evaluate"
+        CloudLatTextOut = "Cloud LAT - Textout"
+        ExecutionOrder = "Execution order"
+        MfgDateFrom = "Manucfacturing date (From)"
+        MfgDateTo = "Manucfacturing date (To)"
+        ProductFamily = "Prod. Family"
         Closed = "Closed"
         Cost = "Cost"
         Comments = "Comments"
@@ -385,7 +385,11 @@ let createRcoFileInfo rcoObjArr =
     |> String.concat "
 "
 
-let updateFile dispatch popupPosition rcoObjArr = async {
+let updateFile file_type dispatch popupPosition rcoObjArr = async {
+    let rco_file_type =
+        match file_type with
+        | RBS_6000 -> "RBS RCO List"
+        | _ -> "ERS RCO List"
 
     let fData = Browser.FormData.Create()
 
@@ -402,6 +406,7 @@ let updateFile dispatch popupPosition rcoObjArr = async {
     popupInfoStr |> dispatch
 
     fData.append("file",fileContent)
+    fData.append("file_type",rco_file_type)
 
     let request =
         Async.FromContinuations <| fun (resolve,_,_) ->

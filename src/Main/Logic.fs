@@ -542,7 +542,7 @@ let parseGitUser dispatch = async {
 
         let currBranch =
             res.responseText
-            |> Regex.Match "(?<='origin\/).*(?=')"
+            |> Regex.Match "(?<=Your branch is up to date with\s+'origin\/).*(?=\')|(?<=On branch\s+).*"
             |> fun res ->
                 {
                     UserValue = res

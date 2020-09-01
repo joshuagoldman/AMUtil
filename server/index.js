@@ -48,10 +48,13 @@ const streamBuffers = require('stream-buffers');
 app.use(bodyParser({limit: '10mb'}));
 
 app.post("/save", (req, res, next) => {
-    const rcoPathFromRepo = `Ericsson.AM.RcoHandler/EmbeddedResources/RBS6000/Aftermarket/RBS RCO List.csv` 
+    var rco_type = req.body.file_type;
+    const rcoPathFromRepo = `Ericsson.AM.RcoHandler/EmbeddedResources/RBS6000/Aftermarket/${rco_type}.csv` 
     let pathRcoFile = __dirname.replace(/\\/g,"/") + `/../public/loganalyzer/${rcoPathFromRepo}`;
+    console.log(rcoPathFromRepo);
 
-    var buffer = new Buffer(req.body.file, 'base64');
+    var buffer = new Buffer(req.body.file, 'utf8');
+    console.log(buffer);
 
     var myReadableStreamBuffer = new streamBuffers.ReadableStreamBuffer({
         frequency: 1000,      // in milliseconds.
@@ -149,7 +152,7 @@ app.post("/shellcommand", (req, res) => {
 var Excel = require('exceljs');
 
 function getVal(name,headerArr) {
-    var foundVal = headerArr.find(x => x.Header === name);
+    var foundVal = headerArr.find(x => x.Header.replace(/\s+/g,"") === name.replace(/\s+/g,""));
 
     if(foundVal != null){
         return foundVal.Position;
@@ -175,8 +178,7 @@ app.post("/RcoList", (req, res) => {
             var headerArr = new Array()
 
             for (l = 1; l <= 26; l++) {
-                var headerName = sh.getRow(1).getCell(l).value.toString().
-                replace(/\s+/g,"");
+                var headerName = sh.getRow(1).getCell(l).value.toString();
                 headerArr.push(
                     {
                         Header : headerName,
@@ -188,25 +190,25 @@ app.post("/RcoList", (req, res) => {
             console.log(sh.rowCount);
             for (i = 2; i <= sh.rowCount; i++) {
                 var jsonObj = {
-                    ReleaseDate : sh.getRow(i).getCell(getVal("ReleaseDate",headerArr)).toString() || "",
+                    ReleaseDate : sh.getRow(i).getCell(getVal("Release Date",headerArr)).toString() || "",
                     RcoDocument : sh.getRow(i).getCell(getVal("RCOdoc",headerArr)).toString() || "",
-                    RcoRevision : sh.getRow(i).getCell(getVal("RCOrev",headerArr)).toString(),
-                    BarcodeText : sh.getRow(i).getCell(getVal("MatchthestringinRCO-doc(Barcodetext)",headerArr)).toString() || "",
+                    RcoRevision : sh.getRow(i).getCell(getVal("RCO rev",headerArr)).toString(),
+                    BarcodeText : sh.getRow(i).getCell(getVal("Match the string in RCO-doc(Barcodetext)",headerArr)).toString() || "",
                     Slogan : sh.getRow(i).getCell(getVal("Slogan",headerArr)).toString() || "",
                     ProductNumber : sh.getRow(i).getCell(getVal("Productnumber",headerArr)).toString() || "",
-                    ProductGroup : sh.getRow(i).getCell(getVal("ProductGroup",headerArr)).toString() || "",
+                    ProductGroup : sh.getRow(i).getCell(getVal("Product Group",headerArr)).toString() || "",
                     RStateIn : sh.getRow(i).getCell(getVal("R-stateIN",headerArr)).toString() || "",
                     RStateOut : sh.getRow(i).getCell(getVal("R-stateOUT",headerArr)).toString() || "",
-                    RcLatEvaluate : sh.getRow(i).getCell(getVal("RCLAT-Evaluate",headerArr)).toString() || "",
-                    RcLatTextOut : sh.getRow(i).getCell(getVal("RCLAT-Textout",headerArr)).toString() || "",
-                    ScPrttEvaluate : sh.getRow(i).getCell(getVal("SCPRTT-Evaluate",headerArr)).toString() || "",
-                    ScPrttTextOut : sh.getRow(i).getCell(getVal("SCPRTT-Textout",headerArr)).toString() || "",
-                    CloudLatEvaluate : sh.getRow(i).getCell(getVal("CloudLAT-Evaluate",headerArr)).toString() || "",
-                    CloudLatTextOut : sh.getRow(i).getCell(getVal("CloudLAT-Textout",headerArr)).toString() || "",
-                    ExecutionOrder : sh.getRow(i).getCell(getVal("Executionorder",headerArr)).toString() || "",
-                    MfgDateFrom : sh.getRow(i).getCell(getVal("Manucfacturingdate(From)",headerArr)).toString() || "",
-                    MfgDateTo : sh.getRow(i).getCell(getVal("Manucfacturingdate(To)",headerArr)).toString() || "",
-                    ProductFamily : sh.getRow(i).getCell(getVal("Prod.Family",headerArr)).toString() || "",
+                    RcLatEvaluate : sh.getRow(i).getCell(getVal("RC LAT - Evaluate",headerArr)).toString() || "",
+                    RcLatTextOut : sh.getRow(i).getCell(getVal("RC LAT - Textout",headerArr)).toString() || "",
+                    ScPrttEvaluate : sh.getRow(i).getCell(getVal("SC PRTT - Evaluate",headerArr)).toString() || "",
+                    ScPrttTextOut : sh.getRow(i).getCell(getVal("SC PRTT – Textout",headerArr)).toString() || "",
+                    CloudLatEvaluate : sh.getRow(i).getCell(getVal("Cloud LAT - Evaluate",headerArr)).toString() || "",
+                    CloudLatTextOut : sh.getRow(i).getCell(getVal("Cloud LAT - Textout",headerArr)).toString() || "",
+                    ExecutionOrder : sh.getRow(i).getCell(getVal("Execution order",headerArr)).toString() || "",
+                    MfgDateFrom : sh.getRow(i).getCell(getVal("Manucfacturing date (From)",headerArr)).toString() || "",
+                    MfgDateTo : sh.getRow(i).getCell(getVal("Manucfacturing date (To)",headerArr)).toString() || "",
+                    ProductFamily : sh.getRow(i).getCell(getVal("Prod. Family",headerArr)).toString() || "",
                     Closed : sh.getRow(i).getCell(getVal("Closed",headerArr)).toString() || "",
                     Cost : sh.getRow(i).getCell(getVal("Cost",headerArr)).toString() || "",
                     Comments : sh.getRow(i).getCell(getVal("Comments",headerArr)).toString() || ""
@@ -302,5 +304,5 @@ app.post("/ChangeName", (req, res) => {
         return res.send("done!")
     });
 
-    return res.send("done!");
+    return res.send("done!"); 
 });  

@@ -57,7 +57,7 @@ let changeFileHandle dispatch ( ev : Browser.Types.Event ) =
 
             match fileEnding with
             | "xlsx" ->
-                files.item 0 |>
+                (files.item 0,RBS_6000) |>
                 (
                     Curr_Rco_File.Yes_Rco_File >>
                     Types.Msg.Change_File_Msg
@@ -224,6 +224,57 @@ let branchDropDown model dispatch =
             ]
         ]
     | _ -> Html.none
+
+let rcoFileoptions model =
+    let rcoTypeConverter strVal =
+        match strVal with
+        |  RBS_6000 -> "RBS 6000"
+        | _ -> "ERS"
+    match model.CurrFile with
+    | Yes_Rco_File(_,s) ->
+        [|
+            "RBS 6000"
+            "ERS"
+        |]
+        |> Array.map (fun rco_type ->
+            rco_type |> branchAlt)
+        
+    | _  -> [|Html.none|]
+        
+let rcoFileTypeDropDown model dispatch =
+    match model.CurrFile with
+    | Yes_Rco_File _ ->
+        Html.div[
+            prop.className "field"
+            prop.children[
+                Html.div[
+                    prop.className "control"
+                    prop.children[
+                        Html.div[
+                            prop.className "select is-rounded is-primary"
+                            prop.children[
+                                Html.select[
+                                    prop.style[
+                                        style.backgroundColor.azure
+                                    ]
+                                    prop.onChange ( fun ev ->
+                                        ev |>
+                                        (
+                                            Change_RCO_File_Type >>
+                                            dispatch
+                                        ))
+                                    prop.id "inlineFormCustomSelect"
+
+                                    rcoFileoptions model
+                                    |> prop.children
+                                ]
+                            ]
+                        ]
+                    ]
+                ]
+            ]
+        ]
+    | _ -> Html.none
     
 let currentBranchInfo model =
     match model.CurrFile with
@@ -323,6 +374,12 @@ let root model dispatch =
                         prop.className "column"
                         prop.children[
                             updateRcoButton model dispatch 
+                        ]
+                    ]
+                    Html.div[
+                        prop.className "column"
+                        prop.children[
+                            rcoFileTypeDropDown model dispatch 
                         ]
                     ]
                 ]
