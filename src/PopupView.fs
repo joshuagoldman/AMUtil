@@ -279,3 +279,34 @@ let popup_view popup_Style =
             
         ]
 
+let generalPopupCreation ( utils : Popup_Utils<Global.Types.GlobalMsg,'a> ) =
+
+    let buttons = createButtons utils.Dispatch utils.Buttons_With_Msg
+
+    let reactElementMsgs =
+        utils.Str_Msg
+        |> getPopupMsg
+
+    let popupStyle =
+        (buttons,reactElementMsgs)
+        |> Popup.Types.Alternative_Popup_Otpions.Several_Alternatives
+
+    (popupStyle,Global.Types.getPositions utils.positions) |>
+    (
+        Popup.Types.PopupStyle.Has_Alternatives >>
+        Global.Types.Popup_Msg_Global >>
+        utils.global_msg
+    )
+
+let questionButton yesMsg noMsg =
+    [|
+        {
+            Popup.Types.Name = "Yes"
+            Popup.Types.Msg = yesMsg
+        }
+        {
+            Popup.Types.Name = "No"
+            Popup.Types.Msg = noMsg
+        }
+    |]
+

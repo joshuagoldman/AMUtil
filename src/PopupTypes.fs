@@ -25,3 +25,11 @@ type PopupStyle =
     | Popup_Is_Dead
     | Has_Alternatives of Alternative_Popup_Otpions * PopupPosition
     | Has_No_Alternatives of Message : ReactElement[] * PopupPosition
+
+type Popup_Utils<'a,'b> = {
+    Str_Msg : string
+    Buttons_With_Msg : Popup_Button<'b> []
+    Dispatch : 'b -> unit
+    positions : Browser.Types.Event
+    global_msg : 'a -> 'b
+}

@@ -8,18 +8,44 @@ open Feliz
 open Feliz.style
 open Types
 
-let standardBranchAlt =
-    [|
-        Html.option[
-            prop.selected true
-            prop.text "Choose Branch..."
-            prop.style[
-                Feliz.style.backgroundColor "violet"
-                Feliz.style.color "black"
-                fontWeight.bold
+let fileUpload model dispatch =
+    Html.form[
+        prop.children[
+            Html.div[
+                prop.className "form-group"
+                prop.style[
+                    style.margin 40
+                ]
+                prop.children[
+                    Html.label[
+                        prop.for' "exampleFormControlFile1"
+                        prop.style[
+                            Feliz.style.color "black"
+                            style.fontWeight.bold
+                            Feliz.style.fontSize 18
+                        ]
+                        prop.text "Choose RCO List file"
+
+                    ]
+                    Html.input[
+                        prop.type'.file
+                        prop.style[
+                            Feliz.style.color "black"
+                            style.fontWeight.bold
+                            Feliz.style.fontSize 16
+                        ]
+                        prop.onChange ( fun ev ->
+                            ev |>
+                            (
+                                Logic.changeFileHandle dispatch >>
+                                Array.iter (fun msg -> msg |> dispatch)
+                            ))
+                        prop.className "form-control-file"
+                    ]
+                ]
             ]
         ]
-    |]
+    ]
 
 let branchAlt ( name : string ) =
     Html.option[
@@ -31,82 +57,41 @@ let branchAlt ( name : string ) =
         ]
     ]
 
-let getBranches model dispatch =
-    match model.Info with
-    | No_Git_Info_Criteria_Changes -> [|Html.none|]
-    | Yes_Git_Info_Criteria_Changes repo ->
-        repo.Branches
-        |> Array.map (fun branch ->
-            branch |> branchAlt)
+let releaseOptions ( infos : Log_Search_Criteria_Info [] ) =
+    infos
+    |> Array.map (fun info ->
+        info.Released |> branchAlt)
 
-let handleBranchNameChange ( ev : Browser.Types.Event ) dispatch =
-    let branchName = ev.target?value |> string
-
-    match branchName with
-    | "Choose Branch..." ->
-        ()
-    | _ ->
-        let positions =
-            {
-                Popup.Types.PosX = ( ev?pageX : float )
-                Popup.Types.PosY = ( ev?pageY : float )
-            }
-        [|(branchName,positions,dispatch) |> Types.Msg.Change_Current_Branch_Criteria_Changes|]
-        |> Array.iter (fun msg -> msg |> dispatch)
-
-let branchDropDown model dispatch =
-    match model.Info with
-    | Yes_Git_Info_Criteria_Changes _ ->
-        Html.form[
+let chooseReleaseDropdown model dispatch =
+    match model.ExcelInfo with
+    | Yes_Rel_Plan_Log_Analysis(infos,_) ->
+        Html.div[
+            prop.className "field"
             prop.children[
                 Html.div[
-                    prop.className "form-row align-items-center"
+                    prop.className "control"
                     prop.children[
                         Html.div[
-                            prop.className "col-auto my-1"
+                            prop.className "select is-rounded is-primary"
                             prop.children[
-                                Html.label[
-                                    prop.className "mr-sm-2 sr-only"
-                                    prop.for' "inlineFormCustomSelect"
-                                    prop.text "Preference"
-                                ]
                                 Html.select[
-                                    prop.className "custom-select mr-sm-2"
                                     prop.style[
-                                        Feliz.style.backgroundColor "violet"
-                                        Feliz.style.color "black"
-                                        fontWeight.bold
+                                        style.backgroundColor.azure
                                     ]
                                     prop.onChange ( fun ev ->
-                                        dispatch
-                                        |> handleBranchNameChange ev)
+                                        Logic.changeReleaseInfoToShow ev infos dispatch)
                                     prop.id "inlineFormCustomSelect"
-                                    prop.children(
-                                        getBranches model dispatch
-                                        |> Array.append standardBranchAlt    
-                                    )
+
+                                    releaseOptions infos
+                                    |> prop.children
                                 ]
                             ]
                         ]
                     ]
                 ]
-
             ]
         ]
     | _ -> Html.none
-
-let currentBranchInfo ( model : Types.Model ) =
-        match model.Info with
-        | Yes_Git_Info_Criteria_Changes info ->
-            Html.div[
-                prop.text ("Current branch: " + info.CurrBranch)
-                prop.style[
-                    style.fontSize 20
-                    style.fontWeight.bold
-                    style.color "black"
-                ]
-            ]
-        | _ -> Html.none
     
 let root model dispatch =
     Html.div[
@@ -120,7 +105,7 @@ let root model dispatch =
                     Html.div[
                         prop.className "column"
                         prop.children[
-                            branchDropDown model dispatch
+                            fileUpload model dispatch
                         ]
                     ]
                 ]
@@ -131,7 +116,7 @@ let root model dispatch =
                     Html.div[
                         prop.className "column"
                         prop.children[
-                            currentBranchInfo model
+                            chooseReleaseDropdown model dispatch
                         ]
                     ]
                 ]

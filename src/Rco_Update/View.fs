@@ -37,10 +37,6 @@ let changeFileHandle dispatch ( ev : Browser.Types.Event ) =
                 Popup.Types.PosY = ( ev?pageY : float )
             }
 
-        let killPopupMsgWDispatch =
-            Rco_Update.Logic.killPopupMsg |> dispatch
-
-
         errorPopupMsgNoDelay
                     msg
                     Rco_Update.Logic.killPopupMsg

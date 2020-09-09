@@ -8,6 +8,8 @@ open Criteria_Changes.Types
 let init result =
     {
         Types.Info = Types.No_Git_Info_Criteria_Changes
+        ExcelInfo = Rel_Plan_Log_Analysis.No_Rel_Plan_Log_Analysis
+        CurrFIle = Curr_Rel_Plan_Log_Analysis_File.No_Log_Analysis_File
     }
 
 
@@ -20,22 +22,6 @@ let update msg (model:Model) : Types.Model * Global.Types.GlobalMsg * Cmd<Msg> =
             |> Cmd.batch
 
         model, Global.Types.MsgNone, msg
-    | Change_Current_Branch_Criteria_Changes(branch_name,positions,dispatch) ->
-        match model.Info with
-        | No_Git_Info_Criteria_Changes ->
-            model, Global.Types.MsgNone,[]
-        | Yes_Git_Info_Criteria_Changes info ->
-            let newInfo =
-                { info with CurrBranch = branch_name }
-
-            let spreadMsg =
-                newInfo
-                |> Global.Types.GlobalMsg.Spread_New_Branch_Name
-
-            Logic.checkoutNewBranch branch_name dispatch positions  
-            |> Async.StartImmediate
-
-            model, spreadMsg,[]
     | Global_Msg_Criteria_Changes global_msg ->
         model, global_msg, []
 
@@ -48,3 +34,9 @@ let update msg (model:Model) : Types.Model * Global.Types.GlobalMsg * Cmd<Msg> =
             { model with Info = newState } , Global.Types.MsgNone, []
         | _ ->
             model, Global.Types.MsgNone, []
+
+    | Change_File_Msg file ->
+        { model with CurrFIle = file }, Global.Types.MsgNone, []
+
+    | Change_Curr_Release info ->
+        { model with ExcelInfo = info }, Global.Types.MsgNone, []
