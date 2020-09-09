@@ -24,7 +24,7 @@ let fileUpload model dispatch =
                             style.fontWeight.bold
                             Feliz.style.fontSize 18
                         ]
-                        prop.text "Choose RCO List file"
+                        prop.text "Choose criteria release plan file"
 
                     ]
                     Html.input[
@@ -63,7 +63,7 @@ let releaseOptions ( infos : Log_Search_Criteria_Info [] ) =
         info.Excel_Info.Released |> branchAlt)
 
 let chooseReleaseDropdown model dispatch =
-    match model.ExcelInfo with
+    match model.Criteria_Info with
     | Yes_Rel_Plan_Log_Analysis(infos,_) ->
         Html.div[
             prop.className "field"
@@ -109,6 +109,23 @@ let getNewInfoButton model dispatch =
         ]
     | _ ->
         Html.none
+
+let downloadResultButton model dispatch =
+    match model.Criteria_Info with
+    | Rel_Plan_Log_Analysis.Yes_Rel_Plan_Log_Analysis(_,currInfos) ->
+        Html.div[
+            prop.className "button"
+            prop.text "Get Excel Info"
+            prop.onClick (fun _ ->
+                let msg =
+                    (currInfos,dispatch)
+                    |> Download_Table_Info
+
+                msg |> dispatch
+                )
+        ]
+    | _ ->
+        Html.none
     
 let root model dispatch =
     Html.div[
@@ -116,7 +133,7 @@ let root model dispatch =
             Html.div[
                 prop.className "columns is-centered"
                 prop.style[
-                    style.marginTop 20
+                    style.marginTop 5
                 ]
                 prop.children[
                     Html.div[
@@ -126,7 +143,7 @@ let root model dispatch =
                         ]
                     ]
                     Html.div[
-                        prop.className "column"
+                        prop.className "column is-1"
                         prop.children[
                             getNewInfoButton model dispatch
                         ]

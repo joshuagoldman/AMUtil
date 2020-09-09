@@ -204,49 +204,43 @@ let getCriteriaInfoText dispatch ( currInfos : Log_Search_Criteria_Excel_Info []
         let revisionInHwLogCriteriaRegexExpr = "(?<=CriteriaReferenceWithRevision Value=\".*(,\s+[rR]ev|;)(\s+|))[aA-zZ]"
 
         let searchKeysWithSameDocNo =
-            searchKeys
-            |> Array.choose ( fun key ->
-                let revisionNoOpt =
-                    Regex.Match docNoRegexExpr key
+            currInfos
+            |> Array.choose ( fun info ->
+                let foundKeyOpt =
+                    searchKeys
+                    |> Array.tryFind (fun key ->
+                        let revisionNoOpt =
+                            Regex.Match docNoRegexExpr key
 
-                match revisionNoOpt with
-                | Some revisionNo ->
-                    let foundKeyOpt =
-                        currInfos
-                        |> Array.tryFind (fun info ->
-                            let revisionNoCompOpt =
-                                Regex.Match ".*(?=;)" info.Revision
+                        match revisionNoOpt with
+                        | Some revisionNo ->
+                            revisionNo.Replace(" ","") = info.Revision.Replace(" ","")
+                        | _ -> false
+                        )
+                match foundKeyOpt with
+                | Some foundKey ->
+                    let criteriaFileInfo =
+                        {
+                            Search_Key_Name =
+                                Regex.Match searchKeyNameRegexExpr foundKey
+                                |> ifNullThenUndef
+                            Info_Text =
+                                Regex.Match infoTextRegex foundKey
+                                |> ifNullThenUndef
+                            Revision =
+                                Regex.Match revisionInHwLogCriteriaRegexExpr foundKey
+                                |> ifNullThenUndef
+                        }
 
-                            match revisionNoCompOpt with
-                            | Some revisionNoComp ->
-                                revisionNo.Replace(" ","") = revisionNoComp.Replace(" ","")
-                            | _ -> false
-                            )
-                    match foundKeyOpt with
-                    | Some foundKey ->
-                        let criteriaFileInfo =
-                            {
-                                Search_Key_Name =
-                                    Regex.Match searchKeyNameRegexExpr key
-                                    |> ifNullThenUndef
-                                Info_Text =
-                                    Regex.Match infoTextRegex key
-                                    |> ifNullThenUndef
-                                Revision =
-                                    Regex.Match revisionInHwLogCriteriaRegexExpr key
-                                    |> ifNullThenUndef
-                            }
+                    let result =
+                        {
+                            Excel_Info = info
+                            HwLog_Crit_File_Info = criteriaFileInfo
+                        }
 
-                        let result =
-                            {
-                                Excel_Info = foundKey
-                                HwLog_Crit_File_Info = criteriaFileInfo
-                            }
+                    result
+                    |> Some
 
-                        result
-                        |> Some
-
-                    | _ -> None
                 | _ -> None
             )
 

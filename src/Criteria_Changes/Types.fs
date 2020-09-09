@@ -59,10 +59,11 @@ type Msg =
     | Change_Curr_Release of Rel_Plan_Log_Analysis
     | Extract_Info_Text_Criteria_File of Log_Search_Criteria_Excel_Info [] * (Msg -> unit)
     | Change_Table_Info of Rel_Plan_Log_Analysis
+    | Download_Table_Info of Log_Search_Criteria_Info [] * (Msg -> unit)
 
 type Model = {
     Info : Git_Info_Criteria_Changes
-    ExcelInfo : Rel_Plan_Log_Analysis
+    Criteria_Info : Rel_Plan_Log_Analysis
     CurrFile : Curr_Rel_Plan_Log_Analysis_File
 }
 
