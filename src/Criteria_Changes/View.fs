@@ -13,9 +13,6 @@ let fileUpload model dispatch =
         prop.children[
             Html.div[
                 prop.className "form-group"
-                prop.style[
-                    style.margin 40
-                ]
                 prop.children[
                     Html.label[
                         prop.for' "exampleFormControlFile1"
@@ -133,7 +130,7 @@ let root model dispatch =
             Html.div[
                 prop.className "columns is-centered"
                 prop.style[
-                    style.marginTop 5
+                    style.marginTop 30
                 ]
                 prop.children[
                     Html.div[
@@ -143,7 +140,7 @@ let root model dispatch =
                         ]
                     ]
                     Html.div[
-                        prop.className "column is-1"
+                        prop.className "column is-2"
                         prop.children[
                             getNewInfoButton model dispatch
                         ]
