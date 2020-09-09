@@ -47,6 +47,7 @@ let update msg (model:Model) : Types.Model * Global.Types.GlobalMsg * Cmd<Msg> =
             |> Async.StartImmediate
 
             model, spreadMsg,[]
+
     | Change_Current_Rco_Info info ->
         { model with CurrRcoInfo = info }, Global.Types.MsgNone,[]
     | Get_Rco_Data_Msg(dispatch,ev) ->

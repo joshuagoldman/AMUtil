@@ -71,7 +71,7 @@ let listOfPages =
         { Activity = Global.Types.App_Activity.Activity_None ; Activity_name = "Home" }
         { Activity = Global.Types.App_Activity.RCOUpdate ; Activity_name = "Update RCO List" }
         { Activity = Global.Types.App_Activity.NugetUpgrade ; Activity_name = "Upgrade NuGet" }
-        { Activity = Global.Types.App_Activity.Criteria_1_84 ; Activity_name = "Criteria 1/-84" }
+        { Activity = Global.Types.App_Activity.Criteria_Changes ; Activity_name = "Criteria Changes Sprint" }
     |]
     
 
@@ -195,8 +195,8 @@ let root ( model : Model ) dispatch =
                         Rco_Update.View.root model.Rco_Update (Types.Msg.Rco_Update_Msg >> dispatch)
                     | Global.Types.NugetUpgrade ->
                         Upgrade_NuGet.View.root model.Upgrade_NuGet (Types.Msg.Upgrade_NuGet_Msg >> dispatch)
-                    | Global.Types.Criteria_1_84 ->
-                        Criteria_1_84.View.root model.Criteria_1_84 (Types.Msg.Criteria_1_84_Msg >> dispatch)
+                    | Global.Types.Criteria_Changes ->
+                        Criteria_Changes.View.root model.Criteria_Changes (Types.Msg.Criteria_Changes_Msg >> dispatch)
                 ]
             ] 
         ]

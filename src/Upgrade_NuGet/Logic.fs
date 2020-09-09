@@ -539,6 +539,47 @@ let getNuGetTableInfo dispatch = async {
 
 }
 
+let updateOnly model dispatch =
+    match model.Info with
+    | Yes_Git_Info_Nuget _ ->
+
+        let msgs =
+            [|
+
+                "Updating table..." |>
+                (
+                    Popup.View.getPopupMsgSpinner >>
+                    checkingProcessPopupMsg Popup.Types.standardPositions >>
+                    Global.Types.AsynSyncMix.Is_Not_Async
+                )
+
+                (dispatch,Global.Types.App_Activity.NugetUpgrade) |>
+                (
+                    Obtain_New_Nuget_Info >>
+                    Global.Types.delayedMessage 2000 >>
+                    Global.Types.AsynSyncMix.Is_Async
+                )
+                
+            |]
+
+        msgs
+        |> Array.map (fun msg ->
+            let asyncAction =
+                async {
+                    match msg with
+                    | Global.Types.AsynSyncMix.Is_Async asynMsg ->
+                        let! asyncToSync = asynMsg
+
+                        asyncToSync |> dispatch
+                    | Global.Types.AsynSyncMix.Is_Not_Async msg ->
+                        msg |> dispatch
+                }
+
+            asyncAction)
+        |> Array.iter (fun action -> action |> Async.StartImmediate)
+            
+    | _ -> ()
+
 let changeBranchNugetUpgrade model dispatch ( ev : Browser.Types.Event ) =
     match model.Info with
     | Yes_Git_Info_Nuget repo ->
@@ -573,7 +614,7 @@ let changeBranchNugetUpgrade model dispatch ( ev : Browser.Types.Event ) =
             |]
 
         msgs
-        |> Array.iter (fun msg ->
+        |> Array.map (fun msg ->
             let asyncAction =
                 async {
                     match msg with
@@ -585,7 +626,8 @@ let changeBranchNugetUpgrade model dispatch ( ev : Browser.Types.Event ) =
                         msg |> dispatch
                 }
 
-            asyncAction |> Async.StartImmediate)
+            asyncAction)
+        |> Array.iter (fun action -> action |> Async.StartImmediate)
             
     | _ -> ()
 
@@ -602,22 +644,8 @@ let updateNugetTable model dispatch =
                         Html.div[
                             prop.className "button"
                             prop.text "Update table"
-                            prop.onClick (fun ev ->
-                                let msgs =
-                                    [|
-
-                                        changeBranchNugetUpgrade model dispatch ev
-
-                                        (dispatch,Global.Types.App_Activity.NugetUpgrade) |>
-                                        (
-                                            Obtain_New_Nuget_Info  >>
-                                            dispatch
-                                        )
-                                        
-                                    |]
-
-                                msgs
-                                |> Array.iter (fun msg -> msg))
+                            prop.onClick (fun _ ->
+                                updateOnly model dispatch)
                         ]
                     ]
                 ]

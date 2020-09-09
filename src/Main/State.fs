@@ -19,10 +19,16 @@ let updateGitRepo model git_Repo =
         |> fun info ->
             { model.Upgrade_NuGet with Info = info}
 
+    let newCriteiraChangesState =
+        git_Repo |> Criteria_Changes.Types.Yes_Git_Info_Criteria_Changes
+        |> fun info ->
+            { model.Criteria_Changes with Info = info}
+
     {
         model with
             Rco_Update = newRcoUpdateState
             Upgrade_NuGet = newUpgradeNugetState
+            Criteria_Changes = newCriteiraChangesState
     },
     GlobalMsg.MsgNone, []
 
