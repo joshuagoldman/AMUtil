@@ -45,4 +45,7 @@ let update msg (model:Model) : Types.Model * Global.Types.GlobalMsg * Cmd<Msg> =
         { model with ExcelInfo = info }, Global.Types.MsgNone, []
 
     | Extract_Info_Text_Criteria_File(excel_infos,dispatch) ->
-        
+        Logic.getCriteriaInfoText dispatch excel_infos
+        |> Async.StartImmediate
+
+        model, Global.Types.MsgNone, []

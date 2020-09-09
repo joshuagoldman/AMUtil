@@ -178,3 +178,110 @@ let parseCriteriaChangesFile ( file : Browser.Types.File ) dispatch = async {
         )
 }
 
+let getCriteriaInfoText dispatch ( currInfos : Log_Search_Criteria_Excel_Info [] ) = async {
+
+    do! Async.Sleep 2000
+
+    let! res = Global.Types.simpleGetRequest ""
+
+    match res.status with
+    | 200.0 ->
+        let hwLogCriteriaFileStr = res.responseText
+
+        let searchKeyChunkRegexExpr = "<SearchKey(.|\n)*?(?=<\/SearchKey>)"
+
+        let searchKeys =
+            (Regex.Matches searchKeyChunkRegexExpr hwLogCriteriaFileStr).Value
+
+        let ifNullThenUndef strOpt =
+            match strOpt with
+            | Some str -> str
+            | _ -> "Undef"
+
+        let docNoRegexExpr = "(?<=CriteriaReferenceWithRevision Value=\").*(?=(,\s+[rR]ev|;))"
+        let infoTextRegex = "(?<=InfotextScreening Value=\").*(?=\")"
+        let searchKeyNameRegexExpr = "(?<=<SearchKey Name=\").*(?=\")"
+        let revisionInHwLogCriteriaRegexExpr = "(?<=CriteriaReferenceWithRevision Value=\".*(,\s+[rR]ev|;)(\s+|))[aA-zZ]"
+
+        let searchKeysWithSameDocNo =
+            searchKeys
+            |> Array.choose ( fun key ->
+                let revisionNoOpt =
+                    Regex.Match docNoRegexExpr key
+
+                match revisionNoOpt with
+                | Some revisionNo ->
+                    let foundKeyOpt =
+                        currInfos
+                        |> Array.tryFind (fun info ->
+                            let revisionNoCompOpt =
+                                Regex.Match ".*(?=;)" info.Revision
+
+                            match revisionNoCompOpt with
+                            | Some revisionNoComp ->
+                                revisionNo.Replace(" ","") = revisionNoComp.Replace(" ","")
+                            | _ -> false
+                            )
+                    match foundKeyOpt with
+                    | Some foundKey ->
+                        let criteriaFileInfo =
+                            {
+                                Search_Key_Name =
+                                    Regex.Match searchKeyNameRegexExpr key
+                                    |> ifNullThenUndef
+                                Info_Text =
+                                    Regex.Match infoTextRegex key
+                                    |> ifNullThenUndef
+                                Revision =
+                                    Regex.Match revisionInHwLogCriteriaRegexExpr key
+                                    |> ifNullThenUndef
+                            }
+
+                        let result =
+                            {
+                                Excel_Info = foundKey
+                                HwLog_Crit_File_Info = criteriaFileInfo
+                            }
+
+                        result
+                        |> Some
+
+                    | _ -> None
+                | _ -> None
+            )
+
+        match ( searchKeysWithSameDocNo |> Array.length ) with
+        | 0 ->
+            "No search key matches found in HwLogCriteria.xml file!" |>
+            (
+                simpleOkUtils dispatch standardPositions >>
+                Popup.View.generalPopupCreation >>
+                dispatch
+            )
+        | _ ->
+            let firstItem =
+                searchKeysWithSameDocNo
+                |> Array.head
+            let currRevisionInfo =
+                searchKeysWithSameDocNo
+                |> Array.filter (fun info ->
+                    info.Excel_Info.Released = firstItem.Excel_Info.Released)
+
+            let msg =
+                (searchKeysWithSameDocNo,currRevisionInfo) |>
+                (
+                    Yes_Rel_Plan_Log_Analysis >>
+                    Types.Change_Table_Info
+                )
+
+            msg |> dispatch
+                    
+    | _ ->
+        res.responseText |>
+        (
+            simpleOkUtils dispatch standardPositions >>
+            Popup.View.generalPopupCreation >>
+            dispatch
+        )
+}
+

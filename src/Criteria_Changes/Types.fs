@@ -14,9 +14,15 @@ type Log_Search_Criteria_Excel_Info = {
     Released : string
 }
 
+type Criteria_File_Info = {
+    Search_Key_Name : string
+    Info_Text : string
+    Revision : string
+}
+
 type Log_Search_Criteria_Info = {
     Excel_Info : Log_Search_Criteria_Excel_Info
-    Info_Text : string
+    HwLog_Crit_File_Info : Criteria_File_Info
 }
 
 let RcoObjectDecoder : Decoder<Log_Search_Criteria_Excel_Info> = 
@@ -52,6 +58,7 @@ type Msg =
     | Change_File_Msg of Curr_Rel_Plan_Log_Analysis_File
     | Change_Curr_Release of Rel_Plan_Log_Analysis
     | Extract_Info_Text_Criteria_File of Log_Search_Criteria_Excel_Info [] * (Msg -> unit)
+    | Change_Table_Info of Rel_Plan_Log_Analysis
 
 type Model = {
     Info : Git_Info_Criteria_Changes

@@ -96,12 +96,19 @@ let chooseReleaseDropdown model dispatch =
 let getNewInfoButton model dispatch =
     match model.CurrFile with
     | Curr_Rel_Plan_Log_Analysis_File.Yes_Log_Analysis_File file ->
-        let msg =
-            Logic.parseCriteriaChangesFile file dispatch
-            |> Types.Async_Msg_Criteria_Changes
+        Html.div[
+            prop.className "button"
+            prop.text "Get Excel Info"
+            prop.onClick (fun _ ->
+                let msg =
+                    Logic.parseCriteriaChangesFile file dispatch
+                    |> Types.Async_Msg_Criteria_Changes
 
-        msg |> dispatch
-    | _ -> ()
+                msg |> dispatch
+                )
+        ]
+    | _ ->
+        Html.none
     
 let root model dispatch =
     Html.div[
@@ -116,6 +123,12 @@ let root model dispatch =
                         prop.className "column"
                         prop.children[
                             fileUpload model dispatch
+                        ]
+                    ]
+                    Html.div[
+                        prop.className "column"
+                        prop.children[
+                            getNewInfoButton model dispatch
                         ]
                     ]
                 ]
