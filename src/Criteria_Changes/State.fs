@@ -9,7 +9,7 @@ let init result =
     {
         Types.Info = Types.No_Git_Info_Criteria_Changes
         ExcelInfo = Rel_Plan_Log_Analysis.No_Rel_Plan_Log_Analysis
-        CurrFIle = Curr_Rel_Plan_Log_Analysis_File.No_Log_Analysis_File
+        CurrFile = Curr_Rel_Plan_Log_Analysis_File.No_Log_Analysis_File
     }
 
 
@@ -25,6 +25,9 @@ let update msg (model:Model) : Types.Model * Global.Types.GlobalMsg * Cmd<Msg> =
     | Global_Msg_Criteria_Changes global_msg ->
         model, global_msg, []
 
+    | Async_Msg_Criteria_Changes asyncMsg ->
+        model, Global.Types.MsgNone, asyncMsg |> Cmd.fromAsync
+
     | Update_Current_Branch_Name new_name ->
         match model.Info with
         | Yes_Git_Info_Criteria_Changes repo ->
@@ -36,7 +39,10 @@ let update msg (model:Model) : Types.Model * Global.Types.GlobalMsg * Cmd<Msg> =
             model, Global.Types.MsgNone, []
 
     | Change_File_Msg file ->
-        { model with CurrFIle = file }, Global.Types.MsgNone, []
+        { model with CurrFile = file }, Global.Types.MsgNone, []
 
     | Change_Curr_Release info ->
         { model with ExcelInfo = info }, Global.Types.MsgNone, []
+
+    | Extract_Info_Text_Criteria_File(excel_infos,dispatch) ->
+        

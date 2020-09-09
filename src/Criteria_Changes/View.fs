@@ -60,7 +60,7 @@ let branchAlt ( name : string ) =
 let releaseOptions ( infos : Log_Search_Criteria_Info [] ) =
     infos
     |> Array.map (fun info ->
-        info.Released |> branchAlt)
+        info.Excel_Info.Released |> branchAlt)
 
 let chooseReleaseDropdown model dispatch =
     match model.ExcelInfo with
@@ -92,6 +92,16 @@ let chooseReleaseDropdown model dispatch =
             ]
         ]
     | _ -> Html.none
+
+let getNewInfoButton model dispatch =
+    match model.CurrFile with
+    | Curr_Rel_Plan_Log_Analysis_File.Yes_Log_Analysis_File file ->
+        let msg =
+            Logic.parseCriteriaChangesFile file dispatch
+            |> Types.Async_Msg_Criteria_Changes
+
+        msg |> dispatch
+    | _ -> ()
     
 let root model dispatch =
     Html.div[

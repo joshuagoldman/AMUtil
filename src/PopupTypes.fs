@@ -30,6 +30,6 @@ type Popup_Utils<'a,'b> = {
     Str_Msg : string
     Buttons_With_Msg : Popup_Button<'b> []
     Dispatch : 'b -> unit
-    positions : Browser.Types.Event
+    positions : PopupPosition
     global_msg : 'a -> 'b
 }

@@ -298,6 +298,15 @@ let generalPopupCreation ( utils : Popup_Utils<Global.Types.GlobalMsg,'a> ) =
         utils.global_msg
     )
 
+let checkingProcessPopupMsg positions  ( msgType : Global.Types.GlobalMsg -> 'a  ) msg  =
+
+    (msg,positions) |>
+    (
+        Popup.Types.PopupStyle.Has_No_Alternatives >>
+        Global.Types.Popup_Msg_Global >>
+        msgType
+    )
+
 let questionButton yesMsg noMsg =
     [|
         {
