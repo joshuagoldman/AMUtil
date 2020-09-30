@@ -178,7 +178,8 @@ app.post("/RcoList", (req, res) => {
             var headerArr = new Array()
 
             for (l = 1; l <= 26; l++) {
-                var headerName = sh.getRow(1).getCell(l).value.toString();
+                var headerName = sh.getRow(1).getCell(l).text;
+                console.log(headerName);
                 headerArr.push(
                     {
                         Header : headerName,
@@ -187,7 +188,6 @@ app.post("/RcoList", (req, res) => {
                 );
             }
 
-            console.log(sh.rowCount);
             for (i = 2; i <= sh.rowCount; i++) {
                 var jsonObj = {
                     ReleaseDate : sh.getRow(i).getCell(getVal("Release Date",headerArr)).toString() || "",
