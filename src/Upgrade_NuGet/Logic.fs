@@ -77,14 +77,19 @@ let monitorEachProjectInfoExtraction ( nugetServerInfo : string )
                         "(?<=Ericsson.AM.{0}',Version=').*(?=')",
                         projectName
                     )
-                let isPartOfNugetServerOpt = JsInterop.Regex.IsMatch nugetServerRegex nugetServerInfo
+
+                let isPartOfNugetServerOpt =
+                    if projectName.ToUpper().Contains("RCOHANDLER")
+                    then Some(true)
+                    else    
+                        JsInterop.Regex.IsMatch nugetServerRegex nugetServerInfo 
 
                 match isPartOfNugetServerOpt with
                 | Some isPartOfNugetServer ->
                     match isPartOfNugetServer with
                     | true ->
                         let existingPackages =
-                            JsInterop.Regex.Matches nugetServerRegex nugetServerInfo
+                            JsInterop.Regex.Matches nugetServerRegex nugetServerInfo 
                             
                         let! newMixItem =
                             {
@@ -98,7 +103,12 @@ let monitorEachProjectInfoExtraction ( nugetServerInfo : string )
 
                                         New_Nuget_Name = New_Nuget_Name.Has_No_Name
                                     }
-                                Existing_Packages = existingPackages.Value
+                                Existing_Packages =
+                                    if existingPackages.IsSome
+                                    then
+                                       existingPackages.Value
+                                    else
+                                        [|""|]
                                 Server_Options = No_Server_Actions
                                 Loading_To_Server = Not_Loading_Info_To_Server
                             }
