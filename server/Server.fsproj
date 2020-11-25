@@ -1,0 +1,27 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net5.0</TargetFramework>
+    <LangVersion>preview</LangVersion>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="WriteFile.fs" />
+    <Compile Include="cmd.fs" />
+    <Compile Include="UpdateRCO.fs" />
+    <Compile Include="WebSockets.fs" />
+    <Compile Include="ChangeNuGet.fs" />
+    <Compile Include="Server.fs" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="ExcelDataReader" Version="3.6.0" />
+    <PackageReference Include="ExcelDataReader.DataSet" Version="3.6.0" />
+    <PackageReference Include="FSharp.Core" Version="5.0.0" />
+    <PackageReference Include="Giraffe" Version="4.1.0" />
+    <PackageReference Include="Microsoft.AspNetCore.WebSockets" Version="2.2.1" />
+    <PackageReference Include="Saturn" Version="0.14.1" />
+    <PackageReference Include="System.Data.OleDb" Version="5.0.0" />
+    <PackageReference Include="Thoth.Json" Version="5.0.0" />
+    <PackageReference Include="Thoth.Json.Giraffe" Version="4.2.0" />
+    <PackageReference Include="Thoth.Json.Net" Version="5.0.0" />
+  </ItemGroup>
+</Project>

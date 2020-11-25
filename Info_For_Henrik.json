@@ -1,0 +1,2834 @@
+[
+  {
+    "Name": "ACPHwFault_1",
+    "Doc_No": "1/15451-LPA108338-1",
+    "Group": "DUW_DUL_DUS",
+    "Files_For_Search": "dumpelg.txt",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "ACPHwFault_2",
+    "Doc_No": "1/15451-LPA108338-1",
+    "Group": "DUW_DUL_DUS",
+    "Files_For_Search": "dumpelg.txt",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "DUW10_OCXO",
+    "Doc_No": "1/15451-LPA108338-2",
+    "Group": "DUW_DUL_DUS",
+    "Files_For_Search": "dumpelg.txt",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "DUW20_OCXO",
+    "Doc_No": "1/15451-LPA108338-3",
+    "Group": "DUW_DUL_DUS",
+    "Files_For_Search": "dumpelg.txt",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "DUW30_OCXO",
+    "Doc_No": "1/15451-LPA108338-4",
+    "Group": "DUW_DUL_DUS",
+    "Files_For_Search": "dumpelg.txt",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "DUW11_OCXO",
+    "Doc_No": "1/15451-LPA108338-5",
+    "Group": "DUW_DUL_DUS",
+    "Files_For_Search": "dumpelg.txt",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "DUW31_OCXO",
+    "Doc_No": "1/15451-LPA108338-6",
+    "Group": "DUW_DUL_DUS",
+    "Files_For_Search": "dumpelg.txt",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "DUW41_OCXO",
+    "Doc_No": "1/15451-LPA108338-7",
+    "Group": "DUW_DUL_DUS",
+    "Files_For_Search": "dumpelg.txt",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "DUS41_OCXO",
+    "Doc_No": "1/15451-LPA108338-8",
+    "Group": "DUW_DUL_DUS",
+    "Files_For_Search": "dumpelg.txt",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "DUS31_OCXO",
+    "Doc_No": "1/15451-LPA108338-9",
+    "Group": "DUW_DUL_DUS",
+    "Files_For_Search": "dumpelg.txt",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "DUWv1_OCXO",
+    "Doc_No": "1/15451-LPA108338-10",
+    "Group": "DUW_DUL_DUS",
+    "Files_For_Search": "dumpelg.txt",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "DUWv2_OCXO",
+    "Doc_No": "1/15451-LPA108338-11",
+    "Group": "DUW_DUL_DUS",
+    "Files_For_Search": "dumpelg.txt",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "DUSg1_OCXO",
+    "Doc_No": "1/15451-LPA108338-12",
+    "Group": "DUW_DUL_DUS",
+    "Files_For_Search": "dumpelg.txt",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "FlashDisk_DUWv1",
+    "Doc_No": "1/15451-LPA108338-13",
+    "Group": "DUW_DUL_DUS",
+    "Files_For_Search": "dumpelg.txt",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "FC_DSP768x_DUWv2",
+    "Doc_No": "1/15451-LPA108338-14",
+    "Group": "DUW_DUL_DUS",
+    "Files_For_Search": "dumpelg.txt",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "FC_DSP793x_DUWv2",
+    "Doc_No": "1/15451-LPA108338-14",
+    "Group": "DUW_DUL_DUS",
+    "Files_For_Search": "dumpelg.txt",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "FC_DSP819x_DUWv2",
+    "Doc_No": "1/15451-LPA108338-14",
+    "Group": "DUW_DUL_DUS",
+    "Files_For_Search": "dumpelg.txt",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "FC_DSP844x_DUWv2",
+    "Doc_No": "1/15451-LPA108338-14",
+    "Group": "DUW_DUL_DUS",
+    "Files_For_Search": "dumpelg.txt",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "FC_DSP870x_DUWv2",
+    "Doc_No": "1/15451-LPA108338-14",
+    "Group": "DUW_DUL_DUS",
+    "Files_For_Search": "dumpelg.txt",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "FC_DSP896x_DUWv2",
+    "Doc_No": "1/15451-LPA108338-14",
+    "Group": "DUW_DUL_DUS",
+    "Files_For_Search": "dumpelg.txt",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "FC_DSP1305x_DUWv2",
+    "Doc_No": "1/15451-LPA108338-14",
+    "Group": "DUW_DUL_DUS",
+    "Files_For_Search": "dumpelg.txt",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "FC_DSP1331x_DUWv2",
+    "Doc_No": "1/15451-LPA108338-14",
+    "Group": "DUW_DUL_DUS",
+    "Files_For_Search": "dumpelg.txt",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "FC_DSP1356x_DUWv2",
+    "Doc_No": "1/15451-LPA108338-14",
+    "Group": "DUW_DUL_DUS",
+    "Files_For_Search": "dumpelg.txt",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "FC_DSP1382x_DUWv2",
+    "Doc_No": "1/15451-LPA108338-14",
+    "Group": "DUW_DUL_DUS",
+    "Files_For_Search": "dumpelg.txt",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "FC_DSP1408x_DUWv2",
+    "Doc_No": "1/15451-LPA108338-14",
+    "Group": "DUW_DUL_DUS",
+    "Files_For_Search": "dumpelg.txt",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "FC_DSP1433x_DUWv2",
+    "Doc_No": "1/15451-LPA108338-14",
+    "Group": "DUW_DUL_DUS",
+    "Files_For_Search": "dumpelg.txt",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "FC_DSP1459x_DUWv2",
+    "Doc_No": "1/15451-LPA108338-14",
+    "Group": "DUW_DUL_DUS",
+    "Files_For_Search": "dumpelg.txt",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "FC_DSP1484x_DUWv2",
+    "Doc_No": "1/15451-LPA108338-14",
+    "Group": "DUW_DUL_DUS",
+    "Files_For_Search": "dumpelg.txt",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "FC_DSP1510x_DUWv2",
+    "Doc_No": "1/15451-LPA108338-14",
+    "Group": "DUW_DUL_DUS",
+    "Files_For_Search": "dumpelg.txt",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "FC_DSP1536x_DUWv2",
+    "Doc_No": "1/15451-LPA108338-14",
+    "Group": "DUW_DUL_DUS",
+    "Files_For_Search": "dumpelg.txt",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "LoadMemFailure1_DUWv1",
+    "Doc_No": "1/15451-LPA108338-17",
+    "Group": "DUW_DUL_DUS",
+    "Files_For_Search": "dumpelg.txt",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "LoadMemFailure2_DUWv1",
+    "Doc_No": "1/15451-LPA108338-17",
+    "Group": "DUW_DUL_DUS",
+    "Files_For_Search": "dumpelg.txt",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "DUL20 OCXO",
+    "Doc_No": "1/15451-LPA108338-24",
+    "Group": "DUW_DUL_DUS",
+    "Files_For_Search": "dumpelg.txt",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "OCXO Rakon",
+    "Doc_No": "1/15451-LPA108338-25",
+    "Group": "DUW_DUL_DUS",
+    "Files_For_Search": "nssinfo tumgr.txt",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "OCXO Vectron",
+    "Doc_No": "1/15451-LPA108338-25",
+    "Group": "DUW_DUL_DUS",
+    "Files_For_Search": "nssinfo tumgr.txt",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "Id813_7168_DUWv1",
+    "Doc_No": "1/15451-LPA108338-28",
+    "Group": "DUW_DUL_DUS",
+    "Files_For_Search": "dumpelg.txt",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "Id813_19968_DUWv1",
+    "Doc_No": "1/15451-LPA108338-28",
+    "Group": "DUW_DUL_DUS",
+    "Files_For_Search": "dumpelg.txt",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "Id813_22528_DUWv1",
+    "Doc_No": "1/15451-LPA108338-28",
+    "Group": "DUW_DUL_DUS",
+    "Files_For_Search": "dumpelg.txt",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "Id813_25088_DUWv1",
+    "Doc_No": "1/15451-LPA108338-28",
+    "Group": "DUW_DUL_DUS",
+    "Files_For_Search": "dumpelg.txt",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "Id814_RULE1_DUWv1",
+    "Doc_No": "1/15451-LPA108338-29",
+    "Group": "DUW_DUL_DUS",
+    "Files_For_Search": "dumpelg.txt",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "Id814_RULE2_DUWv1",
+    "Doc_No": "1/15451-LPA108338-29",
+    "Group": "DUW_DUL_DUS",
+    "Files_For_Search": "dumpelg.txt",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "RaxDevice_GeneralSWError DUW30",
+    "Doc_No": "1/15451-LPA108338-33",
+    "Group": "DUW_DUL_DUS",
+    "Files_For_Search": "LG_AEVSM.txt",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "RaxDevice_GeneralSWError DUW20",
+    "Doc_No": "1/15451-LPA108338-33",
+    "Group": "DUW_DUL_DUS",
+    "Files_For_Search": "LG_AEVSM.txt",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "DUWv1BcThread issue1-ReconfigRfrSetMsg, 1/-36,PA13",
+    "Doc_No": "1/15451-LPA108338-36",
+    "Group": "DUW_DUL_DUS",
+    "Files_For_Search": "dumpelg.txt",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "OCXO MCR,1/-38,B",
+    "Doc_No": "1/15451-LPA108338-38",
+    "Group": "DUW_DUL_DUS",
+    "Files_For_Search": "dumpelg.txt",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "OCXO G1 MC7_1",
+    "Doc_No": "1/15451-LPA108338-40",
+    "Group": "DUW_DUL_DUS",
+    "Files_For_Search": "dumpelg.txt",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "OCXO G1 MC7_2",
+    "Doc_No": "1/15451-LPA108338-40",
+    "Group": "DUW_DUL_DUS",
+    "Files_For_Search": "dumpelg.txt",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "OCXO G1 MC7_3",
+    "Doc_No": "1/15451-LPA108338-40",
+    "Group": "DUW_DUL_DUS",
+    "Files_For_Search": "dumpelg.txt",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "NFF Returns. 1/-49,D",
+    "Doc_No": "1/15451-LPA108338-49",
+    "Group": "DUW_DUL_DUS",
+    "Files_For_Search": "N/A",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "6th Time Return. 1/-49,D",
+    "Doc_No": "1/15451-LPA108338-49",
+    "Group": "DUW_DUL_DUS",
+    "Files_For_Search": "N/A",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "Units in return flow DU. 1/-50,Rev F",
+    "Doc_No": "1/15451-LPA108338-50",
+    "Group": "DUW_DUL_DUS",
+    "Files_For_Search": "N/A",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "DUWv1BcThread issue2-TxDeviceGroup, 1/-53, PA9",
+    "Doc_No": "1/15451-LPA108338-53",
+    "Group": "DUW_DUL_DUS",
+    "Files_For_Search": "ALARM_LOG.xml",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "DUWv1BcThread issue7-Failed to configure SRIO, 1/-58, PA7",
+    "Doc_No": "1/15451-LPA108338-58",
+    "Group": "DUW_DUL_DUS",
+    "Files_For_Search": "dumpelg.txt",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "DUWv1BcThread issue5-BB_INTERCONNECT_FAILURE, 1/-56, PA4",
+    "Doc_No": "1/15451-LPA108338-56",
+    "Group": "DUW_DUL_DUS",
+    "Files_For_Search": "dumpelg.txt",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "Handling of HW Log Id 814 for DUS and ODS;1/-29 REV C",
+    "Doc_No": "1/15451-LPA108 338-29",
+    "Group": "DUW_DUL_DUS",
+    "Files_For_Search": "dumpelg.txt",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "Handling of HW Log Id 814 for DUS and ODS;1/-29 REV C RULE2",
+    "Doc_No": "1/15451-LPA108 338-29",
+    "Group": "DUW_DUL_DUS",
+    "Files_For_Search": "dumpelg.txt",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "Handling of HW Log Id 814 for DUS and ODS;1/-30 REV B",
+    "Doc_No": "1/15451-LPA108 338-30",
+    "Group": "DUW_DUL_DUS",
+    "Files_For_Search": "dumpelg.txt",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "Handling of HW Log Id 814 for DUS and ODS;1/-30 REV B RULE2",
+    "Doc_No": "1/15451-LPA108 338-30",
+    "Group": "DUW_DUL_DUS",
+    "Files_For_Search": "dumpelg.txt",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "Handling of HW Log Id 814 for DUS and ODS;1/-47 REV A",
+    "Doc_No": "1/15451-LPA108 338-47",
+    "Group": "DUW_DUL_DUS",
+    "Files_For_Search": "dumpelg.txt",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "Handling of HW Log Id 814 for DUS and ODS;1/-47 REV A RULE2",
+    "Doc_No": "1/15451-LPA108 338-47",
+    "Group": "DUW_DUL_DUS",
+    "Files_For_Search": "dumpelg.txt",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "Faulty SEC OCXO issue, 1/-81, Rev B",
+    "Doc_No": "1/15451-LPA108338-81",
+    "Group": "DUW_DUL_DUS",
+    "Files_For_Search": "N/A",
+    "Is_RCO_Criteria": "Yes",
+    "RCO_Criteria_Info": "Answer:'156 25-KDU 137 624/11-3', Rco:'156 25-KDU 137 624/11-3'"
+  },
+  {
+    "Name": "DSPs in DUWv2 due to 3/RxBcThread red led on; 1/-15,C",
+    "Doc_No": "1/15451-LPA108338-15",
+    "Group": "DUW_DUL_DUS",
+    "Files_For_Search": "dumpelg.txt",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "DSPs in DUWv2 due to 4/RxBcThread red led on; 1/-15,C",
+    "Doc_No": "1/15451-LPA108338-15",
+    "Group": "DUW_DUL_DUS",
+    "Files_For_Search": "dumpelg.txt",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "DSPs in DUWv2 due to 5/RxBcThread red led on; 1/-15,C",
+    "Doc_No": "1/15451-LPA108338-15",
+    "Group": "DUW_DUL_DUS",
+    "Files_For_Search": "dumpelg.txt",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "DSPs in DUWv2 due to 6/RxBcThread red led on; 1/-15,C",
+    "Doc_No": "1/15451-LPA108338-15",
+    "Group": "DUW_DUL_DUS",
+    "Files_For_Search": "dumpelg.txt",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "DSPs in DUWv2 due to 7/RxBcThread red led on; 1/-15,C",
+    "Doc_No": "1/15451-LPA108338-15",
+    "Group": "DUW_DUL_DUS",
+    "Files_For_Search": "dumpelg.txt",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "DSPs in DUWv2 due to 8/RxBcThread red led on; 1/-15,C",
+    "Doc_No": "1/15451-LPA108338-15",
+    "Group": "DUW_DUL_DUS",
+    "Files_For_Search": "dumpelg.txt",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "Units in return flow RU, 1/-50, Rev F",
+    "Doc_No": "1/15451-LPA108338-50",
+    "Group": "Radio",
+    "Files_For_Search": "N/A",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "TxGAIN_alarms, 2/-3;A",
+    "Doc_No": "2/15451-LPA108338-3",
+    "Group": "Radio",
+    "Files_For_Search": "hwlogread.txt",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "I2C_alarms, 2/-4;B",
+    "Doc_No": "2/15451-LPA108338-4",
+    "Group": "Radio",
+    "Files_For_Search": "hwlogread.txt",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "LNA Problems, 2/-1, Rev E",
+    "Doc_No": "2/15451-LPA108338-1",
+    "Group": "Radio",
+    "Files_For_Search": "hwlogread.txt,elogread.txt",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "LNA Problems, 2/-1, R-states, Rev E",
+    "Doc_No": "2/15451-LPA108338-1",
+    "Group": "Radio",
+    "Files_For_Search": "hwlogread.txt",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "RXIF_LO_problems_1",
+    "Doc_No": "2/15451-LPA108338-5",
+    "Group": "Radio",
+    "Files_For_Search": "hwlogread.txt",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "RXIF_LO_problems_2",
+    "Doc_No": "2/15451-LPA108338-5",
+    "Group": "Radio",
+    "Files_For_Search": "hwlogread.txt",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "RXIF_LO_problems_3",
+    "Doc_No": "2/15451-LPA108338-5",
+    "Group": "Radio",
+    "Files_For_Search": "hwlogread.txt",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "RXIF_LO_problems_4",
+    "Doc_No": "2/15451-LPA108338-5",
+    "Group": "Radio",
+    "Files_For_Search": "hwlogread.txt",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "RXIF_LO_problems_5",
+    "Doc_No": "2/15451-LPA108338-5",
+    "Group": "Radio",
+    "Files_For_Search": "hwlogread.txt",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "RXIF_LO_problems_6",
+    "Doc_No": "2/15451-LPA108338-5",
+    "Group": "Radio",
+    "Files_For_Search": "hwlogread.txt",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "RXIF_LO_problems_7",
+    "Doc_No": "2/15451-LPA108338-5",
+    "Group": "Radio",
+    "Files_For_Search": "hwlogread.txt",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "RXIF_LO_problems_8",
+    "Doc_No": "2/15451-LPA108338-5",
+    "Group": "Radio",
+    "Files_For_Search": "hwlogread.txt",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "RXIF_LO_problems_9",
+    "Doc_No": "2/15451-LPA108338-5",
+    "Group": "Radio",
+    "Files_For_Search": "hwlogread.txt",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "RXIF_LO_problems_10",
+    "Doc_No": "2/15451-LPA108338-5",
+    "Group": "Radio",
+    "Files_For_Search": "hwlogread.txt",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "RXIF_LO_problems_11",
+    "Doc_No": "2/15451-LPA108338-5",
+    "Group": "Radio",
+    "Files_For_Search": "hwlogread.txt",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "RXIF_LO_problems_12",
+    "Doc_No": "2/15451-LPA108338-5",
+    "Group": "Radio",
+    "Files_For_Search": "hwlogread.txt",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "RXIF_LO_problems_13",
+    "Doc_No": "2/15451-LPA108338-5",
+    "Group": "Radio",
+    "Files_For_Search": "hwlogread.txt",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "RXIF_LO_problems_14",
+    "Doc_No": "2/15451-LPA108338-5",
+    "Group": "Radio",
+    "Files_For_Search": "hwlogread.txt",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "RXIF_LO_problems_15",
+    "Doc_No": "2/15451-LPA108338-5",
+    "Group": "Radio",
+    "Files_For_Search": "hwlogread.txt",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "RXIF_LO_problems_16",
+    "Doc_No": "2/15451-LPA108338-5",
+    "Group": "Radio",
+    "Files_For_Search": "hwlogread.txt",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "RXIF_LO_problems_17",
+    "Doc_No": "2/15451-LPA108338-5",
+    "Group": "Radio",
+    "Files_For_Search": "hwlogread.txt",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "PA_problems, 2/6;B",
+    "Doc_No": "2/15451-LPA108338-6",
+    "Group": "Radio",
+    "Files_For_Search": "hwlogread.txt",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "Linearization_problems, 2/-7, Rev C",
+    "Doc_No": "2/15451-LPA108338-7",
+    "Group": "Radio",
+    "Files_For_Search": "hwlogread.txt,elogread.txt",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "Linearization_problems_Prtt",
+    "Doc_No": "2/15451-LPA108338-8",
+    "Group": "Radio",
+    "Files_For_Search": "telogread.txt",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "Optical_Coupler_Quality_Issue, 2/-9, Rev D",
+    "Doc_No": "2/15451-LPA108338-9",
+    "Group": "Radio",
+    "Files_For_Search": "N/A",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "5X_gap_pad_Quality_Issue, 2/10;D",
+    "Doc_No": "2/15451-LPA108338-10",
+    "Group": "Radio",
+    "Files_For_Search": "telogread.txt",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "Calib_Data_Missing, Criteria_1, 2/-12, D",
+    "Doc_No": "2/15451-LPA108338-12",
+    "Group": "Radio",
+    "Files_For_Search": "N/A",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "Calib_Data_Missing, Criteria_2, 2/-12, D",
+    "Doc_No": "2/15451-LPA108338-12",
+    "Group": "Radio",
+    "Files_For_Search": "N/A",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "PSB Fault on RRUS 72",
+    "Doc_No": "2/15451-LPA108338-13",
+    "Group": "Radio",
+    "Files_For_Search": "telogread.txt",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "DCDC Component Failure 1",
+    "Doc_No": "2/15451-LPA108338-14",
+    "Group": "Radio",
+    "Files_For_Search": "hwlogread.txt",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "DCDC Component Failure 2",
+    "Doc_No": "2/15451-LPA108338-14",
+    "Group": "Radio",
+    "Files_For_Search": "hwlogread.txt",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "DCDC Component Failure 3",
+    "Doc_No": "2/15451-LPA108338-14",
+    "Group": "Radio",
+    "Files_For_Search": "hwlogread.txt",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "DCDC Component Failure 4",
+    "Doc_No": "2/15451-LPA108338-14",
+    "Group": "Radio",
+    "Files_For_Search": "hwlogread.txt",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "DCDC Component Failure 5",
+    "Doc_No": "2/15451-LPA108338-14",
+    "Group": "Radio",
+    "Files_For_Search": "hwlogread.txt",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "DCDC Component Failure 6",
+    "Doc_No": "2/15451-LPA108338-14",
+    "Group": "Radio",
+    "Files_For_Search": "hwlogread.txt",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "RUS01 Radios 321; fault",
+    "Doc_No": "2/15451-LPA108338-15",
+    "Group": "Radio",
+    "Files_For_Search": "hwlogread.txt",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "RUS01 Radios 352; fault",
+    "Doc_No": "2/15451-LPA108338-15",
+    "Group": "Radio",
+    "Files_For_Search": "hwlogread.txt",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "DCDC Component Failure indication T1",
+    "Doc_No": "2/15451-LPA108338-16",
+    "Group": "Radio",
+    "Files_For_Search": "hwlogread.txt",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "DCDC Component Failure indication T2",
+    "Doc_No": "2/15451-LPA108338-16",
+    "Group": "Radio",
+    "Files_For_Search": "hwlogread.txt",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "DCDC Component Failure indication T3",
+    "Doc_No": "2/15451-LPA108338-16",
+    "Group": "Radio",
+    "Files_For_Search": "hwlogread.txt",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "RXIF LO Problems RUS 01",
+    "Doc_No": "2/15451-LPA108338-17",
+    "Group": "Radio",
+    "Files_For_Search": "hwlogread.txt",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "PA-KRF Cable fault 2/-19;A",
+    "Doc_No": "2/15451-LPA108338-19",
+    "Group": "Radio",
+    "Files_For_Search": "hwlogread.txt",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "Diode Component Failure 2/-18,A",
+    "Doc_No": "2/15451-LPA108338-18",
+    "Group": "Radio",
+    "Files_For_Search": "hwlogread.txt",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "PL4 DCDC component collection 2/-20 (Crit 1,2,3,4),D",
+    "Doc_No": "2/15451-LPA108338-20",
+    "Group": "Radio",
+    "Files_For_Search": "hwlogread.txt",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "PL4 DCDC component collection 2/-20 (Crit 1,2,5),D",
+    "Doc_No": "2/15451-LPA108338-20",
+    "Group": "Radio",
+    "Files_For_Search": "hwlogread.txt",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "PL4 DCDC component collection 2/-20 (Crit 1,6),D",
+    "Doc_No": "2/15451-LPA108338-20",
+    "Group": "Radio",
+    "Files_For_Search": "hwlogread.txt",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "PL4 DCDC component collection 2/-20 (Crit 1,4,7),D",
+    "Doc_No": "2/15451-LPA108338-20",
+    "Group": "Radio",
+    "Files_For_Search": "hwlogread.txt",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "Fault Ind 468 for RRUS 11, 2/-23,PA5",
+    "Doc_No": "2/15451-LPA108338-23",
+    "Group": "Radio",
+    "Files_For_Search": "hwlogread.txt",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "Fault Ind 702 in RUS 01 B8, 2/-24,PA4",
+    "Doc_No": "2/15451-LPA108338-24",
+    "Group": "Radio",
+    "Files_For_Search": "hwlogread.txt",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "NFF Returns. 2/-22,D",
+    "Doc_No": "2/15451-LPA108338-22",
+    "Group": "Radio",
+    "Files_For_Search": "N/A",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "6th Time Return. 2/-22,D",
+    "Doc_No": "2/15451-LPA108338-22",
+    "Group": "Radio",
+    "Files_For_Search": "N/A",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "Restart of RRUS11 due to MMI, 2/-21,A",
+    "Doc_No": "2/15451-LPA108338-21",
+    "Group": "Radio",
+    "Files_For_Search": "elogread.txt",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "Radio 2219 B3 Start-up Problem, A, 2/-25",
+    "Doc_No": "2/15451-LPA108338-25",
+    "Group": "Radio",
+    "Files_For_Search": "N/A",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "Flux issue for Radio 4449, 2/-28, Rev A",
+    "Doc_No": "2/15451-LPA108338-28",
+    "Group": "Radio",
+    "Files_For_Search": "N/A",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "DCDC Component Failure indication, 317;. 2/-27,B",
+    "Doc_No": "2/15451-LPA108338-27",
+    "Group": "Radio",
+    "Files_For_Search": "hwlogread.txt",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "DCDC Component Failure indication, 837;. 2/-27,B",
+    "Doc_No": "2/15451-LPA108338-27",
+    "Group": "Radio",
+    "Files_For_Search": "hwlogread.txt",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "DCDC Component Failure indication, 317;837;. 2/-27,B",
+    "Doc_No": "2/15451-LPA108338-27",
+    "Group": "Radio",
+    "Files_For_Search": "hwlogread.txt",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "DCDC Component Failure, 317;. 2/-29,B",
+    "Doc_No": "2/15451-LPA108338-29",
+    "Group": "Radio",
+    "Files_For_Search": "hwlogread.txt",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "DCDC Component Failure, 837;. 2/-29,B",
+    "Doc_No": "2/15451-LPA108338-29",
+    "Group": "Radio",
+    "Files_For_Search": "hwlogread.txt",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "DCDC Component Failure, 317;,837;. 2/-29,B",
+    "Doc_No": "2/15451-LPA108338-29",
+    "Group": "Radio",
+    "Files_For_Search": "hwlogread.txt",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "DCDC Component Failure, 317;. 2/-29,B",
+    "Doc_No": "2/15451-LPA108338-29",
+    "Group": "Radio",
+    "Files_For_Search": "hwlogread.txt",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "DCDC Component Failure, 837;. 2/-29,B",
+    "Doc_No": "2/15451-LPA108338-29",
+    "Group": "Radio",
+    "Files_For_Search": "hwlogread.txt",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "DCDC Component Failure, 317;,837;. 2/-29,B",
+    "Doc_No": "2/15451-LPA108338-29",
+    "Group": "Radio",
+    "Files_For_Search": "hwlogread.txt",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "Defective Xenon1.0 for Radio 2468",
+    "Doc_No": "2/15451-LPA108338-30",
+    "Group": "Radio",
+    "Files_For_Search": "telogread.txt",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "Qorvo_pre-driver_delamination_RBS6k, LAT_2/-31_Rev_A",
+    "Doc_No": "2/15451-LPA108338-34",
+    "Group": "Radio",
+    "Files_For_Search": "hwlogread.txt",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "TI_TPS54360_Burn_Issue. 2/-33, Rev K, Criteria A",
+    "Doc_No": "2/15451-LPA108338-33",
+    "Group": "Radio",
+    "Files_For_Search": "N/A",
+    "Is_RCO_Criteria": "Yes",
+    "RCO_Criteria_Info": "Answer:'TI_TPS54360_Burn_Issue', Rco:'156 25-KRC 161 490/1-1_'"
+  },
+  {
+    "Name": "TI_TPS54360_Burn_Issue. 2/-33, Rev K, Criteria B",
+    "Doc_No": "2/15451-LPA108338-33",
+    "Group": "Radio",
+    "Files_For_Search": "N/A",
+    "Is_RCO_Criteria": "Yes",
+    "RCO_Criteria_Info": "Answer:'TI_TPS54360_Burn_Issue', Rco:'156 25-KRC 161 616/1-3_'"
+  },
+  {
+    "Name": "TI_TPS54360_Burn_Issue. 2/-33, Rev K, Criteria C",
+    "Doc_No": "2/15451-LPA108338-33",
+    "Group": "Radio",
+    "Files_For_Search": "N/A",
+    "Is_RCO_Criteria": "Yes",
+    "RCO_Criteria_Info": "Answer:'TI_TPS54360_Burn_Issue', Rco:'156 25-KRC 161 624/2-1_'"
+  },
+  {
+    "Name": "TI_TPS54360_Burn_Issue. 2/-33, Rev K, Criteria D",
+    "Doc_No": "2/15451-LPA108338-33",
+    "Group": "Radio",
+    "Files_For_Search": "N/A",
+    "Is_RCO_Criteria": "Yes",
+    "RCO_Criteria_Info": "Answer:'TI_TPS54360_Burn_Issue', Rco:'156 25-KRC 161 707/2-1_'"
+  },
+  {
+    "Name": "2_37_PSB_Power_Cable_A",
+    "Doc_No": "2/15451-LPA108338-37",
+    "Group": "Radio",
+    "Files_For_Search": "N/A",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "Wrong BPM loaded AIR 6488. 2/-38, Rev A",
+    "Doc_No": "2/15451-LPA108338-38",
+    "Group": "Radio",
+    "Files_For_Search": "N/A",
+    "Is_RCO_Criteria": "Yes",
+    "RCO_Criteria_Info": "Answer:'2_38_Wrong_BPM_Loaded', Rco:'15625-KRD 901 108/11-1'"
+  },
+  {
+    "Name": "Qorvo_pre-driver_delamination_ERS_ LAT_2/-39_Rev_A",
+    "Doc_No": "2/15451-LPA108338-39",
+    "Group": "Radio",
+    "Files_For_Search": "hwlogread.txt",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "LAT 2/-41 RRUS Link failure, Rev B",
+    "Doc_No": "2/154 51-LPA 108 338-41 Uen",
+    "Group": "Radio",
+    "Files_For_Search": "N/A",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "Generic_2/-40_E",
+    "Doc_No": "2/15451-LPA108338-40",
+    "Group": "Radio",
+    "Files_For_Search": "hwlogread.txt",
+    "Is_RCO_Criteria": "Yes",
+    "RCO_Criteria_Info": "expectedRco:'15625-KRC161619/1-4', relatedRcosAsString:'15625-KRC161619/1-4|15625-KRC161650/1-1|15625-KRC161753/1-1|15625-KRC161707/2-1_E', messageType:'Message2'"
+  },
+  {
+    "Name": "RX_RF_LO_2/-40_E",
+    "Doc_No": "2/15451-LPA108338-40",
+    "Group": "Radio",
+    "Files_For_Search": "hwlogread.txt",
+    "Is_RCO_Criteria": "Yes",
+    "RCO_Criteria_Info": "expectedRco:'15625-KRC161619/1-4', relatedRcosAsString:'15625-KRC161619/1-4|15625-KRC161650/1-1|15625-KRC161753/1-1|15625-KRC161707/2-1_E', messageType:'Message1'"
+  },
+  {
+    "Name": "“Unused” LAT_2/-43_Rev_B",
+    "Doc_No": "2/15451-LPA108338-43",
+    "Group": "Radio",
+    "Files_For_Search": "hwlogread.txt,elogread.txt",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "Radio 4443 High number going faulty, 2/-46, WUXI units, Rev A",
+    "Doc_No": "2/15451-LPA108338-46",
+    "Group": "Radio",
+    "Files_For_Search": "N/A",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "Radio 4443 High number going faulty, 2/-46, Rev A",
+    "Doc_No": "2/15451-LPA108338-46",
+    "Group": "Radio",
+    "Files_For_Search": "N/A",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "Tracy info update. 2/-47, Rev A",
+    "Doc_No": "2/15451-LPA108338-47",
+    "Group": "Radio",
+    "Files_For_Search": "N/A",
+    "Is_RCO_Criteria": "Yes",
+    "RCO_Criteria_Info": "Answer:'15625-KRC161661/1-2', Rco:'156 25- KRC161 661/1-2'"
+  },
+  {
+    "Name": "“Input voltage low, Less than 42V”_ LAT_2/-49_Rev_A",
+    "Doc_No": "2/15451-LPA108338-49",
+    "Group": "Radio",
+    "Files_For_Search": "elogread.txt",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "“Input voltage drops, Greater than 10”_ LAT_2/-49_Rev_A",
+    "Doc_No": "2/15451-LPA108338-49",
+    "Group": "Radio",
+    "Files_For_Search": "elogread.txt",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "“CPRI BER issue”_ LAT_2/-50_Rev_A",
+    "Doc_No": "2/15451-LPA108338-50",
+    "Group": "Radio",
+    "Files_For_Search": "elogread.txt",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "“CPRI SFP TxB bias fault”_ LAT_2/-50_Rev_A",
+    "Doc_No": "2/15451-LPA108338-50",
+    "Group": "Radio",
+    "Files_For_Search": "elogread.txt",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "“CPRI SFP TxP transmit fault”_ LAT_2/-50_Rev_A",
+    "Doc_No": "2/15451-LPA108338-50",
+    "Group": "Radio",
+    "Files_For_Search": "elogread.txt",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "“CPRI SFP RxP receive fault”_ LAT_2/-50_Rev_A",
+    "Doc_No": "2/15451-LPA108338-50",
+    "Group": "Radio",
+    "Files_For_Search": "elogread.txt",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "“CPRI SFP Temperature fault”_ LAT_2/-50_Rev_A",
+    "Doc_No": "2/15451-LPA108338-50",
+    "Group": "Radio",
+    "Files_For_Search": "elogread.txt",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "“CPRI SFP Voltage fault”_ LAT_2/-50_Rev_A",
+    "Doc_No": "2/15451-LPA108338-50",
+    "Group": "Radio",
+    "Files_For_Search": "elogread.txt",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "4449-cabel routing 2/-51, Rev B",
+    "Doc_No": "2/15451-LPA108338-51Uen",
+    "Group": "Radio",
+    "Files_For_Search": "N/A",
+    "Is_RCO_Criteria": "Yes",
+    "RCO_Criteria_Info": "rcosAsString:'156 25-KRC 161 749/1-2_D;15625-KRC161749/1-4'"
+  },
+  {
+    "Name": "Power Module for RRUS 12_2/-53_Rev _A, fault id 837,843",
+    "Doc_No": "2/15451-LPA108338-53",
+    "Group": "Radio",
+    "Files_For_Search": "hwlogread.txt",
+    "Is_RCO_Criteria": "Yes",
+    "RCO_Criteria_Info": "rco:'156 25-KRC 161 297/2-4', countryCode:'ID'"
+  },
+  {
+    "Name": "Power Module for RRUS 12_2/-53_Rev _A",
+    "Doc_No": "2/15451-LPA108338-53",
+    "Group": "Radio",
+    "Files_For_Search": "hwlogread.txt",
+    "Is_RCO_Criteria": "Yes",
+    "RCO_Criteria_Info": "rco:'156 25-KRC 161 297/2-4', countryCode:'ID'"
+  },
+  {
+    "Name": "Link Failure issue on RRUS13B7, 2/-54, rev A",
+    "Doc_No": "2/15451-LPA108338-54",
+    "Group": "Radio",
+    "Files_For_Search": "hwlogread.txt",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "TX_Gain_Block_QPA9807_delamination_issue_2/-55_Rev_A",
+    "Doc_No": "2/15451-LPA108338-55",
+    "Group": "Radio",
+    "Files_For_Search": "N/A",
+    "Is_RCO_Criteria": "Yes",
+    "RCO_Criteria_Info": "Answer:'TX_Gain_Block_QPA9807_delamination_issue', Rco:'156 25-KRC 161 676/1-1'"
+  },
+  {
+    "Name": "Pre-driver TX RF G2”_ LAT_2/-48_Rev_A",
+    "Doc_No": "2/15451-LPA108338-48",
+    "Group": "Radio",
+    "Files_For_Search": "elogread.txt",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "Claims/Repair HW-log LPA 108 338 Link Failure issue on RRUS12B3, 2/-45, Rev B",
+    "Doc_No": "2/15451-LPA108338-45",
+    "Group": "Radio",
+    "Files_For_Search": "N/A",
+    "Is_RCO_Criteria": "Yes",
+    "RCO_Criteria_Info": "Answer:'15625-KRC161282_2_4', Rco:'15625-KRC161282_2_4'"
+  },
+  {
+    "Name": "Capacitor Crack Issue Due to Frame Dimension, 2/-56, Rev A",
+    "Doc_No": "2/15451-LPA108338-56",
+    "Group": "Radio",
+    "Files_For_Search": "N/A",
+    "Is_RCO_Criteria": "Yes",
+    "RCO_Criteria_Info": "Answer:'2/-56_ Capacitor_Crack', Rco:'156 25-KRD 901 104/11-2'"
+  },
+  {
+    "Name": "LNA alarm, 2/-57, Rev A",
+    "Doc_No": "2/15451-LPA108338-57",
+    "Group": "Radio",
+    "Files_For_Search": "N/A",
+    "Is_RCO_Criteria": "Yes",
+    "RCO_Criteria_Info": "Answer:'2_57_RU_SN', Rco:'156 25-KRC 161 549/1-1'"
+  },
+  {
+    "Name": "Grease issue, 2/-58, Rev B",
+    "Doc_No": "2/15451-LPA108338-58",
+    "Group": "Radio",
+    "Files_For_Search": "N/A",
+    "Is_RCO_Criteria": "Yes",
+    "RCO_Criteria_Info": "Answer:'2/-58_Grease_issue', Rco:'15625-KRC161831/1-1'"
+  },
+  {
+    "Name": "AIR_6488_D2RF_module_issue_2/-61_Rev_A",
+    "Doc_No": "2/15451-LPA108338-61",
+    "Group": "Radio",
+    "Files_For_Search": "N/A",
+    "Is_RCO_Criteria": "Yes",
+    "RCO_Criteria_Info": "Answer:'AIR_6488_D2RF_module_issue', Rco:'156 25-KRD 901 105/11-1'"
+  },
+  {
+    "Name": "OCVCXO replacement on DUG20. 1/-39, PB2",
+    "Doc_No": "1/15451-LPA108338-39",
+    "Group": "DUG",
+    "Files_For_Search": "dx_diaglodread.txt",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "6th Time Return (DUG). 1/-49,D",
+    "Doc_No": "1/15451-LPA108338-49",
+    "Group": "DUG",
+    "Files_For_Search": "N/A",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "NFF Returns (DUG). 1/-49,D",
+    "Doc_No": "1/15451-LPA108338-49",
+    "Group": "DUG",
+    "Files_For_Search": "N/A",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "BBM Power PD1",
+    "Doc_No": "1/154 51-LPA 108 338-41",
+    "Group": "Baseband",
+    "Files_For_Search": "syslog",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "BBM Power PD2",
+    "Doc_No": "1/154 51-LPA 108 338-41",
+    "Group": "Baseband",
+    "Files_For_Search": "syslog",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "BBM Power PD3",
+    "Doc_No": "1/154 51-LPA 108 338-41",
+    "Group": "Baseband",
+    "Files_For_Search": "syslog",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "BBM Power PD4",
+    "Doc_No": "1/154 51-LPA 108 338-41",
+    "Group": "Baseband",
+    "Files_For_Search": "syslog",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "Fault during Certificate Enrollment, 1/-35",
+    "Doc_No": "1/15451-LPA108338-35",
+    "Group": "Baseband",
+    "Files_For_Search": "erlang.log.1,erlang.log.2,erlang.log.3,erlang.log.4,erlang.log.5,erlang.log.6,erlang.log.7,erlang.log.8,erlang.log.9",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "Boot issue: Parameter table is corrupt, 1-35",
+    "Doc_No": "1/15451-LPA108338-35",
+    "Group": "Baseband",
+    "Files_For_Search": "uboot.txt",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "Network Loader state, 1/-35",
+    "Doc_No": "1/15451-LPA108338-35",
+    "Group": "Baseband",
+    "Files_For_Search": "syslog",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "Network Loader state, 1/-35",
+    "Doc_No": "1/15451-LPA108338-35",
+    "Group": "Baseband",
+    "Files_For_Search": "NodeIPInfo.txt",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "Boot Fallback - Node suffers from corrupt backup, 1/-35",
+    "Doc_No": "1/15451-LPA108338-35",
+    "Group": "Baseband",
+    "Files_For_Search": "erlang.log.1,erlang.log.2,erlang.log.3,erlang.log.4,erlang.log.5,erlang.log.6,erlang.log.7,erlang.log.8,erlang.log.9",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "Log reader rule for faulty TN-A port issue on BB52xx - 1/-44;A",
+    "Doc_No": "1/15451-LPA108338-44",
+    "Group": "Baseband",
+    "Files_For_Search": "syslog",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "LogId(A6E,A6F,A6G). 1/-37;H",
+    "Doc_No": "1/15451-LPA108338-37",
+    "Group": "Baseband",
+    "Files_For_Search": "ee_esi.log",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "LogId(A6O). 1/-37;H",
+    "Doc_No": "1/15451-LPA108338-37",
+    "Group": "Baseband",
+    "Files_For_Search": "ee_esi.log",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "LogId(A6Q). 1/-37;H",
+    "Doc_No": "1/15451-LPA108338-37",
+    "Group": "Baseband",
+    "Files_For_Search": "ee_esi.log",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "LogId(A6R). 1/-37;H",
+    "Doc_No": "1/15451-LPA108338-37",
+    "Group": "Baseband",
+    "Files_For_Search": "ee_esi.log",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "LogId(A6S). 1/-37;H",
+    "Doc_No": "1/15451-LPA108338-37",
+    "Group": "Baseband",
+    "Files_For_Search": "ee_esi.log",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "LogId(A6V,A6W)v1. 1/-37;H",
+    "Doc_No": "1/15451-LPA108338-37",
+    "Group": "Baseband",
+    "Files_For_Search": "ee_esi.log",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "LogId(A6V,A6W)v2. 1/-37;H",
+    "Doc_No": "1/15451-LPA108338-37",
+    "Group": "Baseband",
+    "Files_For_Search": "ee_esi.log",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "LogId(A74). 1/-37;H",
+    "Doc_No": "1/15451-LPA108338-37",
+    "Group": "Baseband",
+    "Files_For_Search": "ee_esi.log",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "LogId(A7A). 1/-37;H",
+    "Doc_No": "1/15451-LPA108338-37",
+    "Group": "Baseband",
+    "Files_For_Search": "ee_esi.log",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "LogId(A7B). 1/-37;H",
+    "Doc_No": "1/15451-LPA108338-37",
+    "Group": "Baseband",
+    "Files_For_Search": "ee_esi.log",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "LogId(A7C). 1/-37;H",
+    "Doc_No": "1/15451-LPA108338-37",
+    "Group": "Baseband",
+    "Files_For_Search": "ee_esi.log",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "LogId(A7D). 1/-37;H",
+    "Doc_No": "1/15451-LPA108338-37",
+    "Group": "Baseband",
+    "Files_For_Search": "ee_esi.log",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "LogId(A7E)-Exapnder0. 1/-37;H",
+    "Doc_No": "1/15451-LPA108338-37",
+    "Group": "Baseband",
+    "Files_For_Search": "ee_esi.log",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "LogId(A7E)-Exapnder1. 1/-37;H",
+    "Doc_No": "1/15451-LPA108338-37",
+    "Group": "Baseband",
+    "Files_For_Search": "ee_esi.log",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "LogId(A7F). 1/-37;H",
+    "Doc_No": "1/15451-LPA108338-37",
+    "Group": "Baseband",
+    "Files_For_Search": "ee_esi.log",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "LogId(A7G). 1/-37;H",
+    "Doc_No": "1/15451-LPA108338-37",
+    "Group": "Baseband",
+    "Files_For_Search": "ee_esi.log",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "LogId(A7H)v1. 1/-37;H",
+    "Doc_No": "1/15451-LPA108338-37",
+    "Group": "Baseband",
+    "Files_For_Search": "ee_esi.log",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "LogId(A7H)v2. 1/-37;H",
+    "Doc_No": "1/15451-LPA108338-37",
+    "Group": "Baseband",
+    "Files_For_Search": "ee_esi.log",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "LogId(A7I). 1/-37;H",
+    "Doc_No": "1/15451-LPA108338-37",
+    "Group": "Baseband",
+    "Files_For_Search": "ee_esi.log",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "LogId(A7K). 1/-37;H",
+    "Doc_No": "1/15451-LPA108338-37",
+    "Group": "Baseband",
+    "Files_For_Search": "ee_esi.log",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "LogId(A7K)-Switch0. 1/-37;H",
+    "Doc_No": "1/15451-LPA108338-37",
+    "Group": "Baseband",
+    "Files_For_Search": "ee_esi.log",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "LogId(A7K)-Switch1. 1/-37;H",
+    "Doc_No": "1/15451-LPA108338-37",
+    "Group": "Baseband",
+    "Files_For_Search": "ee_esi.log",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "LogId(A7K)-Switch2. 1/-37;H",
+    "Doc_No": "1/15451-LPA108338-37",
+    "Group": "Baseband",
+    "Files_For_Search": "ee_esi.log",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "LogId(A7M). 1/-37;H",
+    "Doc_No": "1/15451-LPA108338-37",
+    "Group": "Baseband",
+    "Files_For_Search": "ee_esi.log",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "LogId(A7N). 1/-37;H",
+    "Doc_No": "1/15451-LPA108338-37",
+    "Group": "Baseband",
+    "Files_For_Search": "ee_esi.log",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "LogId(A7O)-BBM1. 1/-37;H",
+    "Doc_No": "1/15451-LPA108338-37",
+    "Group": "Baseband",
+    "Files_For_Search": "ee_esi.log",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "LogId(A7O)-BBM2. 1/-37;H",
+    "Doc_No": "1/15451-LPA108338-37",
+    "Group": "Baseband",
+    "Files_For_Search": "ee_esi.log",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "LogId(A7O)-BBM3. 1/-37;H",
+    "Doc_No": "1/15451-LPA108338-37",
+    "Group": "Baseband",
+    "Files_For_Search": "ee_esi.log",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "LogId(A7O)-BBM4. 1/-37;H",
+    "Doc_No": "1/15451-LPA108338-37",
+    "Group": "Baseband",
+    "Files_For_Search": "ee_esi.log",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "LogId(A7Q). 1/-37;H",
+    "Doc_No": "1/15451-LPA108338-37",
+    "Group": "Baseband",
+    "Files_For_Search": "ee_esi.log",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "LogId(A7R). 1/-37;H",
+    "Doc_No": "1/15451-LPA108338-37",
+    "Group": "Baseband",
+    "Files_For_Search": "ee_esi.log",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "LogId(A7S). 1/-37;H",
+    "Doc_No": "1/15451-LPA108338-37",
+    "Group": "Baseband",
+    "Files_For_Search": "ee_esi.log",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "LogId(A7T). 1/-37;H",
+    "Doc_No": "1/15451-LPA108338-37",
+    "Group": "Baseband",
+    "Files_For_Search": "ee_esi.log",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "LogId(A7U). 1/-37;H",
+    "Doc_No": "1/15451-LPA108338-37",
+    "Group": "Baseband",
+    "Files_For_Search": "ee_esi.log",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "LogId(A7Z). 1/-37;H",
+    "Doc_No": "1/15451-LPA108338-37",
+    "Group": "Baseband",
+    "Files_For_Search": "ee_esi.log",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "LogId(A80). 1/-37;H",
+    "Doc_No": "1/15451-LPA108338-37",
+    "Group": "Baseband",
+    "Files_For_Search": "ee_esi.log",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "LogId(A81). 1/-37;H",
+    "Doc_No": "1/15451-LPA108338-37",
+    "Group": "Baseband",
+    "Files_For_Search": "ee_esi.log",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "LogId(A82). 1/-37;H",
+    "Doc_No": "1/15451-LPA108338-37",
+    "Group": "Baseband",
+    "Files_For_Search": "ee_esi.log",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "LogId(A83). 1/-37;H",
+    "Doc_No": "1/15451-LPA108338-37",
+    "Group": "Baseband",
+    "Files_For_Search": "ee_esi.log",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "LogId(A84). 1/-37;H",
+    "Doc_No": "1/15451-LPA108338-37",
+    "Group": "Baseband",
+    "Files_For_Search": "ee_esi.log",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "LogId(A85). 1/-37;H",
+    "Doc_No": "1/15451-LPA108338-37",
+    "Group": "Baseband",
+    "Files_For_Search": "ee_esi.log",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "LogId(A86). 1/-37;H",
+    "Doc_No": "1/15451-LPA108338-37",
+    "Group": "Baseband",
+    "Files_For_Search": "ee_esi.log",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "LogId(A8A). 1/-37;H",
+    "Doc_No": "1/15451-LPA108338-37",
+    "Group": "Baseband",
+    "Files_For_Search": "ee_esi.log",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "LogId(A8B). 1/-37;H",
+    "Doc_No": "1/15451-LPA108338-37",
+    "Group": "Baseband",
+    "Files_For_Search": "ee_esi.log",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "LogId(A8C). 1/-37;H",
+    "Doc_No": "1/15451-LPA108338-37",
+    "Group": "Baseband",
+    "Files_For_Search": "ee_esi.log",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "LogId(A8D). 1/-37;H",
+    "Doc_No": "1/15451-LPA108338-37",
+    "Group": "Baseband",
+    "Files_For_Search": "ee_esi.log",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "LogId(A8E). 1/-37;H",
+    "Doc_No": "1/15451-LPA108338-37",
+    "Group": "Baseband",
+    "Files_For_Search": "ee_esi.log",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "LogId(A8F). 1/-37;H",
+    "Doc_No": "1/15451-LPA108338-37",
+    "Group": "Baseband",
+    "Files_For_Search": "ee_esi.log",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "LogId(A8G)v1. 1/-37;H",
+    "Doc_No": "1/15451-LPA108338-37",
+    "Group": "Baseband",
+    "Files_For_Search": "ee_esi.log",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "LogId(A8G)v2. 1/-37;H",
+    "Doc_No": "1/15451-LPA108338-37",
+    "Group": "Baseband",
+    "Files_For_Search": "ee_esi.log",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "LogId(A8H). 1/-37;H",
+    "Doc_No": "1/15451-LPA108338-37",
+    "Group": "Baseband",
+    "Files_For_Search": "ee_esi.log",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "LogId(A8M). 1/-37;H",
+    "Doc_No": "1/15451-LPA108338-37",
+    "Group": "Baseband",
+    "Files_For_Search": "ee_esi.log",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "LogId(A8N)(A8U). 1/-37;H",
+    "Doc_No": "1/15451-LPA108338-37",
+    "Group": "Baseband",
+    "Files_For_Search": "ee_esi.log",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "LogId(A8V). 1/-37;H",
+    "Doc_No": "1/15451-LPA108338-37",
+    "Group": "Baseband",
+    "Files_For_Search": "ee_esi.log",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "Units in return flow Baseband. 1/-50, Rev F",
+    "Doc_No": "1/15451-LPA108338-50",
+    "Group": "Baseband",
+    "Files_For_Search": "N/A",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "NFF Returns. 1/-49,D",
+    "Doc_No": "1/15451-LPA108338-49",
+    "Group": "Baseband",
+    "Files_For_Search": "N/A",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "6th Time Return. 1/-49,D",
+    "Doc_No": "1/15451-LPA108338-49",
+    "Group": "Baseband",
+    "Files_For_Search": "N/A",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "Handling of output in U-boot log. 1/-48, A",
+    "Doc_No": "1/15451-LPA108338-48",
+    "Group": "Baseband",
+    "Files_For_Search": "uboot.txt",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "Handling of Fan for BB66 products, Rule 1. 1/-59,D",
+    "Doc_No": "2/15451-LPA108338-43",
+    "Group": "Baseband",
+    "Files_For_Search": "ee_esi.log, saLogAlarm_*.log",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "Handling of Fan for BB66 products, Rule 2. 1/-59,D",
+    "Doc_No": "2/15451-LPA108338-43",
+    "Group": "Baseband",
+    "Files_For_Search": "ee_esi.log, saLogAlarm_*.log",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "Handling of Fan for BB66 products, Rule 3. 1/-59,D",
+    "Doc_No": "2/15451-LPA108338-43",
+    "Group": "Baseband",
+    "Files_For_Search": "ee_esi.log,saLogAlarm_*.log",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "Handling of Fan for BB66 products, Rule 4. 1/-59,D",
+    "Doc_No": "2/15451-LPA108338-43",
+    "Group": "Baseband",
+    "Files_For_Search": "ee_esi.log",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "ERS BB units with HW Fault alarm in alarm log, Rule1, 1/-61, Rev F",
+    "Doc_No": "1/15451-LPA108338-61",
+    "Group": "Baseband",
+    "Files_For_Search": "saLogAlarm_*.log",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "ERS BB units with HW Fault alarm in alarm log, Rule2, 1/-61, Rev F",
+    "Doc_No": "1/15451-LPA108338-61",
+    "Group": "Baseband",
+    "Files_For_Search": "ee_esi.log",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "EQMH Error, 1/-62 EMCA1 EE-ERITA, Rev G",
+    "Doc_No": "1/15451-LPA108338-62",
+    "Group": "Baseband",
+    "Files_For_Search": "llog,syslog",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "EQMH Error, 1/-62 EMCA1, Rev G",
+    "Doc_No": "1/15451-LPA108338-62",
+    "Group": "Baseband",
+    "Files_For_Search": "llog,syslog",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "EQMH Error, 1/-62 EMCA2 EE-ERITA, Rev G",
+    "Doc_No": "1/15451-LPA108338-62",
+    "Group": "Baseband",
+    "Files_For_Search": "llog,syslog",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "EQMH Error, 1/-62 EMCA2, Rev G",
+    "Doc_No": "1/15451-LPA108338-62",
+    "Group": "Baseband",
+    "Files_For_Search": "llog,syslog",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "EQMH Error, 1/-62 EMCA3 EE-ERITA, Rev G",
+    "Doc_No": "1/15451-LPA108338-62",
+    "Group": "Baseband",
+    "Files_For_Search": "llog,syslog",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "EQMH Error, 1/-62 EMCA3, Rev G",
+    "Doc_No": "1/15451-LPA108338-62",
+    "Group": "Baseband",
+    "Files_For_Search": "llog,syslog",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "EQMH Error, 1/-62 EMCA4 EE-ERITA, Rev G",
+    "Doc_No": "1/15451-LPA108338-62",
+    "Group": "Baseband",
+    "Files_For_Search": "llog,syslog",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "EQMH Error, 1/-62 EMCA4, Rev G",
+    "Doc_No": "1/15451-LPA108338-62",
+    "Group": "Baseband",
+    "Files_For_Search": "llog,syslog",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "EQMH Error, 1/-62 EMCA1 EE-ERITA SEVERAL, Rev G",
+    "Doc_No": "1/15451-LPA108338-62",
+    "Group": "Baseband",
+    "Files_For_Search": "llog,syslog",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "EMCA bit-flip issue on BB52, issue1, 1/-63, Rev D",
+    "Doc_No": "1/15451-LPA108338-63",
+    "Group": "Baseband",
+    "Files_For_Search": "llog,syslog",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "EMCA bit-flip issue on BB52, issue2, 1/-63, Rev D",
+    "Doc_No": "1/15451-LPA108338-63",
+    "Group": "Baseband",
+    "Files_For_Search": "llog,syslog",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "EMCA bit-flip issue on BB52, issue3, 1/-63, Rev D",
+    "Doc_No": "1/15451-LPA108338-63",
+    "Group": "Baseband",
+    "Files_For_Search": "llog,syslog",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "EMCA bit-flip issue on BB52, issue4, 1/-63, Rev D",
+    "Doc_No": "1/15451-LPA108338-63",
+    "Group": "Baseband",
+    "Files_For_Search": "llog,syslog",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "Rule1 for OCXO batch issue on BB52, 1/-65, A",
+    "Doc_No": "1/15451-LPA108338-65",
+    "Group": "Baseband",
+    "Files_For_Search": "N/A",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "Rule2 for OCXO batch issue on BB52, 1/-65, A",
+    "Doc_No": "1/15451-LPA108338-65",
+    "Group": "Baseband",
+    "Files_For_Search": "ee_esi.log",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "Rule3 for OCXO batch issue on BB52, 1/-65, A",
+    "Doc_No": "1/15451-LPA108338-65",
+    "Group": "Baseband",
+    "Files_For_Search": "ee_esi.log",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "eUSB disk error E1300A2 uboot RCS (R1 to R5), 1/-45;D",
+    "Doc_No": "1/15451-LPA108338-45",
+    "Group": "Baseband",
+    "Files_For_Search": "uboot.txt",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "eUSB disk error E1300A2 uboot RCS (R10 and newer), 1/-45;D",
+    "Doc_No": "1/15451-LPA108338-45",
+    "Group": "Baseband",
+    "Files_For_Search": "uboot.txt",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "eUSB disk error D2A2 uboot RCS 1/-45;D",
+    "Doc_No": "1/15451-LPA108338-45",
+    "Group": "Baseband",
+    "Files_For_Search": "uboot.txt",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "eUSB disk error E1300A2 ee_esi A66 (R1 to R5), 1/-45;D",
+    "Doc_No": "1/15451-LPA108338-45",
+    "Group": "Baseband",
+    "Files_For_Search": "ee_esi.log",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "eUSB disk error E1300A2 ee_esi A66,A6V (R10 and newer), 1/-45;D",
+    "Doc_No": "1/15451-LPA108338-45",
+    "Group": "Baseband",
+    "Files_For_Search": "ee_esi.log",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "eUSB disk error D2A2 ee_esi A66,A6V 1/-45;D",
+    "Doc_No": "1/15451-LPA108338-45",
+    "Group": "Baseband",
+    "Files_For_Search": "ee_esi.log",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "eUSB disk error E1300A2 ee_esi A6V (R1 to R5), 1/-45;D",
+    "Doc_No": "1/15451-LPA108338-45",
+    "Group": "Baseband",
+    "Files_For_Search": "ee_esi.log",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "ERS BBunits with Edac Device fault, 1/-67;A",
+    "Doc_No": "1/15451-LPA108338-67",
+    "Group": "Baseband",
+    "Files_For_Search": "uboot.txt",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "Repeated Return BB52XX, 1/-42;F",
+    "Doc_No": "1/15451-LPA108338-42",
+    "Group": "Baseband",
+    "Files_For_Search": "N/A",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "Repeated Return BB66XX, 1/-42;F",
+    "Doc_No": "1/15451-LPA108338-42",
+    "Group": "Baseband",
+    "Files_For_Search": "N/A",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "BB52 units with Sync related alarms, 1/-60; Uen",
+    "Doc_No": "1/15451-LPA108338-60",
+    "Group": "Baseband",
+    "Files_For_Search": "saLogAlarm_*.log",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "Rule for ERS BB units with SMEM/CMEM ECC bit errors; Rule 1 (0), 1/-72, Rev D",
+    "Doc_No": "1/15451-LPA108338-72Uen",
+    "Group": "Baseband",
+    "Files_For_Search": "ee_esi.log",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "Rule for ERS BB units with SMEM/CMEM ECC bit errors; Rule 1 (1), 1/-72, Rev D",
+    "Doc_No": "1/15451-LPA108338-72Uen",
+    "Group": "Baseband",
+    "Files_For_Search": "ee_esi.log",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "Rule for ERS BB units with SMEM/CMEM ECC bit errors; Rule 2a (0), 1/-72, Rev D",
+    "Doc_No": "1/15451-LPA108338-72Uen",
+    "Group": "Baseband",
+    "Files_For_Search": "ee_esi.log",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "Rule for ERS BB units with SMEM/CMEM ECC bit errors; Rule 2a (1), 1/-72, Rev D",
+    "Doc_No": "1/15451-LPA108338-72Uen",
+    "Group": "Baseband",
+    "Files_For_Search": "ee_esi.log",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "Rule for ERS BB units with SMEM/CMEM ECC bit errors; Rule 2b (0), 1/-72, Rev D",
+    "Doc_No": "1/15451-LPA108338-72Uen",
+    "Group": "Baseband",
+    "Files_For_Search": "ee_esi.log",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "Rule for ERS BB units with SMEM/CMEM ECC bit errors; Rule 2b (1), 1/-72, Rev D",
+    "Doc_No": "1/15451-LPA108338-72Uen",
+    "Group": "Baseband",
+    "Files_For_Search": "ee_esi.log",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "Rule for ERS BB units with SMEM/CMEM ECC bit errors; Rule 2c (0), 1/-72, Rev D",
+    "Doc_No": "1/15451-LPA108338-72Uen",
+    "Group": "Baseband",
+    "Files_For_Search": "ee_esi.log",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "Rule for ERS BB units with SMEM/CMEM ECC bit errors; Rule 2c (1), 1/-72, Rev D",
+    "Doc_No": "1/15451-LPA108338-72Uen",
+    "Group": "Baseband",
+    "Files_For_Search": "ee_esi.log",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "Rule for ERS BB units with SMEM/CMEM ECC bit errors; Rule 2d (0), 1/-72, Rev D",
+    "Doc_No": "1/15451-LPA108338-72Uen",
+    "Group": "Baseband",
+    "Files_For_Search": "ee_esi.log",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "Rule for ERS BB units with SMEM/CMEM ECC bit errors; Rule 2d (1), 1/-72, Rev D",
+    "Doc_No": "1/15451-LPA108338-72Uen",
+    "Group": "Baseband",
+    "Files_For_Search": "ee_esi.log",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "Rule for ERS BB units with SMEM/CMEM ECC bit errors; Rule 2e (0), 1/-72, Rev D",
+    "Doc_No": "1/15451-LPA108338-72Uen",
+    "Group": "Baseband",
+    "Files_For_Search": "ee_esi.log",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "Rule for ERS BB units with SMEM/CMEM ECC bit errors; Rule 2e (1), 1/-72, Rev D",
+    "Doc_No": "1/15451-LPA108338-72Uen",
+    "Group": "Baseband",
+    "Files_For_Search": "ee_esi.log",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "Rule for ERS BB units with SMEM/CMEM ECC bit errors; Rule 2f (0), 1/-72, Rev D",
+    "Doc_No": "1/15451-LPA108338-72Uen",
+    "Group": "Baseband",
+    "Files_For_Search": "ee_esi.log",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "Rule for ERS BB units with SMEM/CMEM ECC bit errors; Rule 2f (1), 1/-72, Rev D",
+    "Doc_No": "1/15451-LPA108338-72Uen",
+    "Group": "Baseband",
+    "Files_For_Search": "ee_esi.log",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "Rule for ERS BB units with SMEM/CMEM ECC bit errors; Rule 2g (0), 1/-72, Rev D",
+    "Doc_No": "1/15451-LPA108338-72Uen",
+    "Group": "Baseband",
+    "Files_For_Search": "ee_esi.log",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "Rule for ERS BB units with SMEM/CMEM ECC bit errors; Rule 2g (1), 1/-72, Rev D",
+    "Doc_No": "1/15451-LPA108338-72Uen",
+    "Group": "Baseband",
+    "Files_For_Search": "ee_esi.log",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "Rule for ERS BB units with SMEM/CMEM ECC bit errors; Rule 2h (0), 1/-72, Rev D",
+    "Doc_No": "1/15451-LPA108338-72Uen",
+    "Group": "Baseband",
+    "Files_For_Search": "ee_esi.log",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "Rule for ERS BB units with SMEM/CMEM ECC bit errors; Rule 2h (1), 1/-72, Rev D",
+    "Doc_No": "1/15451-LPA108338-72Uen",
+    "Group": "Baseband",
+    "Files_For_Search": "ee_esi.log",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "Rule for ERS BB units with SMEM/CMEM ECC bit errors; Rule 2i (0), 1/-72, Rev D",
+    "Doc_No": "1/15451-LPA108338-72Uen",
+    "Group": "Baseband",
+    "Files_For_Search": "ee_esi.log",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "Rule for ERS BB units with SMEM/CMEM ECC bit errors; Rule 2i (1), 1/-72, Rev D",
+    "Doc_No": "1/15451-LPA108338-72Uen",
+    "Group": "Baseband",
+    "Files_For_Search": "ee_esi.log",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "Rule for ERS BB units with SMEM/CMEM ECC bit errors; Rule 2j (0), 1/-72, Rev D",
+    "Doc_No": "1/15451-LPA108338-72Uen",
+    "Group": "Baseband",
+    "Files_For_Search": "ee_esi.log",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "Rule for ERS BB units with SMEM/CMEM ECC bit errors; Rule 2j (1), 1/-72, Rev D",
+    "Doc_No": "1/15451-LPA108338-72Uen",
+    "Group": "Baseband",
+    "Files_For_Search": "ee_esi.log",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "LAT 1/-71, Rule 1, EMCA1 fault, Rev A",
+    "Doc_No": "1/15451-LPA108338-71",
+    "Group": "Baseband",
+    "Files_For_Search": "ee_esi.log",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "LAT 1/-71, Rule 1, EMCA2 fault, Rev A",
+    "Doc_No": "1/15451-LPA108338-71",
+    "Group": "Baseband",
+    "Files_For_Search": "ee_esi.log",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "LAT 1/-71, Rule 1, EMCA3 fault, Rev A",
+    "Doc_No": "1/15451-LPA108338-71",
+    "Group": "Baseband",
+    "Files_For_Search": "ee_esi.log",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "LAT 1/-71, Rule 1, EMCA4 fault, Rev A",
+    "Doc_No": "1/15451-LPA108338-71",
+    "Group": "Baseband",
+    "Files_For_Search": "ee_esi.log",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "LAT 1/-71, Rule 2, EMCA fault, Rev A",
+    "Doc_No": "1/15451-LPA108338-71",
+    "Group": "Baseband",
+    "Files_For_Search": "ee_esi.log",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "BB66xx units with incorrect capacitor issue. 1/-75, Rev A",
+    "Doc_No": "1/15451-LPA108338-75",
+    "Group": "Baseband",
+    "Files_For_Search": "N/A",
+    "Is_RCO_Criteria": "Yes",
+    "RCO_Criteria_Info": "Answer:'1_75_Incorrect_Capacitor_Issue', Rco:'156 25-KDU 137 848/11-1;'"
+  },
+  {
+    "Name": "Wrong capaticor issue on BB52XX. 1/-76, Rev A",
+    "Doc_No": "1/15451-LPA108338-76",
+    "Group": "Baseband",
+    "Files_For_Search": "N/A",
+    "Is_RCO_Criteria": "Yes",
+    "RCO_Criteria_Info": "Answer:'1_76_Incorrect_Capacitor_Issue', Rco:'156 25-KDU 137 925/31-7'"
+  },
+  {
+    "Name": "LAT 1/-79, Rule 1, EC Address change issue on BB6318, Rev B",
+    "Doc_No": "1/15451-LPA108338-79",
+    "Group": "Baseband",
+    "Files_For_Search": "saLogAlarm_*.log",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "LAT 1/-79, Rule 2, EC Address change issue on BB6318, Rev B",
+    "Doc_No": "1/15451-LPA108338-79",
+    "Group": "Baseband",
+    "Files_For_Search": "saLogAlarm_*.log",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "LAT 1/-80, Get prbs status in emca1 port et9 fail issue (include Lead Repair EE-ERITA), Rev A",
+    "Doc_No": "1/154 51-LPA 108 338-80 Uen",
+    "Group": "Baseband",
+    "Files_For_Search": "HWLog.txt",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "LAT 1/-80, Get prbs status in emca1 port et9 fail issue (exclude Lead Repair), Rev A",
+    "Doc_No": "1/154 51-LPA 108 338-80 Uen",
+    "Group": "Baseband",
+    "Files_For_Search": "HWLog.txt",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "LAT 1/-82, Rule 1, Rule for EMCA HW faults on ERS BB - CM memory, Rev B",
+    "Doc_No": "1/15451-LPA108338-82",
+    "Group": "Baseband",
+    "Files_For_Search": "syslog,llog",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "LAT 1/-82, Rule 2, Rule for EMCA HW faults on ERS BB - CM memory, Rev B",
+    "Doc_No": "1/15451-LPA108338-82",
+    "Group": "Baseband",
+    "Files_For_Search": "syslog,llog",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "LAT 1/-82, Rule 3, Rule for EMCA HW faults on ERS BB - CM memory, Rev B",
+    "Doc_No": "1/15451-LPA108338-82",
+    "Group": "Baseband",
+    "Files_For_Search": "syslog,llog",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "LAT 1/-82, Rule 4, Rule for EMCA HW faults on ERS BB - CM memory, Rev B",
+    "Doc_No": "1/15451-LPA108338-82",
+    "Group": "Baseband",
+    "Files_For_Search": "syslog,llog",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "LAT 1/-73, Mock counter too high for BB G2.1, Rev B",
+    "Doc_No": "1/15451-LPA108338-73Uen",
+    "Group": "Baseband",
+    "Files_For_Search": "N/A",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "Trinity-S 1/-83 (1),Rev B",
+    "Doc_No": "1/15451-LPA108338-83",
+    "Group": "Baseband",
+    "Files_For_Search": "ee_esi.log",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "Trinity-S 1/-83 (2),Rev B",
+    "Doc_No": "1/15451-LPA108338-83",
+    "Group": "Baseband",
+    "Files_For_Search": "ee_esi.log",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "Trinity-S 1/-83 (3),Rev B",
+    "Doc_No": "1/15451-LPA108338-83",
+    "Group": "Baseband",
+    "Files_For_Search": "ee_esi.log",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "Trinity-S 1/-83 (4),Rev B",
+    "Doc_No": "1/15451-LPA108338-83",
+    "Group": "Baseband",
+    "Files_For_Search": "ee_esi.log",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "DDR memory 1/-83 (1) A/0,Rev B",
+    "Doc_No": "1/15451-LPA108338-83",
+    "Group": "Baseband",
+    "Files_For_Search": "ee_esi.log, syslog",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "DDR memory 1/-83 (2) A/0,Rev B",
+    "Doc_No": "1/15451-LPA108338-83",
+    "Group": "Baseband",
+    "Files_For_Search": "ee_esi.log, syslog",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "DDR memory 1/-83 (3) A/0,Rev B",
+    "Doc_No": "1/15451-LPA108338-83",
+    "Group": "Baseband",
+    "Files_For_Search": "ee_esi.log, syslog",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "DDR memory 1/-83 (4) A/0,Rev B",
+    "Doc_No": "1/15451-LPA108338-83",
+    "Group": "Baseband",
+    "Files_For_Search": "ee_esi.log, syslog",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "DDR memory 1/-83 (1) B/1,Rev B",
+    "Doc_No": "1/15451-LPA108338-83",
+    "Group": "Baseband",
+    "Files_For_Search": "ee_esi.log, syslog",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "DDR memory 1/-83 (2) B/1,Rev B",
+    "Doc_No": "1/15451-LPA108338-83",
+    "Group": "Baseband",
+    "Files_For_Search": "ee_esi.log, syslog",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "DDR memory 1/-83 (3) B/1,Rev B",
+    "Doc_No": "1/15451-LPA108338-83",
+    "Group": "Baseband",
+    "Files_For_Search": "ee_esi.log, syslog",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "DDR memory 1/-83 (4) B/1,Rev B",
+    "Doc_No": "1/15451-LPA108338-83",
+    "Group": "Baseband",
+    "Files_For_Search": "ee_esi.log, syslog",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "FPGA CRC (A6H). 1/-85;A",
+    "Doc_No": "1/15451-LPA108338-85",
+    "Group": "Baseband",
+    "Files_For_Search": "ee_esi.log, syslog",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "HWLogId handling G3BB 1/-84,Rev A",
+    "Doc_No": "1/15451-LPA108338-84",
+    "Group": "Baseband",
+    "Files_For_Search": "ee_esi.log",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "LAT 1/-68, Rule 0x, A6N, Rev F",
+    "Doc_No": "1/15451-LPA108338-68",
+    "Group": "Baseband",
+    "Files_For_Search": "ee_esi.log,syslog,uboot.txt",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "LAT 1/-68, Rule 1a0, PLL Trap issue, Rev F",
+    "Doc_No": "1/15451-LPA108338-68",
+    "Group": "Baseband",
+    "Files_For_Search": "ee_esi.log,syslog,uboot.txt",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "LAT 1/-68, Rule 1a1, PLL Trap issue, Rev F",
+    "Doc_No": "1/15451-LPA108338-68",
+    "Group": "Baseband",
+    "Files_For_Search": "ee_esi.log,syslog,uboot.txt",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "LAT 1/-68, Rule 1b, PLL Trap issue, Rev F",
+    "Doc_No": "1/15451-LPA108338-68",
+    "Group": "Baseband",
+    "Files_For_Search": "ee_esi.log,syslog,uboot.txt",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "LAT 1/-68, Rule 1c, PLL Trap issue, Rev F",
+    "Doc_No": "1/15451-LPA108338-68",
+    "Group": "Baseband",
+    "Files_For_Search": "ee_esi.log,syslog,uboot.txt",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "LAT 1/-68, Rule 1d, PLL Trap issue, Rev F",
+    "Doc_No": "1/15451-LPA108338-68",
+    "Group": "Baseband",
+    "Files_For_Search": "ee_esi.log,syslog,uboot.txt",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "LAT 1/-68, Rule 1abcd, PLL Trap issue, Rev F",
+    "Doc_No": "1/15451-LPA108338-68",
+    "Group": "Baseband",
+    "Files_For_Search": "ee_esi.log,syslog,uboot.txt",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "LAT 1/-68, Rule 1e, PLL Trap issue, Rev F",
+    "Doc_No": "1/15451-LPA108338-68",
+    "Group": "Baseband",
+    "Files_For_Search": "ee_esi.log,syslog,uboot.txt",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "LAT 1/-68, Rule 1f, PLL Trap issue, Rev F",
+    "Doc_No": "1/15451-LPA108338-68",
+    "Group": "Baseband",
+    "Files_For_Search": "ee_esi.log,syslog,uboot.txt",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "LAT 1/-68, Rule 1g, PLL Trap issue, Rev F",
+    "Doc_No": "1/15451-LPA108338-68",
+    "Group": "Baseband",
+    "Files_For_Search": "ee_esi.log,syslog,uboot.txt",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "LAT 1/-68, Rule 1fg, PLL Trap issue, Rev F",
+    "Doc_No": "1/15451-LPA108338-68",
+    "Group": "Baseband",
+    "Files_For_Search": "ee_esi.log,syslog,uboot.txt",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "LAT 1/-68, Rule 1h, PLL Trap issue, Rev F",
+    "Doc_No": "1/15451-LPA108338-68",
+    "Group": "Baseband",
+    "Files_For_Search": "ee_esi.log,syslog,uboot.txt",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "LAT 1/-68, Rule 1i, PLL Trap issue, Rev F",
+    "Doc_No": "1/15451-LPA108338-68",
+    "Group": "Baseband",
+    "Files_For_Search": "ee_esi.log,syslog,uboot.txt",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "LAT 1/-68, Rule 1j, PLL Trap issue, Rev F",
+    "Doc_No": "1/15451-LPA108338-68",
+    "Group": "Baseband",
+    "Files_For_Search": "ee_esi.log,syslog,uboot.txt",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "LAT 1/-68, Rule 1ij, PLL Trap issue, Rev F",
+    "Doc_No": "1/15451-LPA108338-68",
+    "Group": "Baseband",
+    "Files_For_Search": "ee_esi.log,syslog,uboot.txt",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "LAT 1/-68, Rule 1k, PLL Trap issue, Rev F",
+    "Doc_No": "1/15451-LPA108338-68",
+    "Group": "Baseband",
+    "Files_For_Search": "ee_esi.log,syslog,uboot.txt",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "LAT 1/-68, Rule 2a, PLL issue, Products Rule 1abcde, Rev F",
+    "Doc_No": "1/15451-LPA108338-68",
+    "Group": "Baseband",
+    "Files_For_Search": "ee_esi.log,syslog,uboot.txt",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "LAT 1/-68, Rule 2a, PLL issue, Products Rule 1fgh, Rev F",
+    "Doc_No": "1/15451-LPA108338-68",
+    "Group": "Baseband",
+    "Files_For_Search": "ee_esi.log,syslog,uboot.txt",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "LAT 1/-68, Rule 2a, PLL issue, Products Rule 1ijk, Rev F",
+    "Doc_No": "1/15451-LPA108338-68",
+    "Group": "Baseband",
+    "Files_For_Search": "ee_esi.log,syslog,uboot.txt",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "LAT 1/-68, Rule 2c, PLL issue, Products Rule 1abcde, Rev F",
+    "Doc_No": "1/15451-LPA108338-68",
+    "Group": "Baseband",
+    "Files_For_Search": "ee_esi.log,syslog,uboot.txt",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "LAT 1/-68, Rule 2c, PLL issue, Products Rule 1fgh, Rev F",
+    "Doc_No": "1/15451-LPA108338-68",
+    "Group": "Baseband",
+    "Files_For_Search": "ee_esi.log,syslog,uboot.txt",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "LAT 1/-68, Rule 2c, PLL issue, Products Rule 1ijk, Rev F",
+    "Doc_No": "1/15451-LPA108338-68",
+    "Group": "Baseband",
+    "Files_For_Search": "ee_esi.log,syslog,uboot.txt",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "LAT 1/-68, Rule 2f, PLL issue, Products Rule 1abcde, Rev F",
+    "Doc_No": "1/15451-LPA108338-68",
+    "Group": "Baseband",
+    "Files_For_Search": "ee_esi.log,syslog,uboot.txt",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "LAT 1/-68, Rule 2f, PLL issue, Products Rule 1fgh, Rev F",
+    "Doc_No": "1/15451-LPA108338-68",
+    "Group": "Baseband",
+    "Files_For_Search": "ee_esi.log,syslog,uboot.txt",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "LAT 1/-68, Rule 2f, PLL issue, Products Rule 1ijk, Rev F",
+    "Doc_No": "1/15451-LPA108338-68",
+    "Group": "Baseband",
+    "Files_For_Search": "ee_esi.log,syslog,uboot.txt",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "Faulty Label issue, 1/-86, Rev A",
+    "Doc_No": "1/15451-LPA108338-86Uen",
+    "Group": "Baseband",
+    "Files_For_Search": "N/A",
+    "Is_RCO_Criteria": "Yes",
+    "RCO_Criteria_Info": "Answer:'15625-KDU137862/11-1', Rco:'156 25-KDU 137 862/11-1'"
+  },
+  {
+    "Name": "OCXO_VCXO_1",
+    "Doc_No": "1/00201-LPA108338-4",
+    "Group": "TCU_SIU",
+    "Files_For_Search": "log_read_system.txt",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "OCXO_VCXO_2",
+    "Doc_No": "1/00201-LPA108338-4",
+    "Group": "TCU_SIU",
+    "Files_For_Search": "log_read_system.txt",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "OCXO_VCXO_1",
+    "Doc_No": "1/00201-LPA108338-4",
+    "Group": "TCU_SIU",
+    "Files_For_Search": "log_read_system.txt",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "OCXO_VCXO_2",
+    "Doc_No": "1/00201-LPA108338-4",
+    "Group": "TCU_SIU",
+    "Files_For_Search": "log_read_system.txt",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "ECC_ERROR_SIU02",
+    "Doc_No": "1/15451-LPA108338-32",
+    "Group": "TCU_SIU",
+    "Files_For_Search": "log_read_system.txt",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  },
+  {
+    "Name": "ECC_ERROR_TCU02",
+    "Doc_No": "1/15451-LPA108338-31",
+    "Group": "TCU_SIU",
+    "Files_For_Search": "log_read_system.txt",
+    "Is_RCO_Criteria": "No",
+    "RCO_Criteria_Info": "N/A"
+  }
+]
