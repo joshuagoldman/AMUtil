@@ -4,9 +4,9 @@
     "description": "Simple Fable App",
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1",
-        "dev": "concurrently \"npm run server\" \"npm start\"",
+        "dev": "concurrently \"dotnet watch run Server/bin/Debug/netcoreapp3.1/Server.dll\" \"npm start\"",
         "start": "webpack-dev-server",
-        "server": "nodemon --delay 3 server"
+        "server_js": "nodemon --delay 3 server"
     },
     "keywords": [],
     "author": "",

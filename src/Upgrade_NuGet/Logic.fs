@@ -1201,15 +1201,79 @@ let getNewStatus progress project dispatch =
 
     newLoadingStatusMsg
 
-let changeNameAsync project ( version : string ) dispatch = async {
-    let reqBody =
-        String.Format(
-            "project=Ericsson.AM.{0}&version={1}",
-            project.Name,
-            version
-        )
+type Project = {
+    ProjectName : string
+    ProjectNamePure : string
+}
 
-    let url = "http://localhost:3001/ChangeName"
+let projectEncoder (record : Project) =
+        Thoth.Json.Encode.object
+            [ "ProjectName", Thoth.Json.Encode.string record.ProjectName
+              "ProjectNamePure", Thoth.Json.Encode.string record.ProjectNamePure
+            ]
+
+type Paths = {
+    SpecificPath : string
+    GeneralPath : string
+}
+
+let pathEncoder (record : Paths) =
+    Thoth.Json.Encode.object
+        [ "Port", Thoth.Json.Encode.string record.SpecificPath
+          "URL", Thoth.Json.Encode.string record.GeneralPath
+        ]
+
+type SocketInfo = {
+    Port : int
+    URL : string
+}
+
+let socketInfoEncoder (record : SocketInfo) =
+    Thoth.Json.Encode.object
+        [ "Port", Thoth.Json.Encode.int record.Port
+          "URL", Thoth.Json.Encode.string record.URL
+        ]
+
+type ChangeNuGetType = {
+    Project : Project
+    NuGetVersionName : string
+    Paths : Paths
+    Socket : SocketInfo
+    Rate : int
+}
+
+let changeNuGetNameEncoder (record : ChangeNuGetType) =
+    Thoth.Json.Encode.object
+        [ "Project", projectEncoder record.Project
+          "NuGetVersionName", Thoth.Json.Encode.string record.NuGetVersionName
+          "Paths", pathEncoder record.Paths
+          "Rate", Thoth.Json.Encode.int record.Rate
+        ]
+
+let changeNameAsync project ( version : string ) dispatch = async {
+
+    let reqBody =
+        {
+            Project = {
+                ProjectName = project.Name
+                ProjectNamePure = project.Name.Replace("Ericsson.AM.","")
+            }
+            NuGetVersionName  = version
+            Paths = {
+                SpecificPath = ""
+                GeneralPath = ""
+            }
+            Socket = {
+                Port = 3001
+                URL = "localhost"
+            }
+            Rate = 1
+            
+        }
+        |> changeNuGetNameEncoder
+        |> fun jsonVal -> jsonVal.ToString()
+
+    let url = "http://localhost:8086/api/ChangeName"
 
     let! request =
         Async.FromContinuations <| fun (resolve,_,_) ->
@@ -1219,50 +1283,35 @@ let changeNameAsync project ( version : string ) dispatch = async {
             xhr.setRequestHeader("Content-Type","application/x-www-form-urlencoded")
             xhr.timeout <- 10000.0
 
-            let socketResponse = ProgressSocket.connect("http://localhost:3001")
-    
-            match socketResponse.ErrorMessage with
-            | None  ->
-                socketResponse.Socket.Value
-                |> ProgressSocket.addEventListener_message(fun scktMsg ->
-                    let eventResult = (scktMsg :?> Global.Types.MessageTypeID)
+            let socket = Browser.WebSocket.Create("http://localhost:3001")
 
-                    match (eventResult.ID = project.Name) with
+            socket.onmessage <- fun x ->
+
+            let eventResult = (x.data :?> string)
+
+            let progress =JsInterop.Regex.Match "(?<=progress=).*?(?=;)*" eventResult
+            let id =JsInterop.Regex.Match "(?<=id=).*?(?=;)*" eventResult
+            let isMsg =JsInterop.Regex.IsMatch "@message:" eventResult 
+
+            match (id.Value = project.Name) with
+                | true ->
+                    match isMsg.Value with
                     | true ->
-                        getNewStatus eventResult.Progress project dispatch
+                        getNewStatus (progress.Value |> float) project dispatch
                     | _ ->
-                        ()
-                            
-                    ) "message"
-                |> ProgressSocket.addEventListener_message(fun scktMsg ->
-                    let response = (scktMsg :?> FinishedTypeID)
-
-                    match (response.ID = project.Name) with
-                    | true ->
-                        socketResponse.Socket.Value 
-                        |> ProgressSocket.disconnect
-                        |> ignore
+                        let response = (x.data :?> string)
+                    
+                        socket.close()
 
                         getNewStatus 100.0 project dispatch
 
-                        resolve
+                        resolve 
                             {
-                                Status = response.Status
-                                Msg = response.Msg
+                                Status = 500
+                                Msg = response
                             }
-                    | _ ->
-                        ()
-                    
-                    ) "finished"
-                |> ignore
-
-            | Some error ->
-
-                resolve
-                    {
-                        Status = 404
-                        Msg = error
-                    }
+                | _ ->
+                    ()
 
             xhr.ontimeout <- fun _ ->
                 let error =

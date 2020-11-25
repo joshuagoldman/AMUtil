@@ -109,8 +109,8 @@ let requestFormDataStyle ( fData : Browser.FormData ) =
     Async.FromContinuations <| fun (resolve,_,_) ->
 
         let xhr = Browser.XMLHttpRequest.Create()
-        xhr.``open``(method = "POST", url = "http://localhost:3001/RcoList")
-        xhr.timeout <- 8000.0
+        xhr.``open``(method = "POST", url = "http://localhost:8086/api/RcoList")
+        xhr.timeout <- 200000.0
     
 
         xhr.onreadystatechange <- fun _ ->
@@ -412,49 +412,38 @@ let updateFile file_type dispatch popupPosition rcoObjArr = async {
         Async.FromContinuations <| fun (resolve,_,_) ->
 
             let xhr = Browser.XMLHttpRequest.Create()
-            xhr.``open``(method = "POST", url = "http://localhost:3001/save")
+            xhr.``open``(method = "POST", url = "http://localhost:8086/api/SaveRCOList")
             xhr.timeout <- 10000.0
 
-            let socketResponse = ProgressSocket.connect("http://localhost:3001")
-    
-            match socketResponse.ErrorMessage with
-            | None  ->
-                socketResponse.Socket.Value
-                |> ProgressSocket.addEventListener_message(fun scktMsg ->
-                    let eventResult = (scktMsg :?> MessageType)
+            let socket = Browser.WebSocket.Create("http://localhost:3001")
 
-                    let msg = "loading file (" + (eventResult.Progress |> int |> string) + " loaded)"
+            socket.onmessage <- fun x ->
 
-                    let popupInfoStr =
-                        eventResult.Progress |>
-                        (
-                            Popup.View.getPopupMsgProgress msg >>
-                            checkingProcessPopupMsg popupPosition >>
-                            dispatch
-                        )
+            let eventResult = (x.data :?> string)
 
-                    popupInfoStr
-                            
-                    ) "message"
-                |> ProgressSocket.addEventListener_message(fun scktMsg ->
-                    let response = (scktMsg :?> FinishedType)
+            match eventResult.ToLower().Contains("@message:") with
+            | true ->
+                let msg = "loading file (" + (eventResult.Replace("@message:","") |> int |> string) + " loaded)"
+
+                let popupInfoStr =
+                    (eventResult.Replace("@message:","")) |>
+                    (
+                        float >>
+                        Popup.View.getPopupMsgProgress msg >>
+                        checkingProcessPopupMsg popupPosition >>
+                        dispatch
+                    )
+
+                popupInfoStr
+            | _ ->
+                let response = (x.data :?> string)
             
-                    socketResponse.Socket.Value 
-                    |> ProgressSocket.disconnect
-                    |> ignore
+                socket.close()
 
-                    resolve response
-
-                    
-                    ) "finished"
-                |> ignore
-
-            | Some error ->
-
-                resolve
+                resolve 
                     {
-                        Status = 404
-                        Msg = error
+                        Status = 500
+                        Msg = response
                     }
 
             xhr.ontimeout <- fun _ ->
