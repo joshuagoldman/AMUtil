@@ -73,11 +73,9 @@ let socket_write port (msg : string ) =
             |> writeLine ConsoleColor.Red
 
 let receiveStream model  = 
-    let mutable content = String.Empty
-    let memoryStream = new MemoryStream()
-    let streamWriter = new StreamWriter(memoryStream)
+    let streamWriter = new MemoryStream()
     try
-        using(File.OpenWrite(model.Paths.SpecificPath))( fun file ->
+        using(File.Open(model.Paths.SpecificPath, FileMode.Open))( fun file ->
             let bt =
                 [|0..model.Rate|]
                 |> Array.map (fun _ -> 1048756 |> byte)
@@ -85,9 +83,7 @@ let receiveStream model  =
             let mutable readByte = file.Read(bt, 0, bt.Length) 
 
             while readByte > 0 do
-                streamWriter.Write(readByte)
-
-                content <- System.Text.Encoding.UTF8.GetString(BitConverter.GetBytes(readByte));
+                streamWriter.Write(bt,0,readByte)
 
                 let percentage = (file.Position * (100 |> int64) / file.Length)
                 Console.ForegroundColor <- ConsoleColor.Green
@@ -103,11 +99,13 @@ let receiveStream model  =
 
             let regex = Regex("(?<=<Version>).*(?=<\/Version>)")
 
+            let content = System.Text.Encoding.UTF8.GetString(streamWriter.ToArray())
+
             let oldVersion = regex.Match(content).Value
 
-            content <- content.Replace($"<Version>{oldVersion}</Version>",$"<Version>{model.NuGetVersionName}</Version>")
+            let newContent = content.Replace($"<Version>{oldVersion}</Version>",$"<Version>{model.NuGetVersionName}</Version>")
 
-            content |> Ok
+            newContent |> Ok
         )
 
     with

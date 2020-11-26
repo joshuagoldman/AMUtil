@@ -59,7 +59,7 @@ let monitorEachProjectInfoExtraction ( nugetServerInfo : string )
 
     let nugetPackageVersionRegex = "(?<=<Version>).*(?=<\/Version>)"
             
-    let! res = requestCustom "http://localhost:3001/projectInfo" fullProjectNameFolder
+    let! res = requestCustom "http://localhost:8086/api/projectInfo" fullProjectNameFolder
 
     let standardFailMsg = "Loading was not successfull"
 

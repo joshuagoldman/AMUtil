@@ -9,6 +9,7 @@ open System.Net.Sockets
 open System.Net
 open Microsoft.AspNetCore.Builder
 open FSharp.Control.Tasks.V2
+open System.Text
 
 type WebSocketServerMessage = { Time : System.DateTime; Message : string }
 
@@ -97,6 +98,29 @@ let defaultView = router {
             ChangeNuGetName.update testobj ChangeNuGetName.Initialize
 
             return! json "Finished!" next ctx
+        })
+    post "/api/projectInfo" (fun next ctx ->
+        task{
+            let stream = new StreamReader(ctx.Request.Body)
+            let! projectNameUnRefined = stream.ReadToEndAsync()
+            let projectName = projectNameUnRefined.Replace("project=","")
+            let dir = Directory.GetCurrentDirectory()
+            let generalPath = $"{dir}\..\public\loganalyzer"
+            let specificPath = $"{generalPath}\{projectName}\{projectName}.csproj"
+
+            let writeStream = new MemoryStream()
+            let file = File.Open(specificPath, FileMode.Open)
+            let bt = [|1048756 |> byte|]
+            let mutable readByte = file.Read(bt,0,bt.Length)
+
+
+            while readByte > 0 do
+                writeStream.Write(bt,0,readByte)
+                readByte <- file.Read(bt, 0, bt.Length)
+
+            let content = Encoding.ASCII.GetString(writeStream.ToArray())
+
+            return! json content next ctx
         })
 } 
 
