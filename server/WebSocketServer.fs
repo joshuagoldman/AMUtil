@@ -9,24 +9,24 @@ let mutable _clientSockets = seq[] : seq<Socket>
 let _serverSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp)
 
 let receiveCallback ar =
-    let socket = (ar : IAsyncResult).AsyncState :?> Socket
-    let received = socket.EndReceive(ar)
+    let socket = (ar : IAsyncResult).AsyncState
+    let received = (socket :?> Socket).EndReceive(ar)
     let dataBuf = [|received |> byte|]
     Array.Copy(_buffer, dataBuf, received)
 
     let text = System.Text.Encoding.ASCII.GetString(dataBuf)
-    Console.Write($"Text received: {text}")
+    Console.Write("Text received: " + text)
 
-let rec acceptCallback ar =
+let  rec acceptCallback ar =
     let socket = _serverSocket.EndAccept(ar : IAsyncResult)
     _clientSockets <- seq[socket]
     socket.BeginReceive(_buffer, 0, _buffer.Length, SocketFlags.None, new AsyncCallback(receiveCallback), socket) |> ignore
-    
 
 
-let setupServer =
+let setupServer = async {
     Console.WriteLine "Setting up socket..."
 
-    _serverSocket.Bind(IPEndPoint(IPAddress.Any, 100))
+    _serverSocket.Bind(IPEndPoint(IPAddress.Any, 3001))
     _serverSocket.Listen(5)
-    _serverSocket.BeginAccept(new AsyncCallback(acceptCallback), null)
+    _serverSocket.BeginAccept(new AsyncCallback(acceptCallback), null) |> ignore
+}

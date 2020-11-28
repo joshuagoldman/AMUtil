@@ -1,50 +1,55 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
-    <!-- Info -->
+    <ProjectReference Include="..\SharedTypes\SharedTypes.fsproj" />
+  </ItemGroup>
+  <ItemGroup>
     <Compile Include="GlobalViews.fs" />
     <Compile Include="PopupTypes.fs" />
     <Compile Include="GlobalTypes.fs" />
     <Compile Include="PopupView.fs" />
     <Compile Include="JsInterop.fs" />
-    <Compile Include="Template\Types.fs" />
-    <Compile Include="Template\Logic.fs" />
-    <Compile Include="Template\State.fs" />
-    <Compile Include="Template\View.fs" />
-    <Compile Include="Criteria_Changes\Types.fs" />
-    <Compile Include="Criteria_Changes\Logic.fs" />
-    <Compile Include="Criteria_Changes\State.fs" />
-    <Compile Include="Criteria_Changes\View.fs" />
-    <Compile Include="Rco_Update\Types.fs" />
-    <Compile Include="Rco_Update\Logic.fs" />
-    <Compile Include="Rco_Update\State.fs" />
-    <Compile Include="Rco_Update\RcoFaultTable.fs" />
-    <Compile Include="Rco_Update\View.fs" />
-    <Compile Include="Upgrade_NuGet\Types.fs" />
-    <Compile Include="Upgrade_NuGet\Logic.fs" />
-    <Compile Include="Upgrade_NuGet\State.fs" />
-    <Compile Include="Upgrade_NuGet\RepoStateTable.fs" />
-    <Compile Include="Upgrade_NuGet\View.fs" />
-    <Compile Include="Main\Types.fs" />
-    <Compile Include="Main\Logic.fs" />
-    <Compile Include="Main\State.fs" />
-    <Compile Include="Main\View.fs" />
-    <!-- Counter -->
-    <!-- CounterList -->
-    <!-- Home -->
-    <!-- Navbar -->
+    <Compile Include="Template/Types.fs" />
+    <Compile Include="Template/Logic.fs" />
+    <Compile Include="Template/State.fs" />
+    <Compile Include="Template/View.fs" />
+    <Compile Include="Criteria_Changes/Types.fs" />
+    <Compile Include="Criteria_Changes/Logic.fs" />
+    <Compile Include="Criteria_Changes/State.fs" />
+    <Compile Include="Criteria_Changes/View.fs" />
+    <Compile Include="Rco_Update/Types.fs" />
+    <Compile Include="Rco_Update/Logic.fs" />
+    <Compile Include="Rco_Update/State.fs" />
+    <Compile Include="Rco_Update/RcoFaultTable.fs" />
+    <Compile Include="Rco_Update/View.fs" />
+    <Compile Include="Upgrade_NuGet/Types.fs" />
+    <Compile Include="Upgrade_NuGet/Logic.fs" />
+    <Compile Include="Upgrade_NuGet/State.fs" />
+    <Compile Include="Upgrade_NuGet/RepoStateTable.fs" />
+    <Compile Include="Upgrade_NuGet/View.fs" />
+    <Compile Include="Main/Types.fs" />
+    <Compile Include="Main/Logic/Logic.fs" />
+    <Compile Include="Main/Logic/DownloadRepo.fs" />
+    <Compile Include="Main/Logic/CommandAPIs.fs" />
+    <Compile Include="Main/Logic/ParseGitUser.fs" />
+    <Compile Include="Main/State.fs" />
+    <Compile Include="Main/View.fs" />
     <Compile Include="Types.fs" />
     <Compile Include="State.fs" />
     <Compile Include="App.fs" />
-    <!-- App -->
+    <Compile Include="../SharedTypes/SharedTypes.fs" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Elmish" Version="3.1.0" />
     <PackageReference Include="Fable.Core" Version="3.1.6" />
+    <PackageReference Include="Fable.Fetch" Version="2.2.0" />
     <PackageReference Include="Fable.Import.Browser" Version="1.4.0" />
+    <PackageReference Include="fable.remoting.client" Version="7.2.0" />
     <PackageReference Include="Feliz" Version="1.17.0" />
+    <PackageReference Include="fsharp.core" Version="5.0.0" />
+    <PackageReference Include="Thoth.Fetch" Version="2.0.0" />
   </ItemGroup>
   <Import Project="..\.paket\Paket.Restore.targets" />
 </Project>

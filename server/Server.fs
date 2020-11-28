@@ -5,11 +5,11 @@ open Giraffe
 open System.IO
 open WriteFile
 open CmdPrompt
-open System.Net.Sockets
-open System.Net
-open Microsoft.AspNetCore.Builder
 open FSharp.Control.Tasks.V2
 open System.Text
+open Fable.Remoting.Server
+open Fable.Remoting.Giraffe
+open SharedTypes
 
 type WebSocketServerMessage = { Time : System.DateTime; Message : string }
 
@@ -17,54 +17,104 @@ let saveRcoFileAsync init = task {
     update init WriteFile.Initialize
 }
 
-let hostEntry = Dns.GetHostEntry("localhost")
-let ipe = new IPEndPoint(hostEntry.AddressList.[0] , 3001)
+WebSocketServer.setupServer
+|> Async.StartImmediate
 
-let socket = 
-    new Socket(ipe.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
+let getRcoAsObject (formFile : obj ) = async{
+    let file = formFile :?> Microsoft.AspNetCore.Http.IFormFile
+    let stream = file.OpenReadStream()
+    let! content = 
+        stream
+        |> UpdateRCOScript.getAllNewRcoInfo
 
-socket.Bind(ipe)
-socket.Listen(128)
+    return(content)
+}
 
-let executeCommands ( commands : seq<string> ) = task {
+let executeCommands ( commands : CommandInfo array ) = async {
     let res =
         commands
-        |> Seq.map (fun cmd ->
-                match cmd.ToLower().Contains("cd server") with
-                | false ->
-                    cmd |> executeCommand
-                | true ->
-                    let currPath = Directory.GetCurrentDirectory()
-                    let server_path = $"{currPath}../public"
-                    let fullCommand = $"cd {server_path}"
+        |> Array.map (fun cmd ->
+                let resp = 
+                    let isServerCommand =
+                        cmd.Command.ToLower().Contains("cd") &&
+                        cmd.Arg.ToLower().Contains("server")
+                    match isServerCommand with
+                    | false ->
+                        cmd.Command 
+                        |> executeCommand cmd.Arg
+                    | true ->
+                        let currPath = Directory.GetCurrentDirectory()
+                        let server_path = $"{currPath}../public"
+                        let fullCommand = 
+                            {cmd with Arg = server_path}
 
-                    fullCommand |> executeCommand
+                        fullCommand.Command 
+                        |> executeCommand fullCommand.Arg
+                {
+                    Command = cmd
+                    Answer = resp
+                }
                 
             )
-        |> String.concat "\n"
 
     return res
     
 }
 
+let saveRcoListAction init = async{
+    update init WriteFile.Initialize
+}
+
+let performNugetNameChange testObj = async{
+    ChangeNuGetName.update testObj ChangeNuGetName.Initialize
+}
+
+let getProjectInfo ( projectName : string ) =
+    async{
+            let dir = Directory.GetCurrentDirectory()
+            let generalPath = $"{dir}\..\public\loganalyzer"
+            let specificPath = $"{generalPath}\{projectName}\{projectName}.csproj"
+
+            let writeStream = new MemoryStream()
+            let file = File.Open(specificPath, FileMode.Open)
+            let bt = [|1048756 |> byte|]
+            let mutable readByte = file.Read(bt,0,bt.Length)
+
+
+            while readByte > 0 do
+                writeStream.Write(bt,0,readByte)
+                readByte <- file.Read(bt, 0, bt.Length)
+
+            let content = Encoding.ASCII.GetString(writeStream.ToArray())
+
+            return content
+        }
+
+
+let apis = {
+    GetRcoObject = getRcoAsObject
+    Command = executeCommands
+    WriteFile = saveRcoListAction
+    ChangeNuGet = performNugetNameChange
+    GetProjecInfo = getProjectInfo
+}
 
 let defaultView = router {
+
     post "/api/SaveRCOList" (fun next ctx ->
         task{
-            let! init = ctx.BindModelAsync<WriteFile.Model>()
-            do! saveRcoFileAsync init
+            let! init = ctx.BindModelAsync<WriteFileModel>()
+            do! saveRcoListAction init
             return! (next ctx)
         })
         
     post "/api/Command" (fun next ctx ->
         task{
-            let! commandsAsString = ctx.BindModelAsync<string>()
-            let allCommands = commandsAsString.Split(";")
+            let! allCommands = ctx.BindModelAsync<CommandInfo array>()
 
             let! allCommandsRes =
                 allCommands
-                |> Array.toSeq
-                |> executeCommands
+                |> executeCommands 
 
             return! json allCommandsRes next ctx
         })
@@ -76,25 +126,14 @@ let defaultView = router {
             let stream = file.OpenReadStream()
             let! content = 
                 stream
-                |> UpdateRCOScript.getRCOUpdateAsRcoObj
-
-            return! json content next ctx
-        })
-
-    post "/api/ProjectInfo" (fun next ctx ->
-        task{
-            let! file = ctx.BindModelAsync<Microsoft.AspNetCore.Http.IFormFile>()
-            let stream = file.OpenReadStream()
-            let content = 
-                stream
-                |> UpdateRCOScript.getRCOUpdateAsRcoObj
+                |> UpdateRCOScript.getAllNewRcoInfo
 
             return! json content next ctx
         })
 
     post "/api/ChangeName" (fun next ctx ->
         task{
-            let! testobj = ctx.BindModelAsync<ChangeNuGetName.Model>()
+            let! testobj = ctx.BindModelAsync<NuGetChange.ChangeNugetNameModel>()
             ChangeNuGetName.update testobj ChangeNuGetName.Initialize
 
             return! json "Finished!" next ctx
@@ -124,15 +163,22 @@ let defaultView = router {
         })
 } 
 
+let ajajRouter = 
+    Remoting.createApi()
+    |> Remoting.fromValue apis
+    |> Remoting.buildHttpHandler
+    
+    
+
 let app =
     application {
         url "http://localhost:8086"
         use_router defaultView
+        use_router ajajRouter
         memory_cache
         use_json_serializer(Thoth.Json.Giraffe.ThothSerializer())
         use_static "../public"
         use_gzip
-        app_config (fun ab -> ab.UseWebSockets().UseMiddleware<WebSockets.WebSocketMiddleware>())
     }
 
 run app

@@ -51,14 +51,19 @@ let update msg (model:Model) : Model * GlobalMsg * Cmd<Msg> =
             |> Array.map (fun msg -> msg |> Cmd.ofMsg)
             |> Cmd.batch
         model, MsgNone, batchedMsgs
+    | Async_Msg_Main asyncMsg ->
+        let msg = asyncMsg |> Cmd.fromAsync
+        model, MsgNone, msg
     | MsgNone_Main ->
         model, MsgNone,[]
     | Check_If_Git_Installed_Msg stage ->
         match stage with
         | CheckProcessStarted dispatch ->
-            Logic.checkIfProcessExists dispatch
-            |> Async.StartImmediate
-            model, MsgNone, []
+            let msg = 
+                Logic.CommandApis.checkIfGitInstalledAsync dispatch
+                |> Cmd.fromAsync
+
+            model, MsgNone, msg
         | CheckProcess.CheckProcessEnded result ->
 
             let changeInstalledStatusGlobalMsg =
@@ -80,7 +85,7 @@ let update msg (model:Model) : Model * GlobalMsg * Cmd<Msg> =
         | CheckProcess.CheckProcessStarted dispatch  ->
             dispatch |>
             (
-                Logic.checkOriginAccessibility >>
+                Logic.CommandApis.checkOriginAccessibility >>
                 Async.StartImmediate
             )
             model, MsgNone, []
@@ -100,7 +105,7 @@ let update msg (model:Model) : Model * GlobalMsg * Cmd<Msg> =
         | CheckProcess.CheckProcessStarted dispatch  ->
             dispatch |>
             (
-                Logic.checkRepositoryDownloaded >>
+                Logic.CommandApis.checkRepositoryDownloaded >>
                 Async.StartImmediate
             )
             model, MsgNone, []
@@ -116,7 +121,7 @@ let update msg (model:Model) : Model * GlobalMsg * Cmd<Msg> =
         | CheckProcess.CheckProcessStarted dispatch  ->
             dispatch |>
             (
-                Logic.downloadRepo >>
+                Logic.DownloadRepo.downloadRepo >>
                 Async.StartImmediate
             )
             model, MsgNone, []

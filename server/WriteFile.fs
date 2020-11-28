@@ -5,6 +5,7 @@ open System.IO
 open System.Text.RegularExpressions
 open System.Net.Sockets
 open System.Text
+open SharedTypes
 
 let writeLine (color : ConsoleColor) ( msg : string ) =
     Console.ForegroundColor <- color
@@ -18,13 +19,6 @@ type Fetch<'a> =
 type Msg =
     | Initialize
     | Write_To_File of MemoryStream
-
-type Model = {
-    Insert_Text : string
-    Dest_Path : string
-    Rate : int
-    SocketPort : int
-}
 
 let socket_write port (msg : string ) =
     let serverIp = "localhost"
@@ -112,7 +106,7 @@ let writeProgress variant (prog : int) =
         else
             Console.Write(output)
 
-let rec update ( model : Model ) ( msg : Msg )  =
+let rec update ( model : WriteFileModel ) ( msg : Msg )  =
     match msg with
     | Initialize ->
         match model.Insert_Text.Length with

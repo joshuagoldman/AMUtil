@@ -52,3 +52,5 @@ let update msg (model:Model) : Types.Model * Global.Types.GlobalMsg * Cmd<Msg> =
 
     | Download_Table_Info(info,dispatch) ->
         model, Global.Types.MsgNone, []
+    | Change_Table_Info info ->
+        model, Global.Types.MsgNone, []

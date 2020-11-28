@@ -5,33 +5,11 @@ open System.Net.Sockets
 open System.Text
 open System
 open System.Text.RegularExpressions
+open SharedTypes.NuGetChange
 
 type Defined<'a> =
     | Defined of 'a
     | Not_Defined
-
-type Project = {
-    ProjectName : string
-    ProjectNamePure : string
-}
-
-type Paths = {
-    SpecificPath : string
-    GeneralPath : string
-}
-
-type SocketInfo = {
-    Port : int
-    URL : string
-}
-
-type Model = {
-    Project : Project
-    NuGetVersionName : string
-    Paths : Paths
-    Socket : SocketInfo
-    Rate : int
-}
 
 type Msg =
     | Initialize
@@ -116,7 +94,7 @@ let receiveStream model  =
         ex.Message
         |> Error
 
-let writeToFile model (writeStream : MemoryStream ) = 
+let writeToFile ( model : ChangeNugetNameModel) (writeStream : MemoryStream ) = 
         try
             let fsOut = new FileStream(model.Paths.SpecificPath, FileMode.Create)
 

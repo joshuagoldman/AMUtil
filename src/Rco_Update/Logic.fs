@@ -7,6 +7,8 @@ open System
 open Types
 open Global.Types
 open Feliz
+open Fable.Remoting.Client
+open SharedTypes
 
 let alternaitvesPopup msg buttonSettings dispatch positions =
 

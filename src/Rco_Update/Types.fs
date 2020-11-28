@@ -3,31 +3,7 @@ module Rco_Update.Types
 open Global.Types
 open Browser
 open Thoth.Json
-
-type RcoObject = {
-    ReleaseDate : string
-    RcoDocument : string
-    RcoRevision : string
-    BarcodeText : string
-    Slogan : string
-    ProductNumber : string
-    ProductGroup : string
-    RStateIn : string
-    RStateOut : string
-    RcLatEvaluate : string
-    RcLatTextOut : string
-    ScPrttEvaluate : string
-    ScPrttTextOut : string
-    CloudLatEvaluate : string
-    CloudLatTextOut : string
-    ExecutionOrder : string
-    MfgDateFrom : string
-    MfgDateTo : string
-    ProductFamily : string
-    Closed : string
-    Cost : string
-    Comments : string
-};
+open SharedTypes
 
 let RcoObjectDecoder : Decoder<RcoObject> = 
     Decode.object (fun fields -> {

@@ -1287,31 +1287,31 @@ let changeNameAsync project ( version : string ) dispatch = async {
 
             socket.onmessage <- fun x ->
 
-            let eventResult = (x.data :?> string)
+                let eventResult = (x.data :?> string)
 
-            let progress =JsInterop.Regex.Match "(?<=progress=).*?(?=;)*" eventResult
-            let id =JsInterop.Regex.Match "(?<=id=).*?(?=;)*" eventResult
-            let isMsg =JsInterop.Regex.IsMatch "@message:" eventResult 
+                let progress =JsInterop.Regex.Match "(?<=progress=).*?(?=;)*" eventResult
+                let id =JsInterop.Regex.Match "(?<=id=).*?(?=;)*" eventResult
+                let isMsg =JsInterop.Regex.IsMatch "@message:" eventResult 
 
-            match (id.Value = project.Name) with
-                | true ->
-                    match isMsg.Value with
+                match (id.Value = project.Name) with
                     | true ->
-                        getNewStatus (progress.Value |> float) project dispatch
+                        match isMsg.Value with
+                        | true ->
+                            getNewStatus (progress.Value |> float) project dispatch
+                        | _ ->
+                            let response = (x.data :?> string)
+                        
+                            socket.close()
+
+                            getNewStatus 100.0 project dispatch
+
+                            resolve 
+                                {
+                                    Status = 500
+                                    Msg = response
+                                }
                     | _ ->
-                        let response = (x.data :?> string)
-                    
-                        socket.close()
-
-                        getNewStatus 100.0 project dispatch
-
-                        resolve 
-                            {
-                                Status = 500
-                                Msg = response
-                            }
-                | _ ->
-                    ()
+                        ()
 
             xhr.ontimeout <- fun _ ->
                 let error =

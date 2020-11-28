@@ -12,23 +12,21 @@ open Fable.React
 
 importAll "../sass/main.sass"
 
-let emitCheckGitInstalledMsg ( dispatch : Msg -> unit ) = async {
+let emitCheckGitInstalledMsg ( dispatch : Msg -> unit ) =
     let newDispatch =
         Types.MainMsg >> dispatch
 
-    let! msg =
+    let msg =
         newDispatch |>
         (
             Global.Types.CheckProcessStarted >>
-            Main.Types.Msg.Check_If_Git_Installed_Msg  >>
-            Types.MainMsg >>
-            Global.Types.delayedMessage 3000
+            Main.Types.Msg.Check_If_Git_Installed_Msg >>
+            Global.Types.delayedMessage 3000 >>
+            Main.Types.Async_Msg_Main >>
+            Types.MainMsg
         )
 
     msg
-    |> dispatch
-
-}
     
 let mainPage model ( dispatch : Msg -> unit ) =
     match model.Git with
@@ -101,12 +99,24 @@ let mainPage model ( dispatch : Msg -> unit ) =
                 |> Global.View.verifyFailedPage
 
     | Global.Types.Git_Installed_Check_Not_Performed ->
-        dispatch |>
-        (
-            emitCheckGitInstalledMsg
-        )
-        |> Async.StartImmediate
+        let checkingGitMsg =
+                Global.Types.GitDecision.Git_Installed_Check_Performing |>
+                (
+                    Global.Types.Change_Git_Installed_Status_Msg >>
+                    Global
+                )
 
+        let msgs = [|
+            checkingGitMsg
+            emitCheckGitInstalledMsg dispatch
+        |]
+
+        msgs
+        |> Array.iter (fun msg -> msg |> dispatch)
+
+        Global.View.verifyPage
+
+    | Global.Types.Git_Installed_Check_Performing ->
         Global.View.verifyPage
 
 let root (model: Model) dispatch =

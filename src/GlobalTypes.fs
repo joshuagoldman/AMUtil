@@ -3,6 +3,22 @@ module Global.Types
 open Fable.React
 open Fable.Core.JsInterop
 open Fable.Import
+open Thoth.Json
+
+type PromiseResponse = {
+    ResponseText : string
+    Status : float
+}
+
+let PromiseReponseDecoder : Thoth.Json.Decoder<PromiseResponse> =
+    Decode.object (fun get ->
+            {
+                ResponseText = get.Required.Field "ResponseText" Decode.string
+                Status = get.Required.Field "Status" Decode.float
+            }
+        )
+
+let decodePromiseRequest str = Decode.fromString PromiseReponseDecoder str
 
 type AsynSyncMix<'a> =
     | Is_Async of Async<'a>
@@ -14,7 +30,7 @@ type Loading_Popup_Options =
     | No_Loading_Popup_Type
 
 let sleepAsync time = async {
-    do! Async.Sleep time
+    do! Async.Sleep(time : int)
 }
 
 let getPositions ev =
@@ -32,10 +48,23 @@ let delayedMessage time ( msg : 'msg ) =
         return(msg)
     }
 
+let requestFetch data  = promise {
+
+    let defaultProps =
+        [ Fetch.Types.RequestProperties.Method Fetch.Types.HttpMethod.POST
+          Fetch.requestHeaders [Fetch.Types.ContentType "application/x-www-form-urlencoded"]
+          Fetch.Types.RequestProperties.Body (unbox data)]
+
+    let! res = Fetch.fetch "http://localhost:8086/api/Command" defaultProps
+
+    let! txt = res.text()
+    return txt
+}
+
 let request ( data : obj ) = 
     Async.FromContinuations <| fun (resolve,_,_) ->
         let xhr = Browser.XMLHttpRequest.Create()
-        xhr.``open``(method = "POST", url = "http://localhost:3001/shellcommand")
+        xhr.``open``(method = "POST", url = "http://localhost:8086/api/Command")
         xhr.setRequestHeader("Content-Type","application/x-www-form-urlencoded")
         
 
@@ -62,7 +91,7 @@ let requestCustom url ( data : obj ) =
     Async.FromContinuations <| fun (resolve,_,_) ->
         let xhr = Browser.XMLHttpRequest.Create()
         xhr.``open``(method = "POST", url = url)
-        xhr.setRequestHeader("Content-Type","application/x-www-form-urlencoded")
+        xhr.setRequestHeader("Content-Type","application/json")
         
 
         xhr.onreadystatechange <- fun _ ->
@@ -202,6 +231,7 @@ type Git_Installed_Result =
 
 type GitDecision =
     | Git_Installed_Check_Performed of Git_Installed_Result
+    | Git_Installed_Check_Performing
     | Git_Installed_Check_Not_Performed
 
 type GlobalMsg =

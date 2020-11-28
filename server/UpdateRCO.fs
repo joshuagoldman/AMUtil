@@ -3,36 +3,11 @@ module UpdateRCOScript
 open System.IO
 open FSharp.Control.Tasks.V2.ContextInsensitive
 open ExcelDataReader
+open SharedTypes
 
-type RcoObject = {
-    ReleaseDate : string
-    RcoDocument : string
-    RcoRevision : string
-    BarcodeText : string
-    Slogan : string
-    ProductNumber : string
-    ProductGroup : string
-    RStateIn : string
-    RStateOut : string
-    RcLatEvaluate : string
-    RcLatTextOut : string
-    ScPrttEvaluate : string
-    ScPrttTextOut : string
-    CloudLatEvaluate : string
-    CloudLatTextOut : string
-    ExecutionOrder : string
-    MfgDateFrom : string
-    MfgDateTo : string
-    ProductFamily : string
-    Closed : string
-    Cost : string
-    Comments : string
-};
-
-let getRCOUpdateAsRcoObj (stream : Stream) = task {
+let getRCOUpdateAsRcoObj ( tables : System.Data.DataTableCollection ) tableNum = 
     System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance)
-    let datareader = ExcelDataReader.ExcelReaderFactory.CreateOpenXmlReader(stream)
-    let table = datareader.AsDataSet().Tables.[0]
+    let table = tables.[tableNum : int]
 
     let resultObj = 
         [|1..table.Rows.Count - 1|]
@@ -64,6 +39,23 @@ let getRCOUpdateAsRcoObj (stream : Stream) = task {
                 rowObj    
             )
 
-    return(resultObj)
-}   
+    resultObj 
 
+let getAllNewRcoInfo (stream : Stream) = async{
+    System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance)
+    let datareader = ExcelDataReader.ExcelReaderFactory.CreateOpenXmlReader(stream)
+    let tables = datareader.AsDataSet().Tables
+
+    let getAllNewRcoInfo =
+        let res =
+            [|0..1|]
+            |> Array.map (fun pos ->
+                    pos
+                    |> getRCOUpdateAsRcoObj tables
+                )
+        stream.Flush()
+
+        res
+
+    return(getAllNewRcoInfo)
+}

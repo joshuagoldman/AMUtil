@@ -107,7 +107,12 @@ module.exports = {
         publicPath: "/",
         contentBase: resolve(CONFIG.assetsDir),
         port: CONFIG.devServerPort,
-        proxy: CONFIG.devServerProxy,
+        proxy: {
+			'/': { // tell webpack-dev-server to re-route all requests from client to the server
+			  target: "http://localhost:8086",// assuming the backend server is hosted on port 8086 during development
+			  changeOrigin: true
+			}
+		},
         hot: true,
         inline: true
     },

@@ -18,7 +18,7 @@ let update msg (model:Model) : Types.Model * Global.Types.GlobalMsg * Cmd<Msg> =
     | Batch msgs ->
         let msg =
             msgs
-            |> Array.map (fun x -> x |> Cmd.ofMsg)
+            |> Array.map (fun x -> x |> Cmd.ofMsg) 
             |> Cmd.batch
 
         model, Global.Types.MsgNone, msg
