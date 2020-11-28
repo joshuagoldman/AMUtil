@@ -137,7 +137,7 @@ let update msg (model:Model) : Model * GlobalMsg * Cmd<Msg> =
         | CheckProcess.CheckProcessStarted dispatch ->
              dispatch |>
              (
-                 Logic.parseGitUser >>
+                 Logic.ParseGitUser.parseGitUser >>
                  Async.StartImmediate
              )
              model, MsgNone, []

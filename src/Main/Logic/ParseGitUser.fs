@@ -9,7 +9,7 @@ open Global.Types
 open Feliz
 open SharedTypes
 open Fable.Remoting.Client
-open Main.Logic
+open Main.Logic.Common
 open Main
 
 let apis =
@@ -228,10 +228,10 @@ let parseGitUser dispatch = async {
 
     let resList =
         [|
-            IsString(usrName)
-            IsString(email)
-            IsStringArray(branches)
-            IsString(currBranch)
+            IsString(usrName responsesCombined)
+            IsString(email responsesCombined)
+            IsStringArray(branches responsesCombined)
+            IsString(currBranch responsesCombined)
         |]
 
     let msgsAll =
@@ -240,5 +240,8 @@ let parseGitUser dispatch = async {
             getInfoNotParsedCorrectly >>
             getMessages responsesCombined dispatch
         ) 
+
+    msgsAll
+    |> Array.iter (fun msg -> msg |> dispatch)
 
 }
