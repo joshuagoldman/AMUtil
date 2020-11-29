@@ -52,7 +52,7 @@ let changeLoadingMix model result dispatch =
             model, Global.Types.MsgNone, msgWithSentPopup
 
 
-        match (Upgrade_NuGet.Logic.Common.haveProjectsBeenLoaded newMix) with
+        match (Upgrade_NuGet.Logic.Miscellaneous.haveProjectsBeenLoaded newMix) with
         | true ->
             let successProjsOpt =
                 newMix

@@ -44,7 +44,7 @@ let performNugetActionToServerAsync proj version dispatch = async {
             (
                 Upgrade_NuGet.Types.Change_Project_Info 
             )
-            |> Upgrade_NuGet.Logic.Common.turnIntoSendPopupWithNewState dispatch
+            |> Upgrade_NuGet.Logic.Miscellaneous.turnIntoSendPopupWithNewState dispatch
 
         newLoadingStatusMsg
 
@@ -81,7 +81,7 @@ let performNugetActionToServerAsync proj version dispatch = async {
                     (
                         Upgrade_NuGet.Types.Change_Project_Info 
                     )
-                    |> Upgrade_NuGet.Logic.Common.turnIntoSendPopupWithNewState dispatch
+                    |> Upgrade_NuGet.Logic.Miscellaneous.turnIntoSendPopupWithNewState dispatch
 
                 return(newLoadingStatusMsg)
         | _ ->
@@ -147,7 +147,7 @@ let performNugetActionToServerAsync proj version dispatch = async {
                     (
                         Upgrade_NuGet.Types.Change_Project_Info 
                     )
-                    |> Upgrade_NuGet.Logic.Common.turnIntoSendPopupWithNewState dispatch
+                    |> Upgrade_NuGet.Logic.Miscellaneous.turnIntoSendPopupWithNewState dispatch
 
                 return(newLoadingStatusMsg)
         | _ ->

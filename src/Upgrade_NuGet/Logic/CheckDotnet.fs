@@ -8,7 +8,7 @@ let checkIfDotNetInstalled dispatch = async {
     let popupMsg =
         "Checking if Dotnet is installed"
         |> Popup.View.getPopupMsgSpinner
-        |> Upgrade_NuGet.Logic.Common.checkingProcessPopupMsg Common.standardPositions
+        |> Upgrade_NuGet.Logic.Miscellaneous.checkingProcessPopupMsg Upgrade_NuGet.Logic.Miscellaneous.standardPositions
         |> dispatch
 
     popupMsg
@@ -63,7 +63,7 @@ let checkIfDotNetInstalled dispatch = async {
 
             let button =
                 Popup.View.simpleOkButton
-                                Common.killPopupMsg
+                                Upgrade_NuGet.Logic.Miscellaneous.killPopupMsg
                                 dispatch
 
             let kickedOutMsg =
@@ -83,7 +83,7 @@ let checkIfDotNetInstalled dispatch = async {
 
         let button =
             Popup.View.simpleOkButton
-                            Common.killPopupMsg
+                            Upgrade_NuGet.Logic.Miscellaneous.killPopupMsg
                             dispatch
 
         let kickedOutMsg =

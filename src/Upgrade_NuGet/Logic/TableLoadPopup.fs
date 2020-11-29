@@ -204,7 +204,7 @@ let newStatuses projsNotLoadingAnymore dispatch =
 let getTableLoadPopup model dispatch =
     match model.Projects_Table with
     | Loganalyzer_Projects_Table_Status.Info_Is_Loading mix ->
-        let allProjectsLoaded = Common.haveProjectsBeenLoaded mix
+        let allProjectsLoaded = Upgrade_NuGet.Logic.Miscellaneous.haveProjectsBeenLoaded mix
 
         match allProjectsLoaded with
         | true ->
@@ -212,12 +212,12 @@ let getTableLoadPopup model dispatch =
                 mix
                 |> getAllMsgs
                 |> Array.map (fun (x,_) -> x)
-            Common.cretateLoadingFinishedPopup allMsgsNoTypeConsideration dispatch
+            Upgrade_NuGet.Logic.Miscellaneous.cretateLoadingFinishedPopup allMsgsNoTypeConsideration dispatch
         | _ ->
             mix |>
             (
                 getAllMsgs >>
-                Common.cretateLoadingPopup dispatch
+                Upgrade_NuGet.Logic.Miscellaneous.cretateLoadingPopup dispatch
             )
             
     | Info_Has_Been_Loaded table ->
@@ -232,9 +232,9 @@ let getTableLoadPopup model dispatch =
                         let allMsgsNoTypeConsideration =
                             allMsgs
                             |> Array.map (fun (x,_) -> x)
-                        Common.cretateLoadingFinishedPopup allMsgsNoTypeConsideration dispatch
+                        Upgrade_NuGet.Logic.Miscellaneous.cretateLoadingFinishedPopup allMsgsNoTypeConsideration dispatch
                     | _ ->
-                        Common.cretateLoadingPopup dispatch allMsgs 
+                        Upgrade_NuGet.Logic.Miscellaneous.cretateLoadingPopup dispatch allMsgs 
                 | _ -> ()
             | _ ->
                 match (projectsNotLoading projs) with
@@ -243,7 +243,7 @@ let getTableLoadPopup model dispatch =
                         projsNotLoadingAnymore
                         |> Array.map (fun (x,_) -> x)
 
-                    Common.cretateLoadingFinishedPopup msgsOnly dispatch
+                    Upgrade_NuGet.Logic.Miscellaneous.cretateLoadingFinishedPopup msgsOnly dispatch
 
                     let statusOnly =
                         projsNotLoadingAnymore

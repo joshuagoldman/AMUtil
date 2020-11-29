@@ -25,7 +25,6 @@
     <Compile Include="Rco_Update/RcoFaultTable.fs" />
     <Compile Include="Rco_Update/View.fs" />
     <Compile Include="Upgrade_NuGet/Types.fs" />
-    <Compile Include="Upgrade_NuGet/Logic/Common.fs" />
     <Compile Include="Upgrade_NuGet/Logic/Miscellaneous.fs" />
     <Compile Include="Upgrade_NuGet/Logic/NugetInfoExtract.fs" />
     <Compile Include="Upgrade_NuGet/Logic/CheckDotnet.fs" />

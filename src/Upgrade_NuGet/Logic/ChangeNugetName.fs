@@ -9,6 +9,49 @@ open Global.Types
 open Feliz
 open Fable.Core.JsInterop
 
+let saveChanges model dispatch =
+    match model.Info with
+    | Upgrade_NuGet.Types.Git_Info_Nuget.Yes_Git_Info_Nuget _ ->
+        match model.Projects_Table with
+        | Loganalyzer_Projects_Table_Status.Info_Has_Been_Loaded res ->
+            match res with
+            |Loganalyzer_Projects_Table.Yes_Projects_Table_Info proj_infos ->
+                let areAnyProjsReady4Change =
+                    proj_infos
+                    |> Array.choose (fun proj ->
+                        match proj.Server_Options with
+                        | Server_Options.No_Server_Actions ->
+                            None
+                        | _ ->
+                            Some proj)
+                    |> function
+                        | res when (res |> Array.length) <> 0 ->
+                            res |> Some
+                        | _ -> None
+
+                match areAnyProjsReady4Change with
+                | Some projsReady4Change ->
+                    Html.div[
+                        prop.className "column is-2"
+                        prop.children[
+                            Html.div[
+                                prop.className "button"
+                                prop.text "Save NuGet changes"
+                                prop.onClick (fun _ ->
+                                    (projsReady4Change,dispatch) |>
+                                    (
+                                        Upgrade_NuGet.Types.Msg.Save_Nuget_Info_To_Server >>
+                                        dispatch
+                                    ))
+                            ]
+                        ]
+                    ]
+                | _ ->
+                    Html.none
+            | _ -> Html.none
+        | _ -> Html.none
+    | _ -> Html.none
+
 let getNewStatus progress project dispatch = 
 
     let newStatus =
@@ -25,7 +68,7 @@ let getNewStatus progress project dispatch =
             Upgrade_NuGet.Types.Change_Project_Info
         ) |>
         (
-            Upgrade_NuGet.Logic.Common.turnIntoSendPopupWithNewState dispatch >>
+            Upgrade_NuGet.Logic.Miscellaneous.turnIntoSendPopupWithNewState dispatch >>
             dispatch
         )
 
@@ -146,7 +189,7 @@ let changeNameRequestToMsgArray projectsWithNewNames dispatch =
                         )
                     |]
                     |> Upgrade_NuGet.Types.Batch_Upgrade_Nuget_Async
-                    |> Upgrade_NuGet.Logic.Common.turnIntoSendPopupWithNewState dispatch
+                    |> Upgrade_NuGet.Logic.Miscellaneous.turnIntoSendPopupWithNewState dispatch
                     
                 return(newLoadingStatusMsg)
             | _ ->
@@ -165,7 +208,7 @@ let changeNameRequestToMsgArray projectsWithNewNames dispatch =
                         delayedMessage 2000
                     )
                     |> Upgrade_NuGet.Types.Upgrade_Nuget_Async
-                    |> Upgrade_NuGet.Logic.Common.turnIntoSendPopupWithNewState dispatch
+                    |> Upgrade_NuGet.Logic.Miscellaneous.turnIntoSendPopupWithNewState dispatch
 
                 return(newLoadingStatusMsg)
         })

@@ -11,6 +11,29 @@ open Fable.Core.JsInterop
 open SharedTypes
 open Fable.Remoting.Client
 
+let allisBuild projs =
+    projs
+    |> Array.forall (fun info ->
+        match info.Loading_To_Server with
+        | Info_Loaded_Options.Loading_Info_To_Server status ->
+            match status with
+            | Loading_Nuget_Status.Loading_Nuget_Info_Is_Not_Done alternatives ->
+                match alternatives with
+                | Loading_To_Nuget_Server_Alternatives.Changing_Nuget_Name _ ->
+                    false
+                | Loading_To_Nuget_Server_Alternatives.Executing_Nuget_Server_Command ->
+                    false
+                | Loading_To_Nuget_Server_Alternatives.Building ->
+                    true
+                    
+            | Loading_Nuget_Status.Loading_Nuget_Info_Is_Done res ->
+                match res with
+                | Loading_To_Server_Result.Loading_To_Server_Failed msg ->
+                    true
+                | Loading_To_Server_Result.Loading_To_Server_Succeeded ->
+                    false
+        | _ -> false   )
+
 let buildSolution projectsLoading dispatch = async {
 
     let reqStr = "shellCommand=cd server;cd loganalyzer;dotnet build Ericsson.AM.sln"

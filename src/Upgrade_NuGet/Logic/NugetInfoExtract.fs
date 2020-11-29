@@ -139,3 +139,54 @@ let monitorEachProjectInfoExtraction ( nugetServerInfo : string )
     return! (evaluateNugetVersion foundNugetVersionOpt utils)
 }
 
+let getAllAvailablePackageVersions dispatch = async {
+
+    let popupMsg =
+        "Getting all NuGet package versions from http://segaeesw04.eipu.ericsson.se/nuget/Packages..."
+        |> Popup.View.getPopupMsgSpinner
+        |> Upgrade_NuGet.Logic.Miscellaneous.checkingProcessPopupMsg Upgrade_NuGet.Logic.Miscellaneous.standardPositions
+        |> dispatch
+
+    popupMsg
+
+    do! Async.Sleep 2000
+
+    let! res = simpleGetRequest "http://localhost:3001/nugetinfo"
+
+    match res.status with
+    | 200.0 ->
+        [|
+            res.responseText |>
+            (
+                Nuget_Server_Is_Available >>
+                Change_Nuget_Server_Info
+            )
+
+            dispatch |>
+            (
+                Get_All_Projects_Info
+            )
+        |]
+        |> Array.iter (fun msg -> dispatch msg)
+        
+    | _ ->
+        let exitMsg =
+            res.responseText + " Couldn't reach NuGet server. Please refresh to return"
+            |> Popup.View.getPopupMsg
+
+        let button =
+            Popup.View.simpleOkButton
+                            Upgrade_NuGet.Logic.Miscellaneous.killPopupMsg
+                            dispatch
+
+        let kickedOutMsg =
+            (button,exitMsg) |>
+            (
+                GlobalMsg.Go_To_Failed_Page >>
+                Upgrade_NuGet.Types.GlobalMsg_Upgrade_Nuget >>
+                dispatch
+            )
+
+        kickedOutMsg
+}
+

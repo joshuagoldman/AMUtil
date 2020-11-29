@@ -29,7 +29,7 @@ let checkoutNewBranch ( newBranch : string ) dispatch positions = async{
             res.responseText |>
             (
                 Popup.View.getPopupMsg >>
-                Upgrade_NuGet.Logic.Common.checkingProcessPopupMsg positions
+                Upgrade_NuGet.Logic.Miscellaneous.checkingProcessPopupMsg positions
             )
 
         let exitMsg =
@@ -38,7 +38,7 @@ let checkoutNewBranch ( newBranch : string ) dispatch positions = async{
 
         let button =
             Popup.View.simpleOkButton
-                            Upgrade_NuGet.Logic.Common.killPopupMsg
+                            Upgrade_NuGet.Logic.Miscellaneous.killPopupMsg
                             dispatch
                         
         let! kickedOutMsg =
@@ -72,13 +72,13 @@ let changeBranchNugetUpgrade model dispatch ( ev : Browser.Types.Event ) =
                      Global.Types.AsynSyncMix.Is_Not_Async
                 )
 
-                Upgrade_NuGet.Logic.Common.handleBranchNameChange branchName repo
+                Upgrade_NuGet.Logic.Miscellaneous.handleBranchNameChange branchName repo
                 |> Global.Types.AsynSyncMix.Is_Not_Async
 
                 "Updating table after branch change..." |>
                 (
                     Popup.View.getPopupMsgSpinner >>
-                    Upgrade_NuGet.Logic.Common.checkingProcessPopupMsg Popup.Types.standardPositions >>
+                    Upgrade_NuGet.Logic.Miscellaneous.checkingProcessPopupMsg Popup.Types.standardPositions >>
                     Global.Types.AsynSyncMix.Is_Not_Async
                 )
 

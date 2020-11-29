@@ -10,12 +10,116 @@ open Fable.Core.JsInterop
 open SharedTypes
 open Fable.Remoting.Client
 
+let getServerActionButton ( option : Global.Types.TypeString<Server_Options>) =
+    Html.option[
+        prop.text option.ObjString
+    ]
+
+let currChoiceWithName =
+    [|
+        {
+            Global.Types.ObjType = Server_Options.No_Server_Actions
+            Global.Types.ObjString = "No Actions"
+        }
+        {
+            Global.Types.ObjType = Server_Options.Is_To_Be_Deleted
+            Global.Types.ObjString = "Delete"
+        }
+        {
+            Global.Types.ObjType = Server_Options.Is_To_Be_Updated
+            Global.Types.ObjString = "Replace"
+        }
+        {
+            Global.Types.ObjType = Server_Options.Push_Nuget
+            Global.Types.ObjString = "Push"
+        }
+    |]
+
+let serverActionChanged project ( ev : Browser.Types.Event ) dispatch =
+    let name = ev.target?value : string
+
+    currChoiceWithName
+    |> Array.tryFind (fun o ->
+        o.ObjString = name)
+    |> function
+        | res when res.IsSome ->
+            (project,res.Value.ObjType) |>
+            (
+                Change_Server_Action_Option >>
+                dispatch
+            )
+        | _ ->
+            ()
+
+let getActionsList project
+                   ( arr : Global.Types.TypeString<Server_Options> [])
+                   ( obj : Global.Types.TypeString<Server_Options> ) =
+
+    let standardAnswer =
+        arr
+        |> Array.choose (fun opt ->
+            match opt.ObjType with
+            | Server_Options.Push_Nuget ->
+                None
+            | _ ->
+                opt
+                |> Some)
+
+    match project.Nuget_Names.New_Nuget_Name with
+    | New_Nuget_Name.Has_New_Name validity ->
+        match validity with
+        | Nuget_Name_Validity.Nuget_Name_Valid _ ->
+            arr
+        | _ ->
+            standardAnswer
+    | _ ->
+        standardAnswer
+
+let nugetServerOptionsViewItems project =
+    match project.Server_Options with
+    | Server_Options.No_Server_Actions ->
+        {
+            Global.Types.ObjType = Server_Options.No_Server_Actions
+            Global.Types.ObjString = "No Actions"
+        } |>
+        (
+            getActionsList project currChoiceWithName >>
+            Array.map (fun option -> getServerActionButton option )
+        )
+    | Server_Options.Is_To_Be_Deleted ->
+        {
+            Global.Types.ObjType = Server_Options.Is_To_Be_Deleted
+            Global.Types.ObjString = "Delete"
+        } |>
+        (
+            getActionsList project currChoiceWithName >>
+            Array.map (fun option -> getServerActionButton option )
+        )
+    | Server_Options.Is_To_Be_Updated ->
+        {
+            Global.Types.ObjType = Server_Options.Is_To_Be_Updated
+            Global.Types.ObjString = "Replace"
+        } |>
+        (
+            getActionsList project currChoiceWithName >>
+            Array.map (fun option -> getServerActionButton option )
+        )
+    | Server_Options.Push_Nuget ->
+        {
+            Global.Types.ObjType = Server_Options.Push_Nuget
+            Global.Types.ObjString = "Push"
+        } |>
+        (
+            getActionsList project currChoiceWithName >>
+            Array.map (fun option -> getServerActionButton option )
+        )
+
 let getNuGetTableInfo dispatch = async {
 
     let popupMsg =
         "Locating all relevant AM.LogAnalyzer projects..."
         |> Popup.View.getPopupMsgSpinner
-        |> Common.checkingProcessPopupMsg Upgrade_NuGet.Logic.Common.standardPositions
+        |> Upgrade_NuGet.Logic.Miscellaneous.checkingProcessPopupMsg Upgrade_NuGet.Logic.Miscellaneous.standardPositions
         |> dispatch
 
     popupMsg
@@ -84,9 +188,9 @@ let getNuGetTableInfo dispatch = async {
             |> Array.iter (fun msg -> msg |> dispatch)
 
         | _ ->
-            Upgrade_NuGet.Logic.Common.kickedOutTemplate dispatch res.responseText
+            Upgrade_NuGet.Logic.Miscellaneous.kickedOutTemplate dispatch res.responseText
     | _ ->
-        Upgrade_NuGet.Logic.Common.kickedOutTemplate dispatch res.responseText
+        Upgrade_NuGet.Logic.Miscellaneous.kickedOutTemplate dispatch res.responseText
 
 }
 
@@ -100,7 +204,7 @@ let updateOnly model dispatch =
                 "Updating table..." |>
                 (
                     Popup.View.getPopupMsgSpinner >>
-                    Upgrade_NuGet.Logic.Common.checkingProcessPopupMsg Popup.Types.standardPositions >>
+                    Upgrade_NuGet.Logic.Miscellaneous.checkingProcessPopupMsg Popup.Types.standardPositions >>
                     Global.Types.AsynSyncMix.Is_Not_Async
                 )
 
