@@ -39,7 +39,7 @@ let changeFileHandle dispatch ( ev : Browser.Types.Event ) =
 
         errorPopupMsgNoDelay
                     msg
-                    Rco_Update.Logic.killPopupMsg
+                    Rco_Update.Logic.Miscellaneous.killPopupMsg
                     dispatch
                     positions
         

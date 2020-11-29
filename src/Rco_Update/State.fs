@@ -43,7 +43,7 @@ let update msg (model:Model) : Types.Model * Global.Types.GlobalMsg * Cmd<Msg> =
                 newInfo
                 |> Global.Types.GlobalMsg.Spread_New_Branch_Name
 
-            Logic.checkoutNewBranch branch_name dispatch positions  
+            Logic.Miscellaneous.checkoutNewBranch branch_name dispatch positions  
             |> Async.StartImmediate
 
             model, spreadMsg,[]
@@ -63,7 +63,7 @@ let update msg (model:Model) : Types.Model * Global.Types.GlobalMsg * Cmd<Msg> =
         model, Global.Types.MsgNone,[]
     | Investigate_Issues_Rco_Files_Msg(popupPosition,rcoObjArr,dispatch)->
         let msgs =
-            Logic.findFaultsInRcoFile rcoObjArr popupPosition dispatch
+            Logic.RCOFaults.findFaultsInRcoFile rcoObjArr popupPosition dispatch
             |> Cmd.fromAsyncSeveral
 
         model, Global.Types.MsgNone, msgs
@@ -71,7 +71,7 @@ let update msg (model:Model) : Types.Model * Global.Types.GlobalMsg * Cmd<Msg> =
         match model.CurrFile with
         | Yes_Rco_File(_,rco_type) ->
             rcoObjArr
-            |> Logic.updateFile rco_type dispatch postions
+            |> Logic.SaveRCOContent.updateFile rco_type dispatch postions
             |> Async.StartImmediate
         | _ ->
             ()
@@ -79,7 +79,7 @@ let update msg (model:Model) : Types.Model * Global.Types.GlobalMsg * Cmd<Msg> =
 
     | Update_Rco_Changes(info,faults,positions,dispatch) ->
         let newRcoObjArr =
-            Logic.modifyRcoLines info faults
+            Logic.RCOFaults.modifyRcoLines info faults
 
         let resultMsg =
             Investigate_Issues_Rco_Files_Msg(positions,newRcoObjArr,dispatch)
