@@ -15,8 +15,6 @@ let checkIfDotNetInstalled dispatch = async {
 
     do! Async.Sleep 2000
 
-    let commandStr = "shellCommand=cd server;cd loganalyzer;dotnet --list-sdks"
-
     let prms = [|
         {
             SharedTypes.CommandInfo.Command = "cd"

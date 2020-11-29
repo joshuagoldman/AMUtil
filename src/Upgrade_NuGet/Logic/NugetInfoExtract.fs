@@ -97,7 +97,7 @@ let nugetVersionFoundActions isPartOfNugetServerOpt ( utils : ProjectUtils ) = a
 
 let evaluateNugetVersion foundNugetVersionOpt ( utils : ProjectUtils ) = async {
     match (foundNugetVersionOpt : bool option) with
-    | Some foundNugetVersion ->
+    | Some _ ->
         let isPartOfNugetServerOpt =
                 if utils.ProjectName.ToUpper().Contains("RCOHANDLER")
                 then Some(true)
@@ -151,12 +151,12 @@ let getAllAvailablePackageVersions dispatch = async {
 
     do! Async.Sleep 2000
 
-    let! res = simpleGetRequest "http://localhost:3001/nugetinfo"
+    let! result = Global.Types.apis.NuGetInfo  "http://localhost:3001/nugetinfo"
 
-    match res.status with
-    | 200.0 ->
+    match result with
+    | Ok okRes ->
         [|
-            res.responseText |>
+            okRes |>
             (
                 Nuget_Server_Is_Available >>
                 Change_Nuget_Server_Info
@@ -169,9 +169,9 @@ let getAllAvailablePackageVersions dispatch = async {
         |]
         |> Array.iter (fun msg -> dispatch msg)
         
-    | _ ->
+    | Error err ->
         let exitMsg =
-            res.responseText + " Couldn't reach NuGet server. Please refresh to return"
+            err + ". Couldn't reach NuGet server. Please refresh to return"
             |> Popup.View.getPopupMsg
 
         let button =

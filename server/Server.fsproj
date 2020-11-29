@@ -10,6 +10,7 @@
     <Compile Include="UpdateRCO.fs" />
     <Compile Include="WebSocketServer.fs" />
     <Compile Include="ChangeNuGet.fs" />
+    <Compile Include="SimpleHttpRequest.fs" />
     <Compile Include="Server.fs" />
   </ItemGroup>
   <ItemGroup>

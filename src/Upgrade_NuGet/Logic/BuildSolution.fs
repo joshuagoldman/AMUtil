@@ -1,4 +1,4 @@
-module Upgrade_NuGet.Logic.BuildAMSolution
+module Upgrade_NuGet.Logic.BuildSolution
 
 open JsInterop
 open Elmish
@@ -36,9 +36,29 @@ let allisBuild projs =
 
 let buildSolution projectsLoading dispatch = async {
 
-    let reqStr = "shellCommand=cd server;cd loganalyzer;dotnet build Ericsson.AM.sln"
+    let prms = [|
+        {
+            SharedTypes.CommandInfo.Command = "cd"
+            SharedTypes.CommandInfo.Arg = "server"
+        }
+        {
+            SharedTypes.CommandInfo.Command = "cd"
+            SharedTypes.CommandInfo.Arg = "loganalyzer"
+        }
+        {
+            SharedTypes.CommandInfo.Command = "build"
+            SharedTypes.CommandInfo.Arg = "Ericsson.AM.sln"
+        }
+    |]
 
-    let! res = request reqStr
+    let! responses = Global.Types.apis.Command prms
+
+    let responsesAll =
+        responses
+        |> Array.map (fun resp ->
+                resp.Answer
+            )
+        |> String.concat "\n"
 
     let buildFailedMsgs msg =
         projectsLoading
@@ -60,92 +80,80 @@ let buildSolution projectsLoading dispatch = async {
             newLoadingStatusMsg
             )
 
-    match res.status with
-    | 200.0 ->
-        match (res.responseText.Contains("Build succeeded.")) with
-        | false ->
+    match (responsesAll.Contains("Build succeeded.")) with
+    | false ->
 
-            let res =
-                "Build failed. Make sure you solution compiles clean!" |>
-                (
-                    buildFailedMsgs >>
-                    Upgrade_NuGet.Types.Batch 
-                )
-            return(res)
-
-        | _ ->
-            let buildSuccededMsgs =
-                projectsLoading
-                |> Array.map (fun proj ->
-
-                    let performNugetActionMsgAsync =
-                        let performNugetActionMsg =
-                            match proj.Server_Options with
-                            | Server_Options.Push_Nuget ->
-                                match proj.Nuget_Names.New_Nuget_Name with
-                                | New_Nuget_Name.Has_New_Name validity ->
-                                    match validity with
-                                    | Nuget_Name_Validity.Nuget_Name_Valid newName ->
-                                        (proj,newName,dispatch) |>
-                                        (
-                                            Perform_Nuget_Action_To_Server
-                                        )
-                                    | _ ->
-                                        MsgNone
-                                        |> Upgrade_NuGet.Types.GlobalMsg_Upgrade_Nuget
-                                | _ ->
-                                    MsgNone
-                                    |> Upgrade_NuGet.Types.GlobalMsg_Upgrade_Nuget
-                            | Server_Options.Is_To_Be_Deleted ->
-                                (proj,proj.Nuget_Names.CurrName,dispatch) |>
-                                (
-                                    Perform_Nuget_Action_To_Server
-                                )
-                            | Server_Options.Is_To_Be_Updated ->
-                                (proj,proj.Nuget_Names.CurrName,dispatch) |>
-                                (
-                                    Perform_Nuget_Action_To_Server
-                                )
-                            | _ ->
-                                MsgNone
-                                |> Upgrade_NuGet.Types.GlobalMsg_Upgrade_Nuget
-
-                        performNugetActionMsg
-                        |> delayedMessage 2000
-                        |> Upgrade_Nuget_Async
-                    
-                    let newStatus =
-                        Loading_To_Nuget_Server_Alternatives.Executing_Nuget_Server_Command |>
-                        (
-                            Loading_Nuget_Status.Loading_Nuget_Info_Is_Not_Done >>
-                            Loading_Info_To_Server
-                        )
-             
-                    let newLoadingStatusMsg =
-                        [|
-                            { proj with Loading_To_Server = newStatus} |>
-                            (
-                                Upgrade_NuGet.Types.Change_Project_Info 
-                            )
-                            |> Upgrade_NuGet.Logic.Miscellaneous.turnIntoSendPopupWithNewState dispatch
-                            
-
-                            performNugetActionMsgAsync
-
-                        |]
-                        |> Upgrade_NuGet.Types.Batch
-                    newLoadingStatusMsg
-                    )
-            let res = buildSuccededMsgs |> Upgrade_NuGet.Types.Batch
-
-            return(res)
-    | _ ->
         let res =
-            res.responseText |>
+            "Build failed. Make sure you solution compiles clean!" |>
             (
                 buildFailedMsgs >>
                 Upgrade_NuGet.Types.Batch 
             )
+        return(res)
+
+    | _ ->
+        let buildSuccededMsgs =
+            projectsLoading
+            |> Array.map (fun proj ->
+
+                let performNugetActionMsgAsync =
+                    let performNugetActionMsg =
+                        match proj.Server_Options with
+                        | Server_Options.Push_Nuget ->
+                            match proj.Nuget_Names.New_Nuget_Name with
+                            | New_Nuget_Name.Has_New_Name validity ->
+                                match validity with
+                                | Nuget_Name_Validity.Nuget_Name_Valid newName ->
+                                    (proj,newName,dispatch) |>
+                                    (
+                                        Perform_Nuget_Action_To_Server
+                                    )
+                                | _ ->
+                                    MsgNone
+                                    |> Upgrade_NuGet.Types.GlobalMsg_Upgrade_Nuget
+                            | _ ->
+                                MsgNone
+                                |> Upgrade_NuGet.Types.GlobalMsg_Upgrade_Nuget
+                        | Server_Options.Is_To_Be_Deleted ->
+                            (proj,proj.Nuget_Names.CurrName,dispatch) |>
+                            (
+                                Perform_Nuget_Action_To_Server
+                            )
+                        | Server_Options.Is_To_Be_Updated ->
+                            (proj,proj.Nuget_Names.CurrName,dispatch) 
+                            |> Perform_Nuget_Action_To_Server
+                        | _ ->
+                            MsgNone
+                            |> Upgrade_NuGet.Types.GlobalMsg_Upgrade_Nuget
+
+                    performNugetActionMsg
+                    |> delayedMessage 2000
+                    |> Upgrade_Nuget_Async
+                
+                let newStatus =
+                    Loading_To_Nuget_Server_Alternatives.Executing_Nuget_Server_Command |>
+                    (
+                        Loading_Nuget_Status.Loading_Nuget_Info_Is_Not_Done >>
+                        Loading_Info_To_Server
+                    )
+         
+                let newLoadingStatusMsg =
+                    [|
+                        { proj with Loading_To_Server = newStatus} |>
+                        (
+                            Upgrade_NuGet.Types.Change_Project_Info 
+                        )
+                        |> Upgrade_NuGet.Logic.Miscellaneous.turnIntoSendPopupWithNewState dispatch
+                        
+
+                        performNugetActionMsgAsync
+
+                    |]
+                    |> Upgrade_NuGet.Types.Batch
+                newLoadingStatusMsg
+                )
+        let res = buildSuccededMsgs |> Upgrade_NuGet.Types.Batch
+
         return(res)
 }
 

@@ -97,6 +97,7 @@ let apis = {
     WriteFile = saveRcoListAction
     ChangeNuGet = performNugetNameChange
     GetProjecInfo = getProjectInfo
+    NuGetInfo = SimpleHttpRequest.responseString
 }
 
 let defaultView = router {

@@ -73,4 +73,5 @@ type IApis = {
     WriteFile : WriteFileModel -> Async<unit>
     ChangeNuGet : NuGetChange.ChangeNugetNameModel -> Async<unit>
     GetProjecInfo : string -> Async<string>
+    NuGetInfo : string -> Async<Result<string,string>>
 }
