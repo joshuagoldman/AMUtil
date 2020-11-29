@@ -11,24 +11,72 @@ open Fable.Core.JsInterop
 open SharedTypes
 open Fable.Remoting.Client
 
+let strResponse prms = async {
+    let! responses = Global.Types.apis.Command prms
+
+    let responsesAll =
+        responses
+        |> Array.map (fun resp ->
+                resp.Answer
+            )
+        |> String.concat "\n"
+       
+    return responsesAll
+}
+
 let performNugetActionToServerAsync proj version dispatch = async {
     do! Async.Sleep 2000
 
     let reqStrBase = "shellCommand=cd server;cd loganalyzer;"
 
+    let base_prms = [|
+            {
+                SharedTypes.CommandInfo.Command = "cd"
+                SharedTypes.CommandInfo.Arg = "server"
+            }
+            {
+                SharedTypes.CommandInfo.Command = "cd"
+                SharedTypes.CommandInfo.Arg = "loganalyzer"
+            }
+        |]
+
     let nugetPushTemplate projName version =
-        String.Format(
-            "dotnet nuget push \"Ericsson.AM.{0}/bin/Debug/Ericsson.AM.{0}.{1}.nupkg\" -k 875e5930-56d2-4f06-9fe9-f3f5a8c09aa2 -s http://segaeesw04.eipu.ericsson.se/nuget",
-            projName,
-            version
-        )
+        let args =
+            String.Format(
+                "dotnet nuget push \"Ericsson.AM.{0}/bin/Debug/Ericsson.AM.{0}.{1}.nupkg\" -k 875e5930-56d2-4f06-9fe9-f3f5a8c09aa2 -s http://segaeesw04.eipu.ericsson.se/nuget",
+                projName,
+                version
+            )
+
+        let prms = 
+            [|
+                {
+                    SharedTypes.CommandInfo.Command = "dotnet"
+                    SharedTypes.CommandInfo.Arg = args
+                }
+            |]
+            |> Array.append base_prms
+
+        prms
 
     let nugetDeleteTemplate projName version =
-        String.Format(
-            "yes|dotnet nuget delete Ericsson.AM.{0} {1} -k 875e5930-56d2-4f06-9fe9-f3f5a8c09aa2 -s http://segaeesw04.eipu.ericsson.se/nuget",
-            projName,
-            version
-        )
+        let args =
+            String.Format(
+                "yes|dotnet nuget delete Ericsson.AM.{0} {1} -k 875e5930-56d2-4f06-9fe9-f3f5a8c09aa2 -s http://segaeesw04.eipu.ericsson.se/nuget",
+                projName,
+                version
+            )
+
+        let prms = 
+            [|
+                {
+                    SharedTypes.CommandInfo.Command = "dotnet"
+                    SharedTypes.CommandInfo.Arg = args
+                }
+            |]
+            |> Array.append base_prms
+
+        prms
 
     let failedMsg msg =
         let newStatus =
@@ -55,74 +103,59 @@ let performNugetActionToServerAsync proj version dispatch = async {
             | Some m -> m
             | _ -> altMsg
 
-    let pusProcedure pushReqString = async {
-        let! pushRes = request pushReqString
+    let pusProcedure pushReqPrms = async {
+        let! pushRes = strResponse pushReqPrms
         
-        match pushRes.status with
-        | 200.0 ->
-            match (pushRes.responseText.Contains("Your package was pushed.")) with
-            | false ->
-                
-                let errorMsg =
-                    getErrorMsg pushRes.responseText "couldn't push NuGet package"
+        match (pushRes.Contains("Your package was pushed.")) with
+        | false ->
+            
+            let errorMsg =
+                getErrorMsg pushRes "couldn't push NuGet package"
 
-                return(failedMsg errorMsg)
-        
-            | _ ->
-                let newStatus =
-                    Loading_To_Server_Result.Loading_To_Server_Succeeded |>
-                    (
-                        Loading_Nuget_Status.Loading_Nuget_Info_Is_Done >>
-                        Loading_Info_To_Server
-                    )
-                     
-                let newLoadingStatusMsg =
-                    { proj with Loading_To_Server = newStatus} |>
-                    (
-                        Upgrade_NuGet.Types.Change_Project_Info 
-                    )
-                    |> Upgrade_NuGet.Logic.Miscellaneous.turnIntoSendPopupWithNewState dispatch
-
-                return(newLoadingStatusMsg)
+            return(failedMsg errorMsg)
+    
         | _ ->
+            let newStatus =
+                Loading_To_Server_Result.Loading_To_Server_Succeeded |>
+                (
+                    Loading_Nuget_Status.Loading_Nuget_Info_Is_Done >>
+                    Loading_Info_To_Server
+                )
+                 
+            let newLoadingStatusMsg =
+                { proj with Loading_To_Server = newStatus} |>
+                (
+                    Upgrade_NuGet.Types.Change_Project_Info 
+                )
+                |> Upgrade_NuGet.Logic.Miscellaneous.turnIntoSendPopupWithNewState dispatch
 
-            return(failedMsg pushRes.responseText)
+            return(newLoadingStatusMsg)
     }
-        
-    let deleteReqString =
-        reqStrBase + (nugetDeleteTemplate proj.Name version)
-
-    let pushReqString =
-        reqStrBase + (nugetPushTemplate proj.Name version)
 
     match proj.Server_Options with
     | Server_Options.Is_To_Be_Updated ->
 
-        let! deleteResp = request deleteReqString
+        let! deleteResp = request nugetDeleteTemplate
         
-        match deleteResp.status with
-        | 200.0 ->
-            match (deleteResp.responseText.Contains("was deleted successfully.")) with
-            | false ->
-                
-                let errorMsg =
-                    getErrorMsg deleteResp.responseText "couldn't delete NuGet before pushing"
+        match (deleteResp.responseText.Contains("was deleted successfully.")) with
+        | false ->
+            
+            let errorMsg =
+                getErrorMsg deleteResp.responseText "couldn't delete NuGet before pushing"
 
-                return(failedMsg errorMsg)
-        
-            | _ ->
-                let! res = pusProcedure pushReqString
-
-                return(res)
+            return(failedMsg errorMsg)
+    
         | _ ->
-            return(failedMsg deleteResp.responseText)
+            let! res = pusProcedure (nugetPushTemplate proj.Name version)
+
+            return(res)
             
     | Server_Options.Push_Nuget ->
-        let! res = pusProcedure pushReqString
+        let! res = pusProcedure (nugetPushTemplate proj.Name version)
         
         return(res)
     | Server_Options.Is_To_Be_Deleted ->
-        let! deleteResp = request deleteReqString
+        let! deleteResp = request nugetDeleteTemplate
         
         match deleteResp.status with
         | 200.0 ->

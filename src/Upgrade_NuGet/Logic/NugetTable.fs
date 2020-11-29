@@ -125,72 +125,88 @@ let getNuGetTableInfo dispatch = async {
     popupMsg
 
     do! Async.Sleep 2000
+
+    let prms = [|
+        {
+            SharedTypes.CommandInfo.Command = "cd"
+            SharedTypes.CommandInfo.Arg = "server"
+        }
+        {
+            SharedTypes.CommandInfo.Command = "cd"
+            SharedTypes.CommandInfo.Arg = "loganalyzer"
+        }
+        {
+            SharedTypes.CommandInfo.Command = "ls"
+            SharedTypes.CommandInfo.Arg = ""
+        }
+    |]
+
+    let! responses = Global.Types.apis.Command prms
+
+    let responsesAll =
+        responses
+        |> Array.map (fun resp ->
+                resp.Answer
+            )
+        |> String.concat "\n"
     
-    let commandStr = "shellCommand=cd server;cd loganalyzer;ls"
+    let regexStr = "(?<=Ericsson\.AM\.(?!sln))\w+(?!.*\.)"
+    
+    let matchesOpt = JsInterop.Regex.Matches regexStr responsesAll
 
-    let! res = request commandStr
+    match matchesOpt with
+    | Some matches ->
+        let projectNotTest =
+            matches
+            |> Array.choose (fun matchStr ->
+                let isTestProjectOpt =
+                    JsInterop.Regex.IsMatch ".Test" matchStr
 
-    match res.status with
-    | 200.0 ->
-        let regexStr = "(?<=Ericsson\.AM\.(?!sln))\w+(?!.*\.)"
-        
-        let matchesOpt = JsInterop.Regex.Matches regexStr res.responseText
+                match isTestProjectOpt with
+                | Some isTestProject ->
+                    match isTestProject with
+                    | true -> None
+                    | _ -> matchStr |> Some
+                | _ -> None)
+            |> Array.map (fun proj ->
+                {
+                    Upgrade_NuGet.Types.Project_Name = proj
+                    Upgrade_NuGet.Types.Loading_Msg = "loading info for " + proj + "."
+                }
+                |> Upgrade_NuGet.Types.Loganalyzer_Projects_Table_Mix.Project_Loading)
 
-        match matchesOpt with
-        | Some matches ->
-            let projectNotTest =
-                matches
-                |> Array.choose (fun matchStr ->
-                    let isTestProjectOpt =
-                        JsInterop.Regex.IsMatch ".Test" matchStr
-
-                    match isTestProjectOpt with
-                    | Some isTestProject ->
-                        match isTestProject with
-                        | true -> None
-                        | _ -> matchStr |> Some
-                    | _ -> None)
-                |> Array.map (fun proj ->
-                    {
-                        Upgrade_NuGet.Types.Project_Name = proj
-                        Upgrade_NuGet.Types.Loading_Msg = "loading info for " + proj + "."
-                    }
-                    |> Upgrade_NuGet.Types.Loganalyzer_Projects_Table_Mix.Project_Loading)
-
-            let getProjectsmsgs =
-                matches
-                |> Array.map (fun proj ->
-                    (proj,dispatch) |>
-                    (
-                        Upgrade_NuGet.Types.Get_Project_Info >>
-                        delayedMessage 2000
-                    ))
-                    |> Batch_Upgrade_Nuget_Async
-
-            let changeStatusMsgWithPopuWrapped =
+        let getProjectsmsgs =
+            matches
+            |> Array.map (fun proj ->
+                (proj,dispatch) |>
                 (
-                    projectNotTest |>
-                    (
-                        Upgrade_NuGet.Types.Loganalyzer_Projects_Table_Status.Info_Is_Loading >>
-                        Upgrade_NuGet.Types.Change_NuGet_Status
-                    ),
-                    dispatch
-                )
-                |> Send_Popup_With_New_State
-                
-            let msgs =
-                [|
-                    changeStatusMsgWithPopuWrapped
-                    getProjectsmsgs
-                |]
+                    Upgrade_NuGet.Types.Get_Project_Info >>
+                    delayedMessage 2000
+                ))
+                |> Batch_Upgrade_Nuget_Async
 
-            msgs
-            |> Array.iter (fun msg -> msg |> dispatch)
+        let changeStatusMsgWithPopuWrapped =
+            (
+                projectNotTest |>
+                (
+                    Upgrade_NuGet.Types.Loganalyzer_Projects_Table_Status.Info_Is_Loading >>
+                    Upgrade_NuGet.Types.Change_NuGet_Status
+                ),
+                dispatch
+            )
+            |> Send_Popup_With_New_State
+            
+        let msgs =
+            [|
+                changeStatusMsgWithPopuWrapped
+                getProjectsmsgs
+            |]
 
-        | _ ->
-            Upgrade_NuGet.Logic.Miscellaneous.kickedOutTemplate dispatch res.responseText
+        msgs
+        |> Array.iter (fun msg -> msg |> dispatch)
+
     | _ ->
-        Upgrade_NuGet.Logic.Miscellaneous.kickedOutTemplate dispatch res.responseText
+        Upgrade_NuGet.Logic.Miscellaneous.kickedOutTemplate dispatch responsesAll
 
 }
 
