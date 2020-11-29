@@ -33,10 +33,10 @@ let branchDropDown model dispatch =
                                         fontWeight.bold
                                     ]
                                     prop.onChange ( fun ev ->
-                                        Logic.changeBranchNugetUpgrade model dispatch ev)
+                                        Logic.GitBranchActions.changeBranchNugetUpgrade model dispatch ev)
                                     prop.id "inlineFormCustomSelect"
                                     prop.children(
-                                        Logic.getBranches model.Info
+                                        Logic.GitBranchActions.getBranches model.Info
                                         |> Array.append Rco_Update.View.standardBranchAlt    
                                     )
                                 ]
@@ -89,8 +89,8 @@ let root model dispatch =
                             currentBranchInfo model      
                         ]
                     ]
-                    Logic.updateNugetTable model dispatch
-                    Logic.saveChanges model dispatch
+                    Logic.NugetTable.updateNugetTable model dispatch
+                    Logic.ChangeNugetName.saveChanges model dispatch
                 ]
             ]
             Html.div[

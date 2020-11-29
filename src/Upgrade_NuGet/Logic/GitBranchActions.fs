@@ -9,6 +9,14 @@ open Global.Types
 open Feliz
 open Fable.Core.JsInterop
 
+let getBranches info =
+    match info with
+    | Upgrade_NuGet.Types.No_Git_Info_Nuget -> [|Html.none|]
+    | Upgrade_NuGet.Types.Yes_Git_Info_Nuget repo ->
+        repo.Branches
+        |> Array.map (fun branch ->
+            branch |> Rco_Update.View.branchAlt)
+
 let checkoutNewBranch ( newBranch : string ) dispatch positions = async{
 
     do! Async.Sleep 2000

@@ -56,7 +56,7 @@ let buildSolution projectsLoading dispatch = async {
                 (
                     Upgrade_NuGet.Types.Change_Project_Info 
                 )
-                |> turnIntoSendPopupWithNewState dispatch
+                |> Upgrade_NuGet.Logic.Miscellaneous.turnIntoSendPopupWithNewState dispatch
             newLoadingStatusMsg
             )
 
@@ -127,7 +127,7 @@ let buildSolution projectsLoading dispatch = async {
                             (
                                 Upgrade_NuGet.Types.Change_Project_Info 
                             )
-                            |> turnIntoSendPopupWithNewState dispatch
+                            |> Upgrade_NuGet.Logic.Miscellaneous.turnIntoSendPopupWithNewState dispatch
                             
 
                             performNugetActionMsgAsync
@@ -175,7 +175,7 @@ let decideifBuild model dispatch =
                         "Building Ericsson.AM solution..." |>
                         (
                             Popup.View.getPopupMsgSpinner >>
-                            checkingProcessPopupMsg standardPositions
+                            Upgrade_NuGet.Logic.Miscellaneous.checkingProcessPopupMsg Upgrade_NuGet.Logic.Miscellaneous.standardPositions
                         )
 
                     let msg =

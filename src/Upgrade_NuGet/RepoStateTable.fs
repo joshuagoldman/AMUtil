@@ -59,8 +59,8 @@ let nugetServerOptionsView project dispatch =
                                     style.backgroundColor.azure
                                 ]
                                 prop.onChange (fun ev ->
-                                    Logic.serverActionChanged project ev dispatch)
-                                Logic.nugetServerOptionsViewItems project |>
+                                    Logic.NugetTable.serverActionChanged project ev dispatch)
+                                Logic.NugetTable.nugetServerOptionsViewItems project |>
                                 (
                                     prop.children
                                 )

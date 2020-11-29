@@ -60,15 +60,6 @@ let turnIntoSendPopupWithNewState dispatch msg =
     (msg,dispatch)
     |> Send_Popup_With_New_State
 
-
-let getBranches info =
-    match info with
-    | Upgrade_NuGet.Types.No_Git_Info_Nuget -> [|Html.none|]
-    | Upgrade_NuGet.Types.Yes_Git_Info_Nuget repo ->
-        repo.Branches
-        |> Array.map (fun branch ->
-            branch |> Rco_Update.View.branchAlt)
-
 let handleBranchNameChange branchName gitRepo =
 
     match branchName with

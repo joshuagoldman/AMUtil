@@ -194,7 +194,7 @@ let update msg (model:Model) : Types.Model * Global.Types.GlobalMsg * Cmd<Msg> =
             |> Cmd.ofMsg
         model, Global.Types.MsgNone, msg
     | Build_Solution_If_Ready_Msg dispatch ->
-        Logic.BuilAMSOlution.decideifBuild model dispatch
+        Logic.BuildAMSolution.decideifBuild model dispatch
                 
     | Perform_Nuget_Action_To_Server(proj,version,dispatch) ->
         let msg =
