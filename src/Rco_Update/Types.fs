@@ -55,13 +55,13 @@ type CorrectionValue<'a> =
 
 type RcoFaultInfo = {
     Line : int
-    LineInfo : RcoObject
+    LineInfo : SharedTypes.RcoObject
     Correction : CorrectionValue<string>
 }
 
 type NeedsCorrection =
-    | No_Correction_Needed of RcoObject[]
-    | Correction_Needed of RcoObject[] * RcoFaultInfo[]
+    | No_Correction_Needed of SharedTypes.RcoObject[]
+    | Correction_Needed of SharedTypes.RcoObject[] * RcoFaultInfo[]
 
 type Curr_Rco_Info =
     | No_Rco_Info
@@ -75,9 +75,9 @@ type Msg =
     | Change_Current_Rco_Info of Curr_Rco_Info
     | Global_Msg of GlobalMsg
     | Get_Rco_Data_Msg of (Msg -> unit) * Types.Event 
-    | Investigate_Issues_Rco_Files_Msg of Popup.Types.PopupPosition * RcoObject[] * (Msg -> unit)
-    | Update_Rco_Changes of RcoObject[] * RcoFaultInfo[] * Popup.Types.PopupPosition * (Msg -> unit)
-    | Save_New_Rco_Info of RcoObject[] * Popup.Types.PopupPosition * (Msg -> unit)
+    | Investigate_Issues_Rco_Files_Msg of Popup.Types.PopupPosition * SharedTypes.RcoObject[] * (Msg -> unit)
+    | Update_Rco_Changes of SharedTypes.RcoObject[] * RcoFaultInfo[] * Popup.Types.PopupPosition * (Msg -> unit)
+    | Save_New_Rco_Info of SharedTypes.RcoObject[] * Popup.Types.PopupPosition * (Msg -> unit)
     | Change_RCO_Fault_Arr of RcoFaultInfo
     | Change_RCO_File_Type of Browser.Types.Event
 

@@ -57,7 +57,7 @@ let update msg (model:Model) : Types.Model * Global.Types.GlobalMsg * Cmd<Msg> =
                 Popup.Types.PosY = ( ev?pageY : float )
             }
 
-        Logic.getFileListData model dispatch positions
+        Rco_Update.Logic.RCOObject.getFileListData model dispatch positions
         |> Async.StartImmediate
 
         model, Global.Types.MsgNone,[]

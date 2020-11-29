@@ -84,24 +84,22 @@ let changeNameAsync project ( version : string ) dispatch = async {
 
     let reqBody =
         {
-            Upgrade_NuGet.Logic.Miscellaneous.Project = {
+            Project = {
                 ProjectName = project.Name
                 ProjectNamePure = project.Name.Replace("Ericsson.AM.","")
             }
-            Upgrade_NuGet.Logic.Miscellaneous.NuGetVersionName  = version
-            Upgrade_NuGet.Logic.Miscellaneous.Paths = {
+            NuGetVersionName  = version
+            Paths = {
                 SpecificPath = ""
                 GeneralPath = ""
             }
-            Upgrade_NuGet.Logic.Miscellaneous.Socket = {
+            Socket = {
                 Port = 3001
                 URL = "localhost"
             }
-            Upgrade_NuGet.Logic.Miscellaneous.Rate = 1
+            Rate = 1
             
         }
-        |> Upgrade_NuGet.Logic.Miscellaneous.changeNuGetNameEncoder
-        |> fun jsonVal -> jsonVal.ToString()
 
     let url = "http://localhost:8086/api/ChangeName"
 

@@ -4,6 +4,7 @@ open System.IO
 open FSharp.Control.Tasks.V2.ContextInsensitive
 open ExcelDataReader
 open SharedTypes
+open System
 
 let getRCOUpdateAsRcoObj ( tables : System.Data.DataTableCollection ) tableNum = 
     System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance)
@@ -42,20 +43,33 @@ let getRCOUpdateAsRcoObj ( tables : System.Data.DataTableCollection ) tableNum =
     resultObj 
 
 let getAllNewRcoInfo (stream : Stream) = async{
-    System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance)
-    let datareader = ExcelDataReader.ExcelReaderFactory.CreateOpenXmlReader(stream)
-    let tables = datareader.AsDataSet().Tables
+    try
+        System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance)
+        let datareader = ExcelDataReader.ExcelReaderFactory.CreateOpenXmlReader(stream)
+        let tables = datareader.AsDataSet().Tables
 
-    let getAllNewRcoInfo =
-        let res =
-            [|0..1|]
-            |> Array.map (fun pos ->
-                    pos
-                    |> getRCOUpdateAsRcoObj tables
-                )
-        stream.Flush()
+        let getAllNewRcoInfo =
+            let res =
+                [|0..1|]
+                |> Array.map (fun pos ->
+                        pos
+                        |> getRCOUpdateAsRcoObj tables
+                    )
+            stream.Flush()
 
-        res
+            res
 
-    return(getAllNewRcoInfo)
+        match getAllNewRcoInfo.Length with
+        | 2 -> 
+            let res = {
+                SharedTypes.RCOTabs.RBS6000 = getAllNewRcoInfo.[0]
+                SharedTypes.RCOTabs.ERS = getAllNewRcoInfo.[0]
+            }
+
+            return(res |> Ok)
+        | _ ->
+            return("Wrong amount of RCO list excel tabs were parsed" |> Error)
+    with
+    | (ex : Exception) ->
+        return(ex.Message |> Error)
 }

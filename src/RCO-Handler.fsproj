@@ -20,7 +20,10 @@
     <Compile Include="Criteria_Changes/State.fs" />
     <Compile Include="Criteria_Changes/View.fs" />
     <Compile Include="Rco_Update/Types.fs" />
-    <Compile Include="Rco_Update/Logic.fs" />
+    <Compile Include="Rco_Update/Logic/Logic.fs" />
+    <Compile Include="Rco_Update/Logic/RCOObject.fs" />
+    <Compile Include="Rco_Update/Logic/RCOFaults.fs" />
+    <Compile Include="Rco_Update/Logic/SaveRCOContent.fs" />
     <Compile Include="Rco_Update/State.fs" />
     <Compile Include="Rco_Update/RcoFaultTable.fs" />
     <Compile Include="Rco_Update/View.fs" />

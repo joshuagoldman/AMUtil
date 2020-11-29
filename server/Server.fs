@@ -25,7 +25,7 @@ let getRcoAsObject (formFile : obj ) = async{
     let stream = file.OpenReadStream()
     let! content = 
         stream
-        |> UpdateRCOScript.getAllNewRcoInfo
+        |> UpdateRCOScript.getAllNewRcoInfo 
 
     return(content)
 }
@@ -62,7 +62,14 @@ let executeCommands ( commands : CommandInfo array ) = async {
 }
 
 let saveRcoListAction init = async{
-    update init WriteFile.Initialize
+    let currDir = Directory.GetCurrentDirectory()
+
+    let basePath = $"{currDir}../public/loganalyzer/Ericsson.AM.RcoHandler/EmbeddedResources/RBS6000/Aftermarket"
+    let finalDestPath = $"{basePath}/{init.Dest_Path}"
+    let newInitModel =
+        {init with Dest_Path = finalDestPath}
+
+    update newInitModel WriteFile.Initialize
 }
 
 let performNugetNameChange testObj = async{

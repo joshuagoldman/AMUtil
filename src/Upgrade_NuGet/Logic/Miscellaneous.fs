@@ -11,50 +11,6 @@ open Fable.Core.JsInterop
 open SharedTypes
 open Fable.Remoting.Client
 open SharedTypes.NuGetChange
-
-let projectEncoder (record : Project) =
-        Thoth.Json.Encode.object
-            [ "ProjectName", Thoth.Json.Encode.string record.ProjectName
-              "ProjectNamePure", Thoth.Json.Encode.string record.ProjectNamePure
-            ]
-
-type Paths = {
-    SpecificPath : string
-    GeneralPath : string
-}
-
-let pathEncoder (record : Paths) =
-    Thoth.Json.Encode.object
-        [ "Port", Thoth.Json.Encode.string record.SpecificPath
-          "URL", Thoth.Json.Encode.string record.GeneralPath
-        ]
-
-type SocketInfo = {
-    Port : int
-    URL : string
-}
-
-let socketInfoEncoder (record : SocketInfo) =
-    Thoth.Json.Encode.object
-        [ "Port", Thoth.Json.Encode.int record.Port
-          "URL", Thoth.Json.Encode.string record.URL
-        ]
-
-type ChangeNuGetType = {
-    Project : Project
-    NuGetVersionName : string
-    Paths : Paths
-    Socket : SocketInfo
-    Rate : int
-}
-
-let changeNuGetNameEncoder (record : ChangeNuGetType) =
-    Thoth.Json.Encode.object
-        [ "Project", projectEncoder record.Project
-          "NuGetVersionName", Thoth.Json.Encode.string record.NuGetVersionName
-          "Paths", pathEncoder record.Paths
-          "Rate", Thoth.Json.Encode.int record.Rate
-        ]
         
 let turnIntoSendPopupWithNewState dispatch msg =
     (msg,dispatch)
