@@ -26,8 +26,10 @@
     <Compile Include="Rco_Update/View.fs" />
     <Compile Include="Upgrade_NuGet/Types.fs" />
     <Compile Include="Upgrade_NuGet/Logic/Common.fs" />
+    <Compile Include="Upgrade_NuGet/Logic/Miscellaneous.fs" />
     <Compile Include="Upgrade_NuGet/Logic/NugetInfoExtract.fs" />
     <Compile Include="Upgrade_NuGet/Logic/CheckDotnet.fs" />
+    <Compile Include="Upgrade_NuGet/Logic/NugetNameEvaluation.fs" />
     <Compile Include="Upgrade_NuGet/State.fs" />
     <Compile Include="Upgrade_NuGet/RepoStateTable.fs" />
     <Compile Include="Upgrade_NuGet/View.fs" />
