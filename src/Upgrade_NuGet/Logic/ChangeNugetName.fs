@@ -8,6 +8,7 @@ open Upgrade_NuGet.Types
 open Global.Types
 open Feliz
 open Fable.Core.JsInterop
+open SharedTypes.NuGetChange
 
 let saveChanges model dispatch =
     match model.Info with
@@ -158,12 +159,75 @@ let changeNameAsync project ( version : string ) dispatch = async {
 
 }
 
+let reqModel version ( proj : Project_Info ) =
+    let paths = {
+                SpecificPath = ""
+                GeneralPath = ""
+    }
+    let socketInfo = {
+        Port = 3001
+        URL = "localhost"
+    }
+
+    let project =  {
+        SharedTypes.NuGetChange.ProjectName = proj.Name
+        SharedTypes.NuGetChange.ProjectNamePure = proj.Name.Replace("Ericsson.AM.", "")
+    }
+
+    let changeNugetNameModel = {
+        SharedTypes.NuGetChange.Project = project
+        NuGetVersionName = version
+        Paths = paths
+        Socket = socketInfo
+        Rate = 1
+    }
+
+    changeNugetNameModel
+
+let changeNameRequest ( socket : Browser.WebSocket ) changeNugetNameModel dispatch =
+    Async.FromContinuations <| fun (resolve,_,_) ->
+        socket.onmessage <- fun socketMsg ->
+            let msg = (socketMsg.data :?> string)
+
+            let isMsg = JsInterop.Regex.IsMatch "@message:" msg 
+            match isMsg.Value with
+            | true ->
+
+                let msgMatch = (JsInterop.Regex.Match "@message:" msg).Value
+                let msg = "Changing NuGet name (" + (msgMatch |> int |> string) + " written)"
+
+                let popupInfoStr =
+                    (msg) |>
+                    (
+                        float >>
+                        Popup.View.getPopupMsgProgress msg >>
+                        Upgrade_NuGet.Logic.Miscellaneous.checkingProcessPopupMsg Upgrade_NuGet.Logic.Miscellaneous.standardPositions >>
+                        dispatch
+                    )
+
+                popupInfoStr
+            | _ ->
+                let response = (socketMsg.data :?> string)
+                socket.close()
+
+                resolve 
+                    {
+                        Status = 500
+                        Msg = response.ToLower().Replace("@finished","")
+                    }
+
+        Global.Types.apis.ChangeNuGet changeNugetNameModel
+        |> Async.StartImmediate
+
 let changeNameRequestToMsgArray projectsWithNewNames dispatch =
     projectsWithNewNames
-    |> Array.map (fun (proj,version) ->
+    |> Array.map (fun (proj : Project_Info,version) ->
         async {
+            let socket = Browser.WebSocket.Create("localhost:3001")
 
-            let! res = changeNameAsync proj version dispatch
+            let changeNugetModel = reqModel version proj
+
+            let! res = changeNameRequest socket changeNugetModel dispatch
 
             match res.Status with
             | 200 ->

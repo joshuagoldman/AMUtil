@@ -21,6 +21,25 @@ let checkoutNewBranch ( newBranch : string ) dispatch positions = async{
 
     do! Async.Sleep 2000
 
+    let prms = [|
+        {
+            SharedTypes.CommandInfo.Command = "git"
+            SharedTypes.CommandInfo.Arg = String.Format(
+                                                "checkout {0}",
+                                                newBranch
+                                            )
+        }
+    |]
+
+    let! responses = Global.Types.apis.Command prms
+
+    let responsesAll =
+        responses
+        |> Array.map (fun resp ->
+                resp.Answer
+            )
+        |> String.concat "\n"
+
     let prms =
         String.Format(
             "shellCommand=cd server;cd loganalyzer;git checkout {0}",
@@ -29,8 +48,8 @@ let checkoutNewBranch ( newBranch : string ) dispatch positions = async{
 
     let! res = request prms
 
-    match res.status with
-    | 200.0 -> ()
+    match responsesAll.Contains("Switched to branch") with
+    |  true -> ()
             
     | _ ->
         let popupMsg =
@@ -41,7 +60,12 @@ let checkoutNewBranch ( newBranch : string ) dispatch positions = async{
             )
 
         let exitMsg =
-            "You've been thrown out due to some error. Please refresh to return"
+            String.Format(
+                "You've been thrown out due to some error:
+{0}.
+Please refresh to return",
+                responsesAll
+            )
             |> Popup.View.getPopupMsg
 
         let button =

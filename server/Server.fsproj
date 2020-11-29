@@ -5,6 +5,7 @@
     <LangVersion>preview</LangVersion>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="..\SharedTypes\SharedTypes.fs" />
     <Compile Include="WriteFile.fs" />
     <Compile Include="cmd.fs" />
     <Compile Include="UpdateRCO.fs" />
