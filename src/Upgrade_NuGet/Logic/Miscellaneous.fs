@@ -1499,7 +1499,6 @@ let changeLoadingMix model result dispatch =
     | _ ->
         model, Global.Types.MsgNone, []
     
-*)
 
 
 
