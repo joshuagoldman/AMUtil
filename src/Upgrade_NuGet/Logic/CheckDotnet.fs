@@ -16,18 +16,7 @@ let checkIfDotNetInstalled dispatch = async {
     do! Async.Sleep 2000
 
     let prms = [|
-        {
-            SharedTypes.CommandInfo.Command = "cd"
-            SharedTypes.CommandInfo.Arg = "server"
-        }
-        {
-            SharedTypes.CommandInfo.Command = "cd"
-            SharedTypes.CommandInfo.Arg = "loganalyzer"
-        }
-        {
-            SharedTypes.CommandInfo.Command = "dotnet"
-            SharedTypes.CommandInfo.Arg = "--list-sdks"
-        }
+        "dotnet --list-sdks" |> SharedTypes.IsResponse
     |]
 
     let! responses = Global.Types.apis.Command prms
