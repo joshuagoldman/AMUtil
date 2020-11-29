@@ -31,6 +31,9 @@
     <Compile Include="Upgrade_NuGet/Logic/CheckDotnet.fs" />
     <Compile Include="Upgrade_NuGet/Logic/NugetNameEvaluation.fs" />
     <Compile Include="Upgrade_NuGet/Logic/TableLoadPopup.fs" />
+    <Compile Include="Upgrade_NuGet/Logic/LoadingMix.fs" />
+    <Compile Include="Upgrade_NuGet/Logic/NugetServerActions.fs" />
+    <Compile Include="Upgrade_NuGet/Logic/NugetTable.fs" />
     <Compile Include="Upgrade_NuGet/State.fs" />
     <Compile Include="Upgrade_NuGet/RepoStateTable.fs" />
     <Compile Include="Upgrade_NuGet/View.fs" />
