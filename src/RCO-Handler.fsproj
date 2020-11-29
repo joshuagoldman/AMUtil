@@ -25,12 +25,14 @@
     <Compile Include="Rco_Update/RcoFaultTable.fs" />
     <Compile Include="Rco_Update/View.fs" />
     <Compile Include="Upgrade_NuGet/Types.fs" />
-    <Compile Include="Upgrade_NuGet/Logic.fs" />
+    <Compile Include="Upgrade_NuGet/Logic/Common.fs" />
+    <Compile Include="Upgrade_NuGet/Logic/NugetInfoExtract.fs" />
+    <Compile Include="Upgrade_NuGet/Logic/CheckDotnet.fs" />
     <Compile Include="Upgrade_NuGet/State.fs" />
     <Compile Include="Upgrade_NuGet/RepoStateTable.fs" />
     <Compile Include="Upgrade_NuGet/View.fs" />
     <Compile Include="Main/Types.fs" />
-    <Compile Include="Main/Logic/Logic.fs" />
+    <Compile Include="Main/Logic/Common.fs" />
     <Compile Include="Main/Logic/DownloadRepo.fs" />
     <Compile Include="Main/Logic/CommandAPIs.fs" />
     <Compile Include="Main/Logic/ParseGitUser.fs" />

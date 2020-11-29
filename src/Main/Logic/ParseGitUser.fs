@@ -9,7 +9,6 @@ open Global.Types
 open Feliz
 open SharedTypes
 open Fable.Remoting.Client
-open Main.Logic.Common
 open Main
 
 let apis =
@@ -28,8 +27,8 @@ let usrName responsesCombined =
         |> Regex.Match "\w.*"
         |> fun res ->
             {
-                UserValue = res
-                TypeName = "user name"
+                Logic.Common.UserValue = res
+                Logic.Common.TypeName = "user name"
             }
 
 let email responsesCombined =
@@ -44,18 +43,18 @@ let email responsesCombined =
                 |> Some
                 |> fun res ->
                     {
-                        UserValue = res
-                        TypeName = "email"
+                        Logic.Common.UserValue = res
+                        Logic.Common.TypeName = "email"
                     }
             else
                 {
-                    UserValue = None
-                    TypeName = "email"
+                    Logic.Common.UserValue = None
+                    Logic.Common.TypeName = "email"
                 }
         | _ ->
             {
-                UserValue = None
-                TypeName = "email"
+                Logic.Common.UserValue = None
+                Logic.Common.TypeName = "email"
             }
 
 let branches responsesCombined =
@@ -63,8 +62,8 @@ let branches responsesCombined =
     |> Regex.Matches "(?<=origin\/).*"
     |> fun res ->
         {
-            UserValue = res
-            TypeName = "branches"
+            Logic.Common.UserValue = res
+            Logic.Common.TypeName = "branches"
         }
 
 let currBranch responsesCombined =
@@ -72,8 +71,8 @@ let currBranch responsesCombined =
     |> Regex.Match "(?<=Your branch is up to date with\s+'origin\/).*(?=\')|(?<=On branch\s+).*"
     |> fun res ->
         {
-            UserValue = res
-            TypeName = "branch"
+            Logic.Common.UserValue = res
+            Logic.Common.TypeName = "branch"
         }
 
 let getMessages responseText dispatch infoNotParsedCorrectlyRes =
@@ -83,9 +82,9 @@ let getMessages responseText dispatch infoNotParsedCorrectlyRes =
                 infoNotParsedCorrectly
                 |> Array.map (fun info ->
                     match info with
-                    | StringOrStringArray.IsString x ->
+                    | Logic.Common.StringOrStringArray.IsString x ->
                         x.TypeName
-                    | StringOrStringArray.IsStringArray x ->
+                    | Logic.Common.StringOrStringArray.IsStringArray x ->
                         x.TypeName)
                 |> String.concat ",\n"
                 |> fun str ->
@@ -101,10 +100,10 @@ The info was parsed from the string:
 
             let popupMsg =
                 responseText
-                |> errorPopupMsg
+                |> Logic.Common.errorPopupMsg
                     dispatch
-                    killPopupMsg
-                    standardPositions
+                    Logic.Common.killPopupMsg
+                    Logic.Common.standardPositions
 
             let originIsAccessibleMsg =
                 errorText |>
@@ -164,13 +163,13 @@ let getInfoNotParsedCorrectly resList =
     resList
     |> Array.choose (fun itm ->
         match itm with
-        | StringOrStringArray.IsString str ->
+        | Logic.Common.StringOrStringArray.IsString str ->
             if str.UserValue.IsNone
-            then str |> (IsString >> Some) 
+            then str |> (Logic.Common.IsString >> Some) 
             else None
-        | StringOrStringArray.IsStringArray strArr ->
+        | Logic.Common.StringOrStringArray.IsStringArray strArr ->
             if strArr.UserValue.IsNone
-            then strArr |> (IsStringArray >> Some) 
+            then strArr |> (Logic.Common.IsStringArray >> Some) 
             else None)
     |> function
         | res when res.Length <> 0 ->
@@ -183,7 +182,7 @@ let parseGitUser dispatch = async {
     let popupMsg =
         "Getting repo info"
         |> Popup.View.getPopupMsgSpinner
-        |> checkingProcessPopupMsg standardPositions
+        |> Logic.Common.checkingProcessPopupMsg Logic.Common.standardPositions
         |> dispatch
 
     popupMsg
@@ -228,10 +227,10 @@ let parseGitUser dispatch = async {
 
     let resList =
         [|
-            IsString(usrName responsesCombined)
-            IsString(email responsesCombined)
-            IsStringArray(branches responsesCombined)
-            IsString(currBranch responsesCombined)
+            Logic.Common.IsString(usrName responsesCombined)
+            Logic.Common.IsString(email responsesCombined)
+            Logic.Common.IsStringArray(branches responsesCombined)
+            Logic.Common.IsString(currBranch responsesCombined)
         |]
 
     let msgsAll =

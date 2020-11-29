@@ -73,7 +73,7 @@ let update msg (model:Model) : Types.Model * Global.Types.GlobalMsg * Cmd<Msg> =
             let msg =
                 dispatch |>
                 (
-                    Logic.monitorEachProjectInfoExtraction info proj_name >>
+                    Logic.NugetInfoExtract.monitorEachProjectInfoExtraction info proj_name >>
                     Cmd.fromAsync
                 )
                 

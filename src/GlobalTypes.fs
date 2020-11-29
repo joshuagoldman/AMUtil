@@ -4,6 +4,11 @@ open Fable.React
 open Fable.Core.JsInterop
 open Fable.Import
 open Thoth.Json
+open Fable.Remoting.Client
+
+let apis =
+    Remoting.createApi()
+    |> Remoting.buildProxy<SharedTypes.IApis>
 
 type PromiseResponse = {
     ResponseText : string

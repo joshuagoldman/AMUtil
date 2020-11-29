@@ -122,7 +122,7 @@ let update msg (model:Model) : Types.Model * Cmd<Types.Msg> =
                 |> Popup.Types.Simple_Ok
 
             let popupStyle =
-                (popupOption,Main.Logic.standardPositions)
+                (popupOption,Main.Logic.Common.standardPositions)
                 |> Popup.Types.Has_Alternatives
 
             let newGitDecisionState =

@@ -9,7 +9,6 @@ open Global.Types
 open Feliz
 open SharedTypes
 open Fable.Remoting.Client
-open Main.Logic
 open Main
 
 let apis =
@@ -21,7 +20,7 @@ let downloadRepo dispatch = async {
     let popupMsg =
         "Downloading loganalyzer repo"
         |> Popup.View.getPopupMsgSpinner
-        |> checkingProcessPopupMsg standardPositions
+        |> Logic.Common.checkingProcessPopupMsg Logic.Common.standardPositions
         |> dispatch
 
     popupMsg
@@ -83,10 +82,10 @@ let downloadRepo dispatch = async {
     | false ->
         let popupMsg =
             responsesCombined
-            |> errorPopupMsg
+            |> Logic.Common.errorPopupMsg
                     dispatch
-                    killPopupMsg
-                    standardPositions
+                    Logic.Common.killPopupMsg
+                    Logic.Common.standardPositions
 
         let originNotAccessibleMsg =
             Git_Repo_Cloned_Result.Git_Error |>

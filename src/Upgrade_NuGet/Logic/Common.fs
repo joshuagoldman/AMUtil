@@ -1,13 +1,15 @@
-module Upgrade_NuGet.Logic
+module Upgrade_NuGet.Logic.Common
 
 open JsInterop
 open Elmish
 open Fable.Import
 open System
-open Types
+open Upgrade_NuGet.Types
 open Global.Types
 open Feliz
 open Fable.Core.JsInterop
+open SharedTypes
+open Fable.Remoting.Client
 
 let turnIntoSendPopupWithNewState dispatch msg =
     (msg,dispatch)
@@ -15,8 +17,8 @@ let turnIntoSendPopupWithNewState dispatch msg =
 
 let getBranches info =
     match info with
-    | Types.No_Git_Info_Nuget -> [|Html.none|]
-    | Types.Yes_Git_Info_Nuget repo ->
+    | Upgrade_NuGet.Types.No_Git_Info_Nuget -> [|Html.none|]
+    | Upgrade_NuGet.Types.Yes_Git_Info_Nuget repo ->
         repo.Branches
         |> Array.map (fun branch ->
             branch |> Rco_Update.View.branchAlt)
@@ -50,133 +52,6 @@ let haveProjectsBeenLoaded projLoadingMixes =
         match proj with
         | Loganalyzer_Projects_Table_Mix.Project_Loading _ -> false
         | _ -> true)
-
-let monitorEachProjectInfoExtraction ( nugetServerInfo : string )
-                                       projectName
-                                       dispatch = async {
-
-    let fullProjectNameFolder = "project=Ericsson.AM." + projectName
-
-    let nugetPackageVersionRegex = "(?<=<Version>).*(?=<\/Version>)"
-            
-    let! res = requestCustom "http://localhost:8086/api/projectInfo" fullProjectNameFolder
-
-    let standardFailMsg = "Loading was not successfull"
-
-    match res.status with
-    | 200.0 ->
-        let foundNugetVersionOpt =
-            JsInterop.Regex.IsMatch nugetPackageVersionRegex res.responseText
-
-        match foundNugetVersionOpt with
-        | Some foundNugetVersion ->
-            match foundNugetVersion with
-            | true ->
-                let nugetServerRegex =
-                    String.Format(
-                        "(?<=Ericsson.AM.{0}',Version=').*(?=')",
-                        projectName
-                    )
-
-                let isPartOfNugetServerOpt =
-                    if projectName.ToUpper().Contains("RCOHANDLER")
-                    then Some(true)
-                    else    
-                        JsInterop.Regex.IsMatch nugetServerRegex nugetServerInfo 
-
-                match isPartOfNugetServerOpt with
-                | Some isPartOfNugetServer ->
-                    match isPartOfNugetServer with
-                    | true ->
-                        let existingPackages =
-                            JsInterop.Regex.Matches nugetServerRegex nugetServerInfo 
-                            
-                        let! newMixItem =
-                            {
-                                Name = projectName
-                                Changes = Project_Changes.Project_Has_No_Changes
-                                Nuget_Names =
-                                    {
-                                        CurrName =
-                                            JsInterop.Regex.Match nugetPackageVersionRegex res.responseText
-                                            |> fun x -> x.Value
-
-                                        New_Nuget_Name = New_Nuget_Name.Has_No_Name
-                                    }
-                                Existing_Packages =
-                                    if existingPackages.IsSome
-                                    then
-                                       existingPackages.Value
-                                    else
-                                        [|""|]
-                                Server_Options = No_Server_Actions
-                                Loading_To_Server = Not_Loading_Info_To_Server
-                            }
-                            |> Loganalyzer_Projects_Table_Result.Loading_Was_Successfull
-                            |> fun mix ->
-                                (mix,dispatch)
-                                |> Types.Change_LogAnalyzer_Loading_Mix
-                                |> delayedMessage 2000
-                            
-                        return(newMixItem)
-                    | _ ->
-                        let newMixItem =
-                            (
-                                (projectName,"Project is not part of NuGet server")
-                                |> Loganalyzer_Projects_Table_Result.Loading_Was_Not_Successfull
-                            )
-                            |> fun mix ->
-                                (mix,dispatch)
-                                |> Types.Change_LogAnalyzer_Loading_Mix
-
-                        return(newMixItem)
-                    
-                | _ ->
-                    let newMixItem =
-                        (
-                            (projectName,"Project is not part of NuGet server")
-                            |> Loganalyzer_Projects_Table_Result.Loading_Was_Not_Successfull
-                        )
-                        |> fun mix ->
-                            (mix,dispatch)
-                            |> Types.Change_LogAnalyzer_Loading_Mix
-
-                    return(newMixItem)
-                
-            | _ ->
-                let newMixItem =
-                    (
-                        (projectName,standardFailMsg)
-                        |> Loganalyzer_Projects_Table_Result.Loading_Was_Not_Successfull
-                    )
-                    |> fun mix ->
-                        (mix,dispatch)
-                        |> Types.Change_LogAnalyzer_Loading_Mix
-
-                return(newMixItem)
-        | _ ->
-            let newMixItem =
-                (
-                    (projectName,standardFailMsg)
-                    |> Loganalyzer_Projects_Table_Result.Loading_Was_Not_Successfull
-                )
-                |> fun mix ->
-                    (mix,dispatch)
-                    |> Types.Change_LogAnalyzer_Loading_Mix
-
-            return(newMixItem) 
-    | _ ->
-        let newMixItem =
-            (
-                (projectName,standardFailMsg)
-                |> Loganalyzer_Projects_Table_Result.Loading_Was_Not_Successfull
-            )
-            |> fun mix ->
-                (mix,dispatch)
-                |> Types.Change_LogAnalyzer_Loading_Mix
-
-        return(newMixItem)
-}
 
 let cretateLoadingFinishedPopup msgs dispatch =
     let killPopupMsg =
@@ -643,7 +518,7 @@ let changeBranchNugetUpgrade model dispatch ( ev : Browser.Types.Event ) =
 
 let updateNugetTable model dispatch =
     match model.Info with
-    | Types.Git_Info_Nuget.Yes_Git_Info_Nuget repo ->
+    | Upgrade_NuGet.Types.Git_Info_Nuget.Yes_Git_Info_Nuget repo ->
         match model.Projects_Table with
         | Loganalyzer_Projects_Table_Status.Info_Has_Been_Loaded res ->
             match res with
@@ -665,7 +540,7 @@ let updateNugetTable model dispatch =
 
 let saveChanges model dispatch =
     match model.Info with
-    | Types.Git_Info_Nuget.Yes_Git_Info_Nuget _ ->
+    | Upgrade_NuGet.Types.Git_Info_Nuget.Yes_Git_Info_Nuget _ ->
         match model.Projects_Table with
         | Loganalyzer_Projects_Table_Status.Info_Has_Been_Loaded res ->
             match res with
@@ -694,7 +569,7 @@ let saveChanges model dispatch =
                                 prop.onClick (fun _ ->
                                     (projsReady4Change,dispatch) |>
                                     (
-                                        Types.Msg.Save_Nuget_Info_To_Server >>
+                                        Upgrade_NuGet.Types.Msg.Save_Nuget_Info_To_Server >>
                                         dispatch
                                     ))
                             ]
@@ -743,7 +618,7 @@ let checkoutNewBranch ( newBranch : string ) dispatch positions = async{
             (button,exitMsg) |>
             (
                 GlobalMsg.Go_To_Failed_Page >>
-                Types.GlobalMsg_Upgrade_Nuget >>
+                Upgrade_NuGet.Types.GlobalMsg_Upgrade_Nuget >>
                 delayedMessage 3000
             )
 
@@ -1074,7 +949,7 @@ let newStatuses projsNotLoadingAnymore dispatch =
         let newLoadingStatusMsg =
             { proj with Loading_To_Server = Info_Loaded_Options.Not_Loading_Info_To_Server} |>
             (
-                Types.Change_Project_Info >>
+                Upgrade_NuGet.Types.Change_Project_Info >>
                 dispatch
             )
         newLoadingStatusMsg 
@@ -1192,7 +1067,7 @@ let getNewStatus progress project dispatch =
     let newLoadingStatusMsg =
         { project with Loading_To_Server = newStatus} |>
         (
-            Types.Change_Project_Info
+            Upgrade_NuGet.Types.Change_Project_Info
         ) |>
         (
             turnIntoSendPopupWithNewState dispatch >>
@@ -1349,7 +1224,7 @@ let changeNameRequestToMsgArray projectsWithNewNames dispatch =
                     [|
                         { proj with Loading_To_Server = newStatus} |>
                         (
-                            Types.Change_Project_Info >>
+                            Upgrade_NuGet.Types.Change_Project_Info >>
                             delayedMessage 3000
                         )
 
@@ -1359,7 +1234,7 @@ let changeNameRequestToMsgArray projectsWithNewNames dispatch =
                             delayedMessage 3000
                         )
                     |]
-                    |> Types.Batch_Upgrade_Nuget_Async
+                    |> Upgrade_NuGet.Types.Batch_Upgrade_Nuget_Async
                     |> turnIntoSendPopupWithNewState dispatch
                     
                 return(newLoadingStatusMsg)
@@ -1375,10 +1250,10 @@ let changeNameRequestToMsgArray projectsWithNewNames dispatch =
                 let newLoadingStatusMsg =
                     { proj with Loading_To_Server = newStatus} |>
                     (
-                        Types.Change_Project_Info >>
+                        Upgrade_NuGet.Types.Change_Project_Info >>
                         delayedMessage 2000
                     )
-                    |> Types.Upgrade_Nuget_Async
+                    |> Upgrade_NuGet.Types.Upgrade_Nuget_Async
                     |> turnIntoSendPopupWithNewState dispatch
 
                 return(newLoadingStatusMsg)
@@ -1434,7 +1309,7 @@ let changeToBuildingMsgs projs dispatch =
         let newLoadingStatusMsg =
             { proj with Loading_To_Server = newStatus} |>
             (
-                Types.Change_Project_Info 
+                Upgrade_NuGet.Types.Change_Project_Info 
             )
             |> turnIntoSendPopupWithNewState dispatch
 
@@ -1447,7 +1322,7 @@ let ChangeNugetNameAndBuildSolution projects dispatch =
         Popup.Types.Popup_Is_Dead |>
         (
             Global.Types.Popup_Msg_Global >>
-            Types.GlobalMsg_Upgrade_Nuget
+            Upgrade_NuGet.Types.GlobalMsg_Upgrade_Nuget
         )
         
     let yesNoPopupMsg yesMsg =
@@ -1467,7 +1342,7 @@ let ChangeNugetNameAndBuildSolution projects dispatch =
         yesNoButton |>
         (
             Global.Types.Popup_Msg_Global >>
-            Types.GlobalMsg_Upgrade_Nuget
+            Upgrade_NuGet.Types.GlobalMsg_Upgrade_Nuget
         )
 
     let existsProjectsWithNewNames =
@@ -1529,7 +1404,7 @@ let ChangeNugetNameAndBuildSolution projects dispatch =
             (
                 Build_Solution_If_Ready_Msg >>
                 delayedMessage 3000 >>
-                Types.Upgrade_Nuget_Async
+                Upgrade_NuGet.Types.Upgrade_Nuget_Async
             )
         let buildAndChangeNameMsgs =
             [|
@@ -1560,7 +1435,7 @@ let buildSolution projectsLoading dispatch = async {
             let newLoadingStatusMsg =
                 { proj with Loading_To_Server = newStatus} |>
                 (
-                    Types.Change_Project_Info 
+                    Upgrade_NuGet.Types.Change_Project_Info 
                 )
                 |> turnIntoSendPopupWithNewState dispatch
             newLoadingStatusMsg
@@ -1575,7 +1450,7 @@ let buildSolution projectsLoading dispatch = async {
                 "Build failed. Make sure you solution compiles clean!" |>
                 (
                     buildFailedMsgs >>
-                    Types.Batch 
+                    Upgrade_NuGet.Types.Batch 
                 )
             return(res)
 
@@ -1598,10 +1473,10 @@ let buildSolution projectsLoading dispatch = async {
                                         )
                                     | _ ->
                                         MsgNone
-                                        |> Types.GlobalMsg_Upgrade_Nuget
+                                        |> Upgrade_NuGet.Types.GlobalMsg_Upgrade_Nuget
                                 | _ ->
                                     MsgNone
-                                    |> Types.GlobalMsg_Upgrade_Nuget
+                                    |> Upgrade_NuGet.Types.GlobalMsg_Upgrade_Nuget
                             | Server_Options.Is_To_Be_Deleted ->
                                 (proj,proj.Nuget_Names.CurrName,dispatch) |>
                                 (
@@ -1614,7 +1489,7 @@ let buildSolution projectsLoading dispatch = async {
                                 )
                             | _ ->
                                 MsgNone
-                                |> Types.GlobalMsg_Upgrade_Nuget
+                                |> Upgrade_NuGet.Types.GlobalMsg_Upgrade_Nuget
 
                         performNugetActionMsg
                         |> delayedMessage 2000
@@ -1631,7 +1506,7 @@ let buildSolution projectsLoading dispatch = async {
                         [|
                             { proj with Loading_To_Server = newStatus} |>
                             (
-                                Types.Change_Project_Info 
+                                Upgrade_NuGet.Types.Change_Project_Info 
                             )
                             |> turnIntoSendPopupWithNewState dispatch
                             
@@ -1639,10 +1514,10 @@ let buildSolution projectsLoading dispatch = async {
                             performNugetActionMsgAsync
 
                         |]
-                        |> Types.Batch
+                        |> Upgrade_NuGet.Types.Batch
                     newLoadingStatusMsg
                     )
-            let res = buildSuccededMsgs |> Types.Batch
+            let res = buildSuccededMsgs |> Upgrade_NuGet.Types.Batch
 
             return(res)
     | _ ->
@@ -1650,7 +1525,7 @@ let buildSolution projectsLoading dispatch = async {
             res.responseText |>
             (
                 buildFailedMsgs >>
-                Types.Batch 
+                Upgrade_NuGet.Types.Batch 
             )
         return(res)
 }
@@ -1686,7 +1561,7 @@ let performNugetActionToServerAsync proj version dispatch = async {
         let newLoadingStatusMsg =
             { proj with Loading_To_Server = newStatus} |>
             (
-                Types.Change_Project_Info 
+                Upgrade_NuGet.Types.Change_Project_Info 
             )
             |> turnIntoSendPopupWithNewState dispatch
 
@@ -1723,7 +1598,7 @@ let performNugetActionToServerAsync proj version dispatch = async {
                 let newLoadingStatusMsg =
                     { proj with Loading_To_Server = newStatus} |>
                     (
-                        Types.Change_Project_Info 
+                        Upgrade_NuGet.Types.Change_Project_Info 
                     )
                     |> turnIntoSendPopupWithNewState dispatch
 
@@ -1789,7 +1664,7 @@ let performNugetActionToServerAsync proj version dispatch = async {
                 let newLoadingStatusMsg =
                     { proj with Loading_To_Server = newStatus} |>
                     (
-                        Types.Change_Project_Info 
+                        Upgrade_NuGet.Types.Change_Project_Info 
                     )
                     |> turnIntoSendPopupWithNewState dispatch
 
@@ -1797,7 +1672,7 @@ let performNugetActionToServerAsync proj version dispatch = async {
         | _ ->
             return(failedMsg deleteResp.responseText)
     | _ ->
-        return(MsgNone |> Types.GlobalMsg_Upgrade_Nuget)
+        return(MsgNone |> Upgrade_NuGet.Types.GlobalMsg_Upgrade_Nuget)
         
 }
 
@@ -1837,11 +1712,11 @@ let decideifBuild model dispatch =
                             dispatch |>
                             (
                                 buildSolution projectsLoading >>
-                                Types.Upgrade_Nuget_Async
+                                Upgrade_NuGet.Types.Upgrade_Nuget_Async
                             )
                         |] |>
                         (
-                            Types.Batch >>
+                            Upgrade_NuGet.Types.Batch >>
                             Cmd.ofMsg
                         )
                         
@@ -1942,7 +1817,7 @@ let changeLoadingMix model result dispatch =
                         finishedStatusMsg
                     |] |>
                     (
-                        Types.Batch >>
+                        Upgrade_NuGet.Types.Batch >>
                         Cmd.ofMsg
                     )
 

@@ -1,4 +1,4 @@
-module Logic.CommandApis
+module Main.Logic.CommandApis
 
 open JsInterop
 open Elmish
@@ -9,7 +9,6 @@ open Global.Types
 open Feliz
 open SharedTypes
 open Fable.Remoting.Client
-open Main.Logic
 open Main
 
 let apis =
@@ -97,7 +96,7 @@ let checkOriginAccessibility dispatch = async{
     let popupMsg =
         "Checking accesibility to server"
         |> Popup.View.getPopupMsgSpinner
-        |> checkingProcessPopupMsg standardPositions
+        |> Logic.Common.checkingProcessPopupMsg Logic.Common.standardPositions
         |> dispatch
 
     popupMsg
@@ -155,10 +154,10 @@ let checkOriginAccessibility dispatch = async{
 
         let popupMsg =
             "Origin is not accessible!"
-            |> errorPopupMsg
+            |> Logic.Common.errorPopupMsg
                     dispatch
-                    killPopupMsg
-                    standardPositions
+                    Logic.Common.killPopupMsg
+                    Logic.Common.standardPositions
 
         let originNotAccessibleMsg =
             Origin_Access_Result.Origin_Not_Accessible |>
@@ -181,7 +180,7 @@ let checkRepositoryDownloaded dispatch = async{
     let popupMsg =
         "Checking if loganalyzer repo cloned"
         |> Popup.View.getPopupMsgSpinner
-        |> checkingProcessPopupMsg standardPositions
+        |> Logic.Common.checkingProcessPopupMsg Logic.Common.standardPositions
         |> dispatch
 
     popupMsg
