@@ -27,19 +27,6 @@ let strResponse prms = async {
 let performNugetActionToServerAsync proj version dispatch = async {
     do! Async.Sleep 2000
 
-    let reqStrBase = "shellCommand=cd server;cd loganalyzer;"
-
-    let base_prms = [|
-            {
-                SharedTypes.CommandInfo.Command = "cd"
-                SharedTypes.CommandInfo.Arg = "server"
-            }
-            {
-                SharedTypes.CommandInfo.Command = "cd"
-                SharedTypes.CommandInfo.Arg = "loganalyzer"
-            }
-        |]
-
     let nugetPushTemplate projName version =
         let args =
             String.Format(
@@ -51,11 +38,11 @@ let performNugetActionToServerAsync proj version dispatch = async {
         let prms = 
             [|
                 {
-                    SharedTypes.CommandInfo.Command = "dotnet"
-                    SharedTypes.CommandInfo.Arg = args
+                    SharedTypes.CdCommand.MoveCommand = "server/loganalyzer"
+                    SharedTypes.CdCommand.ResponseCommand = args
                 }
+                |> SharedTypes.IsCd
             |]
-            |> Array.append base_prms
 
         prms
 
@@ -70,11 +57,11 @@ let performNugetActionToServerAsync proj version dispatch = async {
         let prms = 
             [|
                 {
-                    SharedTypes.CommandInfo.Command = "dotnet"
-                    SharedTypes.CommandInfo.Arg = args
+                    SharedTypes.CdCommand.MoveCommand = "server/loganalyzer"
+                    SharedTypes.CdCommand.ResponseCommand = args
                 }
+                |> SharedTypes.IsCd
             |]
-            |> Array.append base_prms
 
         prms
 

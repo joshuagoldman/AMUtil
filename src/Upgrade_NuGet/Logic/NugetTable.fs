@@ -128,17 +128,10 @@ let getNuGetTableInfo dispatch = async {
 
     let prms = [|
         {
-            SharedTypes.CommandInfo.Command = "cd"
-            SharedTypes.CommandInfo.Arg = "server"
+            CdCommand.MoveCommand = "server/loganalyzer"
+            CdCommand.ResponseCommand = "ls"
         }
-        {
-            SharedTypes.CommandInfo.Command = "cd"
-            SharedTypes.CommandInfo.Arg = "loganalyzer"
-        }
-        {
-            SharedTypes.CommandInfo.Command = "ls"
-            SharedTypes.CommandInfo.Arg = ""
-        }
+        |> SharedTypes.CommandInfo.IsCd
     |]
 
     let! responses = Global.Types.apis.Command prms

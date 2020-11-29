@@ -73,11 +73,9 @@ let isGitInstalledMsgsToDispatch dispatch
                 resultGitInstalledMsg |> resolve
 
 let checkIfGitInstalledAsync dispatch = async {
+
     let prms = [|
-        {
-            SharedTypes.CommandInfo.Command = "which"
-            SharedTypes.CommandInfo.Arg = "git"
-        }
+        IsResponse "which git"
     |]
 
     let! resp = apis.Command prms
@@ -104,11 +102,9 @@ let checkOriginAccessibility dispatch = async{
     do! Async.Sleep 3000
 
     let prms = [|
-        {
-            SharedTypes.CommandInfo.Command = "git"
-            SharedTypes.CommandInfo.Arg = "ls-remote ssh://git@segaeesl01.eipu.ericsson.se:8081/nodetest/loganalyzer.git HEAD"
-        }
+        IsResponse "ls-remote ssh://git@segaeesl01.eipu.ericsson.se:8081/nodetest/loganalyzer.git HEAD"
     |]
+    
 
     let! resp = apis.Command prms
 
@@ -189,17 +185,10 @@ let checkRepositoryDownloaded dispatch = async{
 
     let prms = [|
         {
-            SharedTypes.CommandInfo.Command = "cd"
-            SharedTypes.CommandInfo.Arg = "server"
+            SharedTypes.CdCommand.MoveCommand = "server/loganalyzer"
+            SharedTypes.CdCommand.ResponseCommand = "git remote -v"
         }
-        {
-            SharedTypes.CommandInfo.Command = "cd"
-            SharedTypes.CommandInfo.Arg = "loganalyzer"
-        }
-        {
-            SharedTypes.CommandInfo.Command = "git"
-            SharedTypes.CommandInfo.Arg = "remote -v"
-        }
+        |> IsCd
     |]
 
     let! responses = apis.Command prms

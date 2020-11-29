@@ -31,28 +31,50 @@ let getRcoAsObject (formFile : obj ) = async{
 }
 
 let executeCommands ( commands : CommandInfo array ) = async {
+
     let res =
         commands
-        |> Array.map (fun cmd ->
-                let resp = 
-                    let isServerCommand =
-                        cmd.Command.ToLower().Contains("cd") &&
-                        cmd.Arg.ToLower().Contains("server")
-                    match isServerCommand with
-                    | false ->
-                        cmd.Command 
-                        |> executeCommand cmd.Arg
-                    | true ->
-                        let currPath = Directory.GetCurrentDirectory()
-                        let server_path = $"{currPath}../public"
-                        let fullCommand = 
-                            {cmd with Arg = server_path}
+        |> Array.map (fun cmdChoice ->
+            match cmdChoice with
+            | IsCd cdCmd ->
+                let isServerCommand = 
+                    cdCmd.MoveCommand.ToLower().Contains("server")
+                
+                match isServerCommand with
+                | false ->
+                    let answer =
+                        cdCmd.ResponseCommand 
+                        |> executeCommand (Some(cdCmd.MoveCommand))
 
-                        fullCommand.Command 
-                        |> executeCommand fullCommand.Arg
+                    {
+                        Command = 
+                            cdCmd.MoveCommand + ";" + cdCmd.ResponseCommand
+                        Answer = answer
+                    }
+                | true ->
+                    let currPath = Directory.GetCurrentDirectory().Replace("\\","/")
+                    let server_path = $"{currPath}/../public"
+                    let fullCommand = 
+                        {cdCmd with MoveCommand = 
+                                    cdCmd.MoveCommand.Replace("server",server_path) }
+
+                    let answer =
+                        fullCommand.ResponseCommand 
+                        |> executeCommand (Some(fullCommand.MoveCommand))
+
+                    {
+                        Command = 
+                            fullCommand.MoveCommand + ";" + fullCommand.ResponseCommand
+                        Answer = answer
+                    }
+            | IsResponse cmd ->
+                let answer =
+                    cmd 
+                    |> executeCommand None
+
                 {
                     Command = cmd
-                    Answer = resp
+                    Answer = answer
                 }
                 
             )

@@ -6,37 +6,50 @@ open System.IO
 open System
 open System.Diagnostics
 
-let executeCommand args command =
+let getWorkingpath pathOpt =
+    match pathOpt with
+        | Some path -> path
+        | _ -> "C:/Data"
+
+let executeCommand pathOpt command =
     try
-        let currPath = Directory.GetCurrentDirectory()
-        let pathReNamed = currPath.Replace("\\","/")
+        let pathToBash = Environment.GetEnvironmentVariable("BASHPATH").Replace("\\","/")
+        let bashFile = pathToBash + "/bash.exe"
         let gitBashProcess = new System.Diagnostics.Process()
         let cmdInfo = System.Diagnostics.ProcessStartInfo()
-        cmdInfo.Arguments <- args // such as "fetch origin"
         cmdInfo.UseShellExecute <- false 
-        cmdInfo.WorkingDirectory <- pathReNamed
-        cmdInfo.FileName <- command
+        cmdInfo.WorkingDirectory <- getWorkingpath pathOpt
+        cmdInfo.FileName <- bashFile
         cmdInfo.Verb <- "runas" 
         cmdInfo.RedirectStandardOutput <- true
         cmdInfo.RedirectStandardError <- true
+        cmdInfo.RedirectStandardInput <- true
         cmdInfo.WindowStyle <- ProcessWindowStyle.Hidden
         gitBashProcess.StartInfo <- cmdInfo
+
         gitBashProcess.Start()
         |> function
         | processStartedSuccesfully when processStartedSuccesfully ->
-                //gitProcess.WaitForExit()
+            //gitProcess.WaitForExit()
+            using ( gitBashProcess.StandardInput) ( fun sw ->
+                if sw.BaseStream.CanWrite
+                then
+                    sw.WriteLine(command : string)
+            )
+
+            let allStringinfo = 
+                gitBashProcess.StandardOutput.ReadToEnd()
+        
+            match allStringinfo.Length with
+            | 0 -> 
                 let allStringinfo = 
-                    gitBashProcess.StandardOutput.ReadToEnd()
-                
-                match allStringinfo.Length with
-                | 0 -> 
-                    let allStringinfo = 
-                        gitBashProcess.StandardError.ReadToEnd()
-                    gitBashProcess.Close()
-                    allStringinfo
-                | _ ->
-                    gitBashProcess.Close()
-                    allStringinfo
+                    gitBashProcess.StandardError.ReadToEnd()
+                gitBashProcess.Close()
+                allStringinfo
+            | _ ->
+                gitBashProcess.Close()
+                allStringinfo
+           
         | _ ->
             let allStringinfo = 
                 gitBashProcess.StandardError.ReadToEnd()
@@ -45,3 +58,4 @@ let executeCommand args command =
     with
     | (e : Exception) ->
         e.Message
+    

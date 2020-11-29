@@ -29,13 +29,10 @@ let downloadRepo dispatch = async {
 
     let prms = [|
         {
-            SharedTypes.CommandInfo.Command = "cd"
-            SharedTypes.CommandInfo.Arg = "server"
+            SharedTypes.CdCommand.MoveCommand = "server"
+            SharedTypes.CdCommand.ResponseCommand = "git clone ssh://git@segaeesl01.eipu.ericsson.se:8081/nodetest/loganalyzer.gi"
         }
-        {
-            SharedTypes.CommandInfo.Command = "git"
-            SharedTypes.CommandInfo.Arg = "clone ssh://git@segaeesl01.eipu.ericsson.se:8081/nodetest/loganalyzer.git"
-        }
+        |> IsCd
     |]
 
     let! responses = apis.Command prms

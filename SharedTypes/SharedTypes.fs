@@ -31,13 +31,17 @@ type WriteFileModel = {
     SocketPort : int
 }
 
-type CommandInfo = {
-    Command : string
-    Arg : string
+type CdCommand = {
+    MoveCommand : string
+    ResponseCommand : string
 }
 
+type CommandInfo = 
+    | IsCd of CdCommand
+    | IsResponse of string
+
 type CommandOptions = {
-    Command : CommandInfo
+    Command : string
     Answer : string
 }
 

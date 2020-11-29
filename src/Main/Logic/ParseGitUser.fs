@@ -191,29 +191,30 @@ let parseGitUser dispatch = async {
 
     let prms = [|
         {
-            SharedTypes.CommandInfo.Command = "cd"
-            SharedTypes.CommandInfo.Arg = "server"
+            SharedTypes.CdCommand.MoveCommand = "server/loganalyzer"
+            SharedTypes.CdCommand.ResponseCommand = "branch -r"
         }
+        |> SharedTypes.IsCd
         {
-            SharedTypes.CommandInfo.Command = "cd"
-            SharedTypes.CommandInfo.Arg = "loganalyzer"
+            SharedTypes.CdCommand.MoveCommand = "server/loganalyzer"
+            SharedTypes.CdCommand.ResponseCommand = "config --global user.name"
         }
+        |> SharedTypes.IsCd
         {
-            SharedTypes.CommandInfo.Command = "git"
-            SharedTypes.CommandInfo.Arg = "config --global user.name"
+            SharedTypes.CdCommand.MoveCommand = "server/loganalyzer"
+            SharedTypes.CdCommand.ResponseCommand = "config --global user.email"
         }
+        |> SharedTypes.IsCd
         {
-            SharedTypes.CommandInfo.Command = "git"
-            SharedTypes.CommandInfo.Arg = "config --global user.email"
+            SharedTypes.CdCommand.MoveCommand = "server/loganalyzer"
+            SharedTypes.CdCommand.ResponseCommand = "status"
         }
+        |> SharedTypes.IsCd
         {
-            SharedTypes.CommandInfo.Command = "git"
-            SharedTypes.CommandInfo.Arg = "status"
+            SharedTypes.CdCommand.MoveCommand = "server/loganalyzer"
+            SharedTypes.CdCommand.ResponseCommand = "status"
         }
-        {
-            SharedTypes.CommandInfo.Command = "git"
-            SharedTypes.CommandInfo.Arg = "branch -r"
-        }
+        |> SharedTypes.IsCd
     |]
 
     let! responses = apis.Command prms
