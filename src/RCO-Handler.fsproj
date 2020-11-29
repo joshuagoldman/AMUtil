@@ -34,6 +34,9 @@
     <Compile Include="Upgrade_NuGet/Logic/LoadingMix.fs" />
     <Compile Include="Upgrade_NuGet/Logic/NugetServerActions.fs" />
     <Compile Include="Upgrade_NuGet/Logic/NugetTable.fs" />
+    <Compile Include="Upgrade_NuGet/Logic/BuildAMSolution.fs" />
+    <Compile Include="Upgrade_NuGet/Logic/ChangeNugetName.fs" />
+    <Compile Include="Upgrade_NuGet/Logic/GitBranchActions.fs" />
     <Compile Include="Upgrade_NuGet/State.fs" />
     <Compile Include="Upgrade_NuGet/RepoStateTable.fs" />
     <Compile Include="Upgrade_NuGet/View.fs" />
