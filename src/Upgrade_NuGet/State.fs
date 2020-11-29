@@ -82,7 +82,7 @@ let update msg (model:Model) : Types.Model * Global.Types.GlobalMsg * Cmd<Msg> =
             model, Global.Types.MsgNone, []
     | Change_Project_Status project ->
         let newProjInfoOpt =
-            Logic.Common.changeProjectStatus
+            Logic.Miscellaneous.changeProjectStatus
                             model
                             project
         match newProjInfoOpt with
@@ -159,13 +159,13 @@ let update msg (model:Model) : Types.Model * Global.Types.GlobalMsg * Cmd<Msg> =
         model, activityMsg, []
 
     | Check_Nuget_Server dispatch ->
-        Logic.Miscellaneous.getAllAvailablePackageVersions dispatch
+        Logic.NugetInfoExtract.getAllAvailablePackageVersions dispatch
         |> Async.StartImmediate
 
         model, Global.Types.GlobalMsg.MsgNone, []
 
     | Get_All_Projects_Info dispatch ->
-        Logic.Miscellaneous.getNuGetTableInfo dispatch
+        Logic.NugetTable.getNuGetTableInfo dispatch
         |> Async.StartImmediate
 
         model, Global.Types.MsgNone, []
@@ -181,7 +181,7 @@ let update msg (model:Model) : Types.Model * Global.Types.GlobalMsg * Cmd<Msg> =
                 newInfo
                 |> Global.Types.GlobalMsg.Spread_New_Branch_Name
 
-            Logic.Miscellaneous.checkoutNewBranch branch_name dispatch positions  
+            Logic.GitBranchActions.checkoutNewBranch branch_name dispatch positions  
             |> Async.StartImmediate
 
             model, spreadMsg,[]
@@ -190,15 +190,15 @@ let update msg (model:Model) : Types.Model * Global.Types.GlobalMsg * Cmd<Msg> =
         { model with Nuget_Server = info}, Global.Types.MsgNone,[]
     | Save_Nuget_Info_To_Server(projs,dispatch) ->
         let msg =
-            Logic.Miscellaneous.ChangeNugetNameAndBuildSolution projs dispatch
+            Logic.ChangeNugetName.ChangeNugetNameAndBuildSolution projs dispatch
             |> Cmd.ofMsg
         model, Global.Types.MsgNone, msg
     | Build_Solution_If_Ready_Msg dispatch ->
-        Logic.Miscellaneous.decideifBuild model dispatch
+        Logic.BuilAMSOlution.decideifBuild model dispatch
                 
     | Perform_Nuget_Action_To_Server(proj,version,dispatch) ->
         let msg =
-            Logic.Miscellaneous.performNugetActionToServerAsync proj version dispatch
+            Logic.NugetServerActions.performNugetActionToServerAsync proj version dispatch
             |> Cmd.fromAsync
 
         model, Global.Types.MsgNone, msg
@@ -222,10 +222,10 @@ let update msg (model:Model) : Types.Model * Global.Types.GlobalMsg * Cmd<Msg> =
 
     | Send_Popup dispatch ->
 
-        Logic.Miscellaneous.getTableLoadPopup model dispatch
+        Logic.TableLoadPopup.getTableLoadPopup model dispatch
 
         model, Global.Types.MsgNone, []
 
     | Change_LogAnalyzer_Loading_Mix(result,dispatch) ->
-        Logic.Miscellaneous.changeLoadingMix model result dispatch 
+        Logic.LoadingMix.changeLoadingMix model result dispatch 
             
