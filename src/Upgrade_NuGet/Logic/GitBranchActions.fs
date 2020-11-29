@@ -22,13 +22,10 @@ let checkoutNewBranch ( newBranch : string ) dispatch positions = async{
     do! Async.Sleep 2000
 
     let prms = [|
-        {
-            SharedTypes.CommandInfo.Command = "git"
-            SharedTypes.CommandInfo.Arg = String.Format(
-                                                "checkout {0}",
-                                                newBranch
-                                            )
-        }
+        String.Format(
+            "checkout {0}",
+            newBranch
+        ) |> SharedTypes.IsResponse
     |]
 
     let! responses = Global.Types.apis.Command prms
