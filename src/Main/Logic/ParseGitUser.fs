@@ -192,27 +192,27 @@ let parseGitUser dispatch = async {
     let prms = [|
         {
             SharedTypes.CdCommand.MoveCommand = "server/loganalyzer"
-            SharedTypes.CdCommand.ResponseCommand = "branch -r"
+            SharedTypes.CdCommand.ResponseCommand = "git branch -r"
         }
         |> SharedTypes.IsCd
         {
             SharedTypes.CdCommand.MoveCommand = "server/loganalyzer"
-            SharedTypes.CdCommand.ResponseCommand = "config --global user.name"
+            SharedTypes.CdCommand.ResponseCommand = "git config --global user.name"
         }
         |> SharedTypes.IsCd
         {
             SharedTypes.CdCommand.MoveCommand = "server/loganalyzer"
-            SharedTypes.CdCommand.ResponseCommand = "config --global user.email"
+            SharedTypes.CdCommand.ResponseCommand = "git config --global user.email"
         }
         |> SharedTypes.IsCd
         {
             SharedTypes.CdCommand.MoveCommand = "server/loganalyzer"
-            SharedTypes.CdCommand.ResponseCommand = "status"
+            SharedTypes.CdCommand.ResponseCommand = "git status"
         }
         |> SharedTypes.IsCd
         {
             SharedTypes.CdCommand.MoveCommand = "server/loganalyzer"
-            SharedTypes.CdCommand.ResponseCommand = "status"
+            SharedTypes.CdCommand.ResponseCommand = "git status"
         }
         |> SharedTypes.IsCd
     |]

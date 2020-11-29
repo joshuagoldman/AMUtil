@@ -102,7 +102,7 @@ let checkOriginAccessibility dispatch = async{
     do! Async.Sleep 3000
 
     let prms = [|
-        IsResponse "ls-remote ssh://git@segaeesl01.eipu.ericsson.se:8081/nodetest/loganalyzer.git HEAD"
+        IsResponse "git ls-remote ssh://git@segaeesl01.eipu.ericsson.se:8081/nodetest/loganalyzer.git HEAD"
     |]
     
 
