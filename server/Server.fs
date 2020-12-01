@@ -10,6 +10,8 @@ open System.Text
 open Fable.Remoting.Server
 open Fable.Remoting.Giraffe
 open SharedTypes
+open System.Net.Sockets
+open System.Net
 
 type WebSocketServerMessage = { Time : System.DateTime; Message : string }
 
@@ -17,8 +19,16 @@ let saveRcoFileAsync init = task {
     update init WriteFile.Initialize
 }
 
-WebSocketServer.setupServer
-|> Async.StartImmediate
+let startSocketServer = 
+    let listenSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream,ProtocolType.Tcp)
+    let hostIP = (Dns.GetHostEntry(IPAddress.Parse("127.0.0.1"))).AddressList.[0]
+    let ep = IPEndPoint(hostIP, 3001)
+    listenSocket.Bind(ep)
+    listenSocket.Listen()
+
+    System.Console.WriteLine("Server has started on localhost:3001...")
+
+startSocketServer
 
 let getRcoAsObject (formFile : obj ) = async{
     let file = formFile :?> Microsoft.AspNetCore.Http.IFormFile
@@ -102,7 +112,8 @@ let getProjectInfo ( projectName : string ) =
     async{
             let dir = Directory.GetCurrentDirectory()
             let generalPath = $"{dir}\..\public\loganalyzer"
-            let specificPath = $"{generalPath}\{projectName}\{projectName}.csproj"
+            let projectNameLongVersion = $"Ericsson.AM.{projectName}"
+            let specificPath = $"{generalPath}\{projectNameLongVersion}\{projectNameLongVersion}.csproj"
 
             let writeStream = new MemoryStream()
             let file = File.Open(specificPath, FileMode.Open)
@@ -115,6 +126,9 @@ let getProjectInfo ( projectName : string ) =
                 readByte <- file.Read(bt, 0, bt.Length)
 
             let content = Encoding.ASCII.GetString(writeStream.ToArray())
+
+            file.Flush()
+            file.Close()
 
             return content
         }

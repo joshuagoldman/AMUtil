@@ -75,6 +75,12 @@ type RCOTabs = {
     ERS : RcoObject array
 }
 
+type SocketMsg = {
+    ID : string
+    Message : string
+    Progress : float
+}
+
 
 type IApis = {
     GetRcoObject : obj -> Async<Result<RCOTabs,string>>
@@ -84,3 +90,28 @@ type IApis = {
     GetProjecInfo : string -> Async<string>
     NuGetInfo : string -> Async<Result<string,string>>
 }
+
+module Shared =
+    let endpoint = "ws://localhost:8086"
+
+    type Process<'a,'b> =
+        | OnGoing of 'a
+        | Finished of Result<'b, string>
+
+    type NuGetInfo = {
+        ProjectName : string
+        Uploaded : float
+    }
+
+    type BridgeAction =
+        | None
+        | PushNuGet of Process<NuGetInfo,string>
+        | WriteRco of Process<float,string>
+
+    type BridgeModel = {
+        CurrAction : BridgeAction
+    }
+
+    type BridgeMsg = 
+        | ChangeAction of BridgeAction
+

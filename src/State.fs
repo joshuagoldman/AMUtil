@@ -31,6 +31,9 @@ let init result =
         Main = Main.State.init 
         VerifyStrMsg = Verify_Str_Msg_Not_Determined
         Popup = Popup.Types.PopupStyle.Popup_Is_Dead
+        Socket = {
+            CurrAction = SharedTypes.Shared.None
+        }
     }, Cmd.none
 
 
@@ -162,5 +165,30 @@ let update msg (model:Model) : Types.Model * Cmd<Types.Msg> =
                         model.Main with Activity = activity
                 }
             }, []
-        
+    | SocketMsg socketMsg ->
+        match socketMsg with
+        | SharedTypes.Shared.BridgeMsg.ChangeAction action ->
+            match action with
+            | SharedTypes.Shared.BridgeAction.None ->
+                model, []
+            | SharedTypes.Shared.BridgeAction.PushNuGet prcs->
+                match prcs with
+                | SharedTypes.Shared.Process.OnGoing info ->
+                    model, []
+                | SharedTypes.Shared.Process.Finished result ->
+                    match result with
+                    | Ok resMsg ->
+                        model, []
+                    | Error err ->
+                        model, []
+            | SharedTypes.Shared.BridgeAction.WriteRco prcs ->
+                match prcs with
+                | SharedTypes.Shared.Process.OnGoing progress ->
+                    model, []
+                | SharedTypes.Shared.Process.Finished result ->
+                    match result with
+                    | Ok resMsg ->
+                        model, []
+                    | Error err ->
+                        model, []
 

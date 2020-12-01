@@ -39,7 +39,7 @@ let buildSolution projectsLoading dispatch = async {
     let prms = [|
         {
             SharedTypes.CdCommand.MoveCommand = "server/loganalyzer"
-            SharedTypes.CdCommand.ResponseCommand = "Ericsson.AM.sln"
+            SharedTypes.CdCommand.ResponseCommand = "dotnet build Ericsson.AM.sln"
         }
         |> IsCd
     |]

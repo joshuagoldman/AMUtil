@@ -151,7 +151,7 @@ let getAllAvailablePackageVersions dispatch = async {
 
     do! Async.Sleep 2000
 
-    let! result = Global.Types.apis.NuGetInfo  "http://localhost:3001/nugetinfo"
+    let! result = Global.Types.apis.NuGetInfo  "http://segaeesw04.eipu.ericsson.se/nuget/Packages"
 
     match result with
     | Ok okRes ->

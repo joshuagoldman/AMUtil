@@ -56,6 +56,7 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Elmish" Version="3.1.0" />
+    <PackageReference Include="elmish.bridge.client" Version="3.4.0" />
     <PackageReference Include="Fable.Core" Version="3.1.6" />
     <PackageReference Include="Fable.Fetch" Version="2.2.0" />
     <PackageReference Include="Fable.Import.Browser" Version="1.4.0" />

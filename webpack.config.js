@@ -111,7 +111,11 @@ module.exports = {
 			'/': { // tell webpack-dev-server to re-route all requests from client to the server
 			  target: "http://localhost:8086",// assuming the backend server is hosted on port 8086 during development
 			  changeOrigin: true
-			}
+			},
+			'/socket': {
+				target: "http://localhost:8086",
+				ws: true
+			 }
 		},
         hot: true,
         inline: true

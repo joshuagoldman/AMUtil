@@ -15,6 +15,8 @@
     <Compile Include="Server.fs" />
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="elmish.bridge.giraffe" Version="3.0.3" />
+    <PackageReference Include="elmish.bridge.server" Version="3.0.3" />
     <PackageReference Include="ExcelDataReader" Version="3.6.0" />
     <PackageReference Include="ExcelDataReader.DataSet" Version="3.6.0" />
     <PackageReference Include="Fable.remoting.giraffe" Version="4.13.0" />

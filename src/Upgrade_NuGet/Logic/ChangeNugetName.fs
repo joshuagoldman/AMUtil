@@ -164,12 +164,12 @@ let reqModel version ( proj : Project_Info ) =
     }
     let socketInfo = {
         Port = 3001
-        URL = "localhost"
+        URL = "127.0.0.1"
     }
 
     let project =  {
-        SharedTypes.NuGetChange.ProjectName = proj.Name
-        SharedTypes.NuGetChange.ProjectNamePure = proj.Name.Replace("Ericsson.AM.", "")
+        SharedTypes.NuGetChange.ProjectName = "Ericsson.AM." + proj.Name
+        SharedTypes.NuGetChange.ProjectNamePure = proj.Name
     }
 
     let changeNugetNameModel = {
@@ -218,10 +218,12 @@ let changeNameRequest ( socket : Browser.WebSocket ) changeNugetNameModel dispat
         |> Async.StartImmediate
 
 let changeNameRequestToMsgArray projectsWithNewNames dispatch =
+    
+    let socket = Browser.WebSocket.Create("ws://127.0.0.1:3001")
+
     projectsWithNewNames
     |> Array.map (fun (proj : Project_Info,version) ->
         async {
-            let socket = Browser.WebSocket.Create("localhost:3001")
 
             let changeNugetModel = reqModel version proj
 

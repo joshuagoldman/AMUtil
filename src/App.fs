@@ -9,6 +9,7 @@ open App.State
 open Feliz
 open Feliz.style
 open Fable.React
+open Elmish.Bridge
 
 importAll "../sass/main.sass"
 
@@ -134,6 +135,7 @@ open Elmish.HMR
 // App
 Program.mkProgram init update root
 |> Program.toNavigable (parseHash pageParser) urlUpdate
+|> Program.withBridge SharedTypes.Shared.endpoint
 #if DEBUG
 |> Program.withDebugger
 #endif

@@ -1,32 +1,27 @@
 module WebSocketServer
 
-open System
-open System.Net.Sockets
-open System.Net
+open Elmish
+open Elmish.Bridge
+open SharedTypes.Shared
 
-let _buffer = [|1024 |> byte|]
-let mutable _clientSockets = seq[] : seq<Socket>
-let _serverSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp)
+let init (clientDispatch:Dispatch<SharedTypes.Shared.BridgeMsg>) () =
+    {
+        CurrAction = SharedTypes.Shared.None
+    }, Cmd.none
 
-let receiveCallback ar =
-    let socket = (ar : IAsyncResult).AsyncState
-    let received = (socket :?> Socket).EndReceive(ar)
-    let dataBuf = [|received |> byte|]
-    Array.Copy(_buffer, dataBuf, received)
+let update (clientDispatch:Dispatch<SharedTypes.Shared.BridgeMsg>) msg (model : BridgeModel) =
+    match msg with 
+    | ChangeAction action ->
+        action
+        |> ChangeAction
+        |> clientDispatch 
 
-    let text = System.Text.Encoding.ASCII.GetString(dataBuf)
-    Console.Write("Text received: " + text)
+        let newModel = { model with CurrAction = action }
 
-let  rec acceptCallback ar =
-    let socket = _serverSocket.EndAccept(ar : IAsyncResult)
-    _clientSockets <- seq[socket]
-    socket.BeginReceive(_buffer, 0, _buffer.Length, SocketFlags.None, new AsyncCallback(receiveCallback), socket) |> ignore
+        newModel, Cmd.none
 
 
-let setupServer = async {
-    Console.WriteLine "Setting up socket..."
 
-    _serverSocket.Bind(IPEndPoint(IPAddress.Any, 3001))
-    _serverSocket.Listen(5)
-    _serverSocket.BeginAccept(new AsyncCallback(acceptCallback), null) |> ignore
-}
+let server =
+  Bridge.mkServer SharedTypes.Shared.endpoint init update
+  |> Bridge.run Giraffe.server

@@ -6,6 +6,7 @@ open System.Text
 open System
 open System.Text.RegularExpressions
 open SharedTypes.NuGetChange
+open System.Net
 
 type Defined<'a> =
     | Defined of 'a
@@ -30,21 +31,21 @@ let writeLine (color : ConsoleColor) ( msg : string ) =
     Console.WriteLine msg
     Console.ResetColor()
 
-let socket_write port (msg : string ) =
-    let serverIp = "localhost"
-    let port = port
+let socket_write serverIp port (msg : string ) =
     try
-        let sckt = new TcpClient()
-        sckt.Connect(serverIp, port)
+        let host = Dns.GetHostEntry(serverIp : string) 
+        let ipAddress = host.AddressList.[0]
+        let remoteEP = new IPEndPoint(ipAddress, port) 
+  
+            // Create a TCP/IP  socket.    
+        let sender = new Socket(ipAddress.AddressFamily, SocketType.Stream, ProtocolType.Tcp); 
+        sender.Connect(remoteEP)
 
-        let byte_count = Encoding.ASCII.GetByteCount msg
-        let mutable bytesArr = [|byte_count |> byte|]
-        bytesArr <- Encoding.ASCII.GetBytes msg
-        let stream = sckt.GetStream()
-        stream.Write(bytesArr, 0, bytesArr.Length)
+        let bytesMsg = Encoding.ASCII.GetBytes msg
+        let bytesSent = sender.Send(bytesMsg)
 
-        stream.Close()
-        sckt.Close()
+        sender.Shutdown(SocketShutdown.Both) 
+        sender.Close()
     with
         | (ex : Exception) ->
             ex.Message
@@ -55,7 +56,7 @@ let receiveStream model  =
     try
         using(File.Open(model.Paths.SpecificPath, FileMode.Open))( fun file ->
             let bt =
-                [|0..model.Rate|]
+                [|0..model.Rate + 5|]
                 |> Array.map (fun _ -> 1048756 |> byte)
 
             let mutable readByte = file.Read(bt, 0, bt.Length) 
@@ -69,7 +70,7 @@ let receiveStream model  =
                 percentage
                 |> string
                 |> fun str -> "@message_receive:" + str
-                |> socket_write model.Socket.Port
+                |> socket_write model.Socket.URL model.Socket.Port
 
                 readByte <- file.Read(bt, 0, bt.Length) 
 
@@ -99,7 +100,7 @@ let writeToFile ( model : ChangeNugetNameModel) (writeStream : MemoryStream ) =
             let fsOut = new FileStream(model.Paths.SpecificPath, FileMode.Create)
 
             let bt =
-                [|0..model.Rate|]
+                [|0..model.Rate + 5|]
                 |> Array.map (fun _ -> 1048756 |> byte)
 
             let mutable readByte : int = writeStream.Read(bt, 0, bt.Length)
@@ -113,13 +114,13 @@ let writeToFile ( model : ChangeNugetNameModel) (writeStream : MemoryStream ) =
                 percentage
                 |> string
                 |> fun str -> "@message_write:" + str
-                |> socket_write model.Socket.Port
+                |> socket_write model.Socket.URL model.Socket.Port
 
                 readByte <- writeStream.Read(bt, 0, bt.Length)
 
             "finished!"
             |> fun str -> "@finished:" + str
-            |> socket_write model.Socket.Port
+            |> socket_write model.Socket.URL model.Socket.Port
 
             fsOut.Close()
 
@@ -131,7 +132,7 @@ let writeToFile ( model : ChangeNugetNameModel) (writeStream : MemoryStream ) =
 
             ex.Message
             |> fun str -> "@finished:" + str
-            |> socket_write model.Socket.Port
+            |> socket_write model.Socket.URL model.Socket.Port
 
         Console.ResetColor()
 
@@ -140,8 +141,9 @@ let rec update model msg  =
     | Initialize ->
         let projectNameNoEricssonAM = model.Project.ProjectName.Replace("Ericsson.AM.","")
 
+        let currDir = Directory.GetCurrentDirectory().Replace("\\","/")
         let generalPath = 
-            $"{Directory.GetCurrentDirectory()}/../public/loganalyzer"
+            $"{currDir}/../public/loganalyzer"
 
         let specificPath = 
             $"{generalPath}/{model.Project.ProjectName}/{model.Project.ProjectName}.csproj"
@@ -169,7 +171,7 @@ let rec update model msg  =
         | Error err ->
             err
             |> fun str -> "@finished:" + str
-            |> socket_write model.Socket.Port
+            |> socket_write model.Socket.URL model.Socket.Port
 
     | WriteNewFileContent content ->
         content
