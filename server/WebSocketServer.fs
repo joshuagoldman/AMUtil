@@ -20,7 +20,3 @@ let update (clientDispatch : Dispatch<SharedTypes.Shared.ClientMsg>) msg (model 
         ChangeNuGetName.update nugetModel ChangeNuGetName.Initialize clientDispatch
 
         model, Cmd.none
-
-let server =
-    Bridge.mkServer SharedTypes.Shared.endpoint init update
-    |> Bridge.run Giraffe.server

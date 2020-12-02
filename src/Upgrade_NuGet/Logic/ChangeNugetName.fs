@@ -214,9 +214,6 @@ let changeNameRequest ( socket : Browser.WebSocket ) changeNugetNameModel dispat
                         Msg = response.ToLower().Replace("@finished","")
                     }
 
-        Global.Types.apis.ChangeNuGet changeNugetNameModel
-        |> Async.StartImmediate
-
 let changeNameRequestToMsgArray projectsWithNewNames dispatch =
     
     let socket = Browser.WebSocket.Create("ws://127.0.0.1:3001")
@@ -226,6 +223,8 @@ let changeNameRequestToMsgArray projectsWithNewNames dispatch =
         async {
 
             let changeNugetModel = reqModel version proj
+
+            
 
             let! res = changeNameRequest socket changeNugetModel dispatch
 

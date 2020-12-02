@@ -5,7 +5,7 @@ open Main.Types
 type Msg =
     | Global of Global.Types.GlobalMsg
     | MainMsg of  Main.Types.Msg
-    | SocketMsg of SharedTypes.Shared.BridgeMsg
+    | SocketMsg of SharedTypes.Shared.ClientMsg
 
 type Model = {
     Git : Global.Types.GitDecision

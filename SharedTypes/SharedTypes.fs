@@ -86,7 +86,6 @@ type IApis = {
     GetRcoObject : obj -> Async<Result<RCOTabs,string>>
     Command : CommandInfo array -> Async<CommandOptions array>
     WriteFile : WriteFileModel -> Async<unit>
-    ChangeNuGet : NuGetChange.ChangeNugetNameModel -> Async<unit>
     GetProjecInfo : string -> Async<string>
     NuGetInfo : string -> Async<Result<string,string>>
 }

@@ -12,6 +12,8 @@ open Fable.Remoting.Giraffe
 open SharedTypes
 open System.Net.Sockets
 open System.Net
+open Elmish
+open Elmish.Bridge
 
 type WebSocketServerMessage = { Time : System.DateTime; Message : string }
 
@@ -104,10 +106,6 @@ let saveRcoListAction init = async{
     update newInitModel WriteFile.Initialize
 }
 
-let performNugetNameChange testObj = async{
-    ChangeNuGetName.update testObj ChangeNuGetName.Initialize
-}
-
 let getProjectInfo ( projectName : string ) =
     async{
             let dir = Directory.GetCurrentDirectory()
@@ -133,12 +131,17 @@ let getProjectInfo ( projectName : string ) =
             return content
         }
 
+open Elmish
+open Elmish.Bridge
+
+let server =
+  Bridge.mkServer Shared.endpoint WebSocketServer.init WebSocketServer.update
+  |> Bridge.run Giraffe.server
 
 let apis = {
     GetRcoObject = getRcoAsObject
     Command = executeCommands
     WriteFile = saveRcoListAction
-    ChangeNuGet = performNugetNameChange
     GetProjecInfo = getProjectInfo
     NuGetInfo = SimpleHttpRequest.responseString
 }
@@ -147,15 +150,12 @@ let ajajRouter =
     Remoting.createApi()
     |> Remoting.fromValue apis
     |> Remoting.buildHttpHandler
-    
-    
-open Elmish
-open Elmish.Bridge
 
 let app =
     application {
         url "http://localhost:8086"
         use_router ajajRouter
+        use_router server
         memory_cache
         app_config Giraffe.useWebSockets
         use_json_serializer(Thoth.Json.Giraffe.ThothSerializer())
