@@ -105,13 +105,16 @@ module Shared =
 
     type BridgeAction =
         | None
-        | PushNuGet of Process<NuGetInfo,string>
+        | ChangeNuGet of Process<NuGetInfo,string>
         | WriteRco of Process<float,string>
 
     type BridgeModel = {
         CurrAction : BridgeAction
     }
 
-    type BridgeMsg = 
+    type ServerMsg =
+        | ChangeNuGet of NuGetChange.ChangeNugetNameModel
+
+    type ClientMsg = 
         | ChangeAction of BridgeAction
 

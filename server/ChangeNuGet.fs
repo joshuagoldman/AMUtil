@@ -7,6 +7,8 @@ open System
 open System.Text.RegularExpressions
 open SharedTypes.NuGetChange
 open System.Net
+open Elmish
+open Elmish.Bridge
 
 type Defined<'a> =
     | Defined of 'a
@@ -31,27 +33,7 @@ let writeLine (color : ConsoleColor) ( msg : string ) =
     Console.WriteLine msg
     Console.ResetColor()
 
-let socket_write serverIp port (msg : string ) =
-    try
-        let host = Dns.GetHostEntry(serverIp : string) 
-        let ipAddress = host.AddressList.[0]
-        let remoteEP = new IPEndPoint(ipAddress, port) 
-  
-            // Create a TCP/IP  socket.    
-        let sender = new Socket(ipAddress.AddressFamily, SocketType.Stream, ProtocolType.Tcp); 
-        sender.Connect(remoteEP)
-
-        let bytesMsg = Encoding.ASCII.GetBytes msg
-        let bytesSent = sender.Send(bytesMsg)
-
-        sender.Shutdown(SocketShutdown.Both) 
-        sender.Close()
-    with
-        | (ex : Exception) ->
-            ex.Message
-            |> writeLine ConsoleColor.Red
-
-let receiveStream model  = 
+let receiveStream model ( clientDispatch : Dispatch<SharedTypes.Shared.ClientMsg> )  = 
     let streamWriter = new MemoryStream()
     try
         using(File.Open(model.Paths.SpecificPath, FileMode.Open))( fun file ->
@@ -67,10 +49,20 @@ let receiveStream model  =
                 let percentage = (file.Position * (100 |> int64) / file.Length)
                 Console.ForegroundColor <- ConsoleColor.Green
 
-                percentage
-                |> string
-                |> fun str -> "@message_receive:" + str
-                |> socket_write model.Socket.URL model.Socket.Port
+                let nugetInfo = {
+                    SharedTypes.Shared.NuGetInfo.ProjectName = model.Project.ProjectNamePure
+                    SharedTypes.Shared.NuGetInfo.Uploaded = percentage |> float
+                }
+
+                let socketMsg =
+                    nugetInfo |>
+                    (
+                        SharedTypes.Shared.Process.OnGoing >>
+                        SharedTypes.Shared.ChangeNuGet >>
+                        SharedTypes.Shared.ClientMsg.ChangeAction
+                    )
+
+                socketMsg |> clientDispatch
 
                 readByte <- file.Read(bt, 0, bt.Length) 
 
@@ -95,7 +87,9 @@ let receiveStream model  =
         ex.Message
         |> Error
 
-let writeToFile ( model : ChangeNugetNameModel) (writeStream : MemoryStream ) = 
+let writeToFile ( model : ChangeNugetNameModel)
+                ( clientDispatch : Dispatch<SharedTypes.Shared.ClientMsg>)
+                (writeStream : MemoryStream ) = 
         try
             let fsOut = new FileStream(model.Paths.SpecificPath, FileMode.Create)
 
@@ -111,16 +105,33 @@ let writeToFile ( model : ChangeNugetNameModel) (writeStream : MemoryStream ) =
                 let percentage = (writeStream.Position * (100 |> int64) / writeStream.Length)
                 Console.ForegroundColor <- ConsoleColor.Green
 
-                percentage
-                |> string
-                |> fun str -> "@message_write:" + str
-                |> socket_write model.Socket.URL model.Socket.Port
+                let nugetInfo = {
+                    SharedTypes.Shared.NuGetInfo.ProjectName = model.Project.ProjectNamePure
+                    SharedTypes.Shared.NuGetInfo.Uploaded = percentage |> float
+                }
+
+                let socketMsg =
+                    nugetInfo |>
+                    (
+                        SharedTypes.Shared.Process.OnGoing >>
+                        SharedTypes.Shared.ChangeNuGet >>
+                        SharedTypes.Shared.ClientMsg.ChangeAction
+                    )
+
+                socketMsg |> clientDispatch
 
                 readByte <- writeStream.Read(bt, 0, bt.Length)
 
-            "finished!"
-            |> fun str -> "@finished:" + str
-            |> socket_write model.Socket.URL model.Socket.Port
+            let socketMsg =
+                "finished!" |>
+                (
+                    Ok >>
+                    SharedTypes.Shared.Process.Finished >>
+                    SharedTypes.Shared.ChangeNuGet >>
+                    SharedTypes.Shared.ClientMsg.ChangeAction
+                )
+
+            socketMsg |> clientDispatch
 
             fsOut.Close()
 
@@ -130,13 +141,20 @@ let writeToFile ( model : ChangeNugetNameModel) (writeStream : MemoryStream ) =
             Console.ForegroundColor <- ConsoleColor.Red
             Console.WriteLine("No file info fetched")
 
-            ex.Message
-            |> fun str -> "@finished:" + str
-            |> socket_write model.Socket.URL model.Socket.Port
+            let socketMsg =
+                ex.Message |>
+                (
+                    Error >>
+                    SharedTypes.Shared.Process.Finished >>
+                    SharedTypes.Shared.ChangeNuGet >>
+                    SharedTypes.Shared.ClientMsg.ChangeAction
+                )
+
+            socketMsg |> clientDispatch
 
         Console.ResetColor()
 
-let rec update model msg  =
+let rec update model msg (clientDispatch: Elmish.Dispatch<SharedTypes.Shared.ClientMsg>)  =
     match msg with 
     | Initialize ->
         let projectNameNoEricssonAM = model.Project.ProjectName.Replace("Ericsson.AM.","")
@@ -161,22 +179,29 @@ let rec update model msg  =
             {model with Project = newProjectInfo
                         Paths = newPaths}
 
-        update newModel GetFileContent
+        update newModel GetFileContent clientDispatch
     | GetFileContent ->
-        let streamOpt = receiveStream model
+        let streamOpt = receiveStream model clientDispatch
 
         match streamOpt with 
         | Ok stream ->
-            update model (stream |> WriteNewFileContent)
+            update model (stream |> WriteNewFileContent) clientDispatch
         | Error err ->
-            err
-            |> fun str -> "@finished:" + str
-            |> socket_write model.Socket.URL model.Socket.Port
+            let socketMsg =
+                err |>
+                (
+                    Error >>
+                    SharedTypes.Shared.Process.Finished >>
+                    SharedTypes.Shared.ChangeNuGet >>
+                    SharedTypes.Shared.ClientMsg.ChangeAction
+                )
+
+            socketMsg |> clientDispatch
 
     | WriteNewFileContent content ->
         content
         |> generateStreamFromString
-        |> writeToFile model
+        |> writeToFile model clientDispatch
 
 
 

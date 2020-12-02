@@ -143,83 +143,21 @@ let apis = {
     NuGetInfo = SimpleHttpRequest.responseString
 }
 
-let defaultView = router {
-
-    post "/api/SaveRCOList" (fun next ctx ->
-        task{
-            let! init = ctx.BindModelAsync<WriteFileModel>()
-            do! saveRcoListAction init
-            return! (next ctx)
-        })
-        
-    post "/api/Command" (fun next ctx ->
-        task{
-            let! allCommands = ctx.BindModelAsync<CommandInfo array>()
-
-            let! allCommandsRes =
-                allCommands
-                |> executeCommands 
-
-            return! json allCommandsRes next ctx
-        })
-
-    post "/api/RcoList" (fun next ctx ->
-        task{
-            
-            let file = ctx.Request.Form.Files.Item("file")
-            let stream = file.OpenReadStream()
-            let! content = 
-                stream
-                |> UpdateRCOScript.getAllNewRcoInfo
-
-            return! json content next ctx
-        })
-
-    post "/api/ChangeName" (fun next ctx ->
-        task{
-            let! testobj = ctx.BindModelAsync<NuGetChange.ChangeNugetNameModel>()
-            ChangeNuGetName.update testobj ChangeNuGetName.Initialize
-
-            return! json "Finished!" next ctx
-        })
-    post "/api/projectInfo" (fun next ctx ->
-        task{
-            let stream = new StreamReader(ctx.Request.Body)
-            let! projectNameUnRefined = stream.ReadToEndAsync()
-            let projectName = projectNameUnRefined.Replace("project=","")
-            let dir = Directory.GetCurrentDirectory()
-            let generalPath = $"{dir}\..\public\loganalyzer"
-            let specificPath = $"{generalPath}\{projectName}\{projectName}.csproj"
-
-            let writeStream = new MemoryStream()
-            let file = File.Open(specificPath, FileMode.Open)
-            let bt = [|1048756 |> byte|]
-            let mutable readByte = file.Read(bt,0,bt.Length)
-
-
-            while readByte > 0 do
-                writeStream.Write(bt,0,readByte)
-                readByte <- file.Read(bt, 0, bt.Length)
-
-            let content = Encoding.ASCII.GetString(writeStream.ToArray())
-
-            return! json content next ctx
-        })
-} 
-
 let ajajRouter = 
     Remoting.createApi()
     |> Remoting.fromValue apis
     |> Remoting.buildHttpHandler
     
     
+open Elmish
+open Elmish.Bridge
 
 let app =
     application {
         url "http://localhost:8086"
-        use_router defaultView
         use_router ajajRouter
         memory_cache
+        app_config Giraffe.useWebSockets
         use_json_serializer(Thoth.Json.Giraffe.ThothSerializer())
         use_static "../public"
         use_gzip
