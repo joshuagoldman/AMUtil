@@ -231,4 +231,5 @@ let update msg (model:Model) : Types.Model * Global.Types.GlobalMsg * Cmd<Msg> =
 
     | Change_LogAnalyzer_Loading_Mix(result,dispatch) ->
         Logic.LoadingMix.changeLoadingMix model result dispatch 
+
             

@@ -131,7 +131,7 @@ let addDispatch ( model : Model ) dispatch =
         )
 
 let root (model: Model) dispatch =
-    addDispatch |> ignore
+    addDispatch |> ignore   
     Html.div[
         prop.children[
             mainPage model dispatch

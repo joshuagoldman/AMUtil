@@ -224,56 +224,11 @@ let changeNameRequestToMsgArray projectsWithNewNames dispatch =
 
             let changeNugetModel = reqModel version proj
 
-            
+            let serverMsg =
+                changeNugetModel
+                |> SharedTypes.Shared.ServerMsg.ChangeNuGet
 
-            let! res = changeNameRequest socket changeNugetModel dispatch
-
-            match res.Status with
-            | 200 ->
-                let newStatus =
-                    Loading_To_Nuget_Server_Alternatives.Building |>
-                    (
-                        Loading_Nuget_Info_Is_Not_Done >>
-                        Loading_Info_To_Server
-                    )
-                     
-                let newLoadingStatusMsg =
-                    [|
-                        { proj with Loading_To_Server = newStatus} |>
-                        (
-                            Upgrade_NuGet.Types.Change_Project_Info >>
-                            delayedMessage 3000
-                        )
-
-                        dispatch |>
-                        (
-                            Build_Solution_If_Ready_Msg >>
-                            delayedMessage 3000
-                        )
-                    |]
-                    |> Upgrade_NuGet.Types.Batch_Upgrade_Nuget_Async
-                    |> Upgrade_NuGet.Logic.Miscellaneous.turnIntoSendPopupWithNewState dispatch
-                    
-                return(newLoadingStatusMsg)
-            | _ ->
-                let newStatus =
-                    res.Msg |>
-                    (
-                        Loading_To_Server_Result.Loading_To_Server_Failed >>
-                        Loading_Nuget_Info_Is_Done >>
-                        Loading_Info_To_Server 
-                    )
-                     
-                let newLoadingStatusMsg =
-                    { proj with Loading_To_Server = newStatus} |>
-                    (
-                        Upgrade_NuGet.Types.Change_Project_Info >>
-                        delayedMessage 2000
-                    )
-                    |> Upgrade_NuGet.Types.Upgrade_Nuget_Async
-                    |> Upgrade_NuGet.Logic.Miscellaneous.turnIntoSendPopupWithNewState dispatch
-
-                return(newLoadingStatusMsg)
+            serverMsg |> Elmish.Bridge.Bridge.Send
         })
 
 let ChangeNugetNameAndBuildSolution projects dispatch = 

@@ -1,4 +1,4 @@
-module SocketMsgHandle
+module App.Logic.SocketMsgHandle
 
 open SharedTypes.Shared
 

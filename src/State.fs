@@ -164,77 +164,35 @@ let update msg (model:Model) : Types.Model * Cmd<Types.Msg> =
                 }
             }, []
     | SocketMsg socketMsg ->
-        match socketMsg with
-        | SharedTypes.Shared.ClientMsg.ChangeAction action ->
-            match action with
-            | SharedTypes.Shared.BridgeAction.None ->
-                model, []
-            | SharedTypes.Shared.BridgeAction.ChangeNuGet prcs->
-                match prcs with
-                | SharedTypes.Shared.Process.OnGoing info ->
-                    let msg = "Changing NuGet name (" + (info.Uploaded |> int |> string) + " written)"
-
-                    let popupElement =
-                        (msg) |>
-                        (
-                            float >>
-                            Popup.View.getPopupMsgProgress msg
-                        )
-
-                    let popupType =
-                        (popupElement, Popup.Types.standardPositions)
-                        |> Popup.Types.PopupStyle.Has_No_Alternatives
-
-                    { model with Popup = popupType }, []
-
-                | SharedTypes.Shared.Process.Finished result ->
-                    match result with
-                    | Ok (projInfo,resMsg) ->
-                        match model.Main.Upgrade_NuGet.Projects_Table with
-                        | Upgrade_NuGet.Types.Loganalyzer_Projects_Table_Status.Info_Has_Been_Loaded res ->
-                            match res with
-                            | Upgrade_NuGet.Types.Loganalyzer_Projects_Table.Yes_Projects_Table_Info table ->
-                                let foundProjInfoOpt =
-                                    table
-                                    |> Seq.tryFind (fun projInfo ->
-                                            projInfo.Name.Replace(" ","") = projInfo.Name
-                                        )
-                                
-                                match foundProjInfoOpt with
-                                | Some foundProjInfo ->
-                                    let newStatus =
-                                        Upgrade_NuGet.Types.Loading_To_Nuget_Server_Alternatives.Building |>
-                                        (
-                                            Upgrade_NuGet.Types.Loading_Nuget_Info_Is_Not_Done >>
-                                            Upgrade_NuGet.Types.Loading_Info_To_Server
-                                        )
-
-                                    let newLoadingStatusMsg =
-                                        [|
-                                            { foundProjInfo with Loading_To_Server = newStatus} |>
-                                            (
-                                                Upgrade_NuGet.Types.Change_Project_Info >>
-                                                delayedMessage 3000
-                                            )
-
-                                            Elmish.Dispatch.FromConverter 
-
-                                            dispatch |>
-                                            (
-                                                Build_Solution_If_Ready_Msg >>
-                                                delayedMessage 3000
-                                            )
-                                        |]
-                                        |> Upgrade_NuGet.Types.Batch_Upgrade_Nuget_Async
-                                        |> Upgrade_NuGet.Logic.Miscellaneous.turnIntoSendPopupWithNewState dispatch
-
-                                    model, []
-                                | _ ->
-                                    model,[]
-                            | _ -> 
-                                model, []
-                        | _ ->
-                            model, []
+        match model.Dispatch with
+        | Some dispatch ->
+            let socketMsgHandlingResult =
+                (
+                    Upgrade_NuGet.Types.Msg >>
+                    Main.Types.Upgrade_NuGet_Msg >>
+                    App.Types.MainMsg >>
+                    dispatch
+                )
+                |> App.Logic.SocketMsgHandle.handleSocketMsgs model socketMsg
+                
+            match socketMsgHandlingResult with
+            | App.Logic.SocketMsgHandle.SocketDecision.MsgsToDispatch msg ->
+                let msgIntoAppMsg =
+                    msg |>
+                    (
+                        Upgrade_NuGet.Types.Msg >>
+                        Main.Types.Upgrade_NuGet_Msg >>
+                        App.Types.MainMsg >>
+                        Cmd.ofMsg
+                    )
+                model, msgIntoAppMsg
+            | App.Logic.SocketMsgHandle.SocketDecision.PopupChange popupStyle ->
+                {model with Popup = popupStyle},[]
+            | _ ->
+                model,[]
+        | _ ->
+            model,[]
+        
     | AddDispatch dispatch ->
         {model with Dispatch = dispatch |> Some},[]
 
