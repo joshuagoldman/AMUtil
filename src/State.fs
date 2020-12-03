@@ -31,9 +31,7 @@ let init result =
         Main = Main.State.init 
         VerifyStrMsg = Verify_Str_Msg_Not_Determined
         Popup = Popup.Types.PopupStyle.Popup_Is_Dead
-        Socket = {
-            CurrAction = SharedTypes.Shared.None
-        }
+        Dispatch = None
     }, Cmd.none
 
 
@@ -167,28 +165,76 @@ let update msg (model:Model) : Types.Model * Cmd<Types.Msg> =
             }, []
     | SocketMsg socketMsg ->
         match socketMsg with
-        | SharedTypes.Shared.BridgeMsg.ChangeAction action ->
+        | SharedTypes.Shared.ClientMsg.ChangeAction action ->
             match action with
             | SharedTypes.Shared.BridgeAction.None ->
                 model, []
-            | SharedTypes.Shared.BridgeAction.PushNuGet prcs->
+            | SharedTypes.Shared.BridgeAction.ChangeNuGet prcs->
                 match prcs with
                 | SharedTypes.Shared.Process.OnGoing info ->
-                    model, []
+                    let msg = "Changing NuGet name (" + (info.Uploaded |> int |> string) + " written)"
+
+                    let popupElement =
+                        (msg) |>
+                        (
+                            float >>
+                            Popup.View.getPopupMsgProgress msg
+                        )
+
+                    let popupType =
+                        (popupElement, Popup.Types.standardPositions)
+                        |> Popup.Types.PopupStyle.Has_No_Alternatives
+
+                    { model with Popup = popupType }, []
+
                 | SharedTypes.Shared.Process.Finished result ->
                     match result with
-                    | Ok resMsg ->
-                        model, []
-                    | Error err ->
-                        model, []
-            | SharedTypes.Shared.BridgeAction.WriteRco prcs ->
-                match prcs with
-                | SharedTypes.Shared.Process.OnGoing progress ->
-                    model, []
-                | SharedTypes.Shared.Process.Finished result ->
-                    match result with
-                    | Ok resMsg ->
-                        model, []
-                    | Error err ->
-                        model, []
+                    | Ok (projInfo,resMsg) ->
+                        match model.Main.Upgrade_NuGet.Projects_Table with
+                        | Upgrade_NuGet.Types.Loganalyzer_Projects_Table_Status.Info_Has_Been_Loaded res ->
+                            match res with
+                            | Upgrade_NuGet.Types.Loganalyzer_Projects_Table.Yes_Projects_Table_Info table ->
+                                let foundProjInfoOpt =
+                                    table
+                                    |> Seq.tryFind (fun projInfo ->
+                                            projInfo.Name.Replace(" ","") = projInfo.Name
+                                        )
+                                
+                                match foundProjInfoOpt with
+                                | Some foundProjInfo ->
+                                    let newStatus =
+                                        Upgrade_NuGet.Types.Loading_To_Nuget_Server_Alternatives.Building |>
+                                        (
+                                            Upgrade_NuGet.Types.Loading_Nuget_Info_Is_Not_Done >>
+                                            Upgrade_NuGet.Types.Loading_Info_To_Server
+                                        )
+
+                                    let newLoadingStatusMsg =
+                                        [|
+                                            { foundProjInfo with Loading_To_Server = newStatus} |>
+                                            (
+                                                Upgrade_NuGet.Types.Change_Project_Info >>
+                                                delayedMessage 3000
+                                            )
+
+                                            Elmish.Dispatch.FromConverter 
+
+                                            dispatch |>
+                                            (
+                                                Build_Solution_If_Ready_Msg >>
+                                                delayedMessage 3000
+                                            )
+                                        |]
+                                        |> Upgrade_NuGet.Types.Batch_Upgrade_Nuget_Async
+                                        |> Upgrade_NuGet.Logic.Miscellaneous.turnIntoSendPopupWithNewState dispatch
+
+                                    model, []
+                                | _ ->
+                                    model,[]
+                            | _ -> 
+                                model, []
+                        | _ ->
+                            model, []
+    | AddDispatch dispatch ->
+        {model with Dispatch = dispatch |> Some},[]
 

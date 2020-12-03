@@ -131,9 +131,6 @@ let getProjectInfo ( projectName : string ) =
             return content
         }
 
-open Elmish
-open Elmish.Bridge
-
 let server =
   Bridge.mkServer Shared.endpoint WebSocketServer.init WebSocketServer.update
   |> Bridge.run Giraffe.server

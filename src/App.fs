@@ -120,7 +120,18 @@ let mainPage model ( dispatch : Msg -> unit ) =
     | Global.Types.Git_Installed_Check_Performing ->
         Global.View.verifyPage
 
+let addDispatch ( model : Model ) dispatch = 
+    match model.Dispatch with
+    | Some _ -> ()
+    | _ ->
+        dispatch |>
+        (
+            Types.AddDispatch >>
+            dispatch
+        )
+
 let root (model: Model) dispatch =
+    addDispatch |> ignore
     Html.div[
         prop.children[
             mainPage model dispatch

@@ -10,6 +10,9 @@ let init result =
         Info = Git_Info_Nuget.No_Git_Info_Nuget
         Projects_Table = Loganalyzer_Projects_Table_Status.Info_Not_Loaded
         Nuget_Server = Nuget_Server_Is_Not_Available
+        Socket = {
+            CurrAction = SharedTypes.Shared.None
+        }
     }
 
 

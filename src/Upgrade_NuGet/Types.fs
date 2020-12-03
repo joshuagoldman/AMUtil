@@ -137,5 +137,6 @@ type Model = {
     Info : Git_Info_Nuget
     Projects_Table : Loganalyzer_Projects_Table_Status
     Nuget_Server : Nuget_Server_Options
+    Socket : SharedTypes.Shared.BridgeModel
 }
 

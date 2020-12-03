@@ -104,8 +104,7 @@ module Shared =
 
     type BridgeAction =
         | None
-        | ChangeNuGet of Process<NuGetInfo,string>
-        | WriteRco of Process<float,string>
+        | ChangeNuGet of Process<NuGetInfo,NuGetInfo * string>
 
     type BridgeModel = {
         CurrAction : BridgeAction

@@ -50,6 +50,7 @@
     <Compile Include="Main/State.fs" />
     <Compile Include="Main/View.fs" />
     <Compile Include="Types.fs" />
+    <Compile Include="Logic/SocketMsgHandle.fs" />
     <Compile Include="State.fs" />
     <Compile Include="App.fs" />
     <Compile Include="../SharedTypes/SharedTypes.fs" />
