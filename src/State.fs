@@ -168,7 +168,6 @@ let update msg (model:Model) : Types.Model * Cmd<Types.Msg> =
         | Some dispatch ->
             let socketMsgHandlingResult =
                 (
-                    Upgrade_NuGet.Types.Msg >>
                     Main.Types.Upgrade_NuGet_Msg >>
                     App.Types.MainMsg >>
                     dispatch
@@ -180,7 +179,6 @@ let update msg (model:Model) : Types.Model * Cmd<Types.Msg> =
                 let msgIntoAppMsg =
                     msg |>
                     (
-                        Upgrade_NuGet.Types.Msg >>
                         Main.Types.Upgrade_NuGet_Msg >>
                         App.Types.MainMsg >>
                         Cmd.ofMsg
