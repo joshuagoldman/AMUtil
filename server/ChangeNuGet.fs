@@ -122,8 +122,13 @@ let writeToFile ( model : ChangeNugetNameModel)
 
                 readByte <- writeStream.Read(bt, 0, bt.Length)
 
+            let nugetInfo = {
+                SharedTypes.Shared.NuGetInfo.ProjectName = model.Project.ProjectNamePure
+                SharedTypes.Shared.NuGetInfo.Uploaded = 100.0 |> float
+            }
+
             let socketMsg =
-                "finished!" |>
+                (nugetInfo,"finished!") |>
                 (
                     Ok >>
                     SharedTypes.Shared.Process.Finished >>

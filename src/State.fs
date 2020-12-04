@@ -34,7 +34,6 @@ let init result =
         Dispatch = None
     }, Cmd.none
 
-
 let update msg (model:Model) : Types.Model * Cmd<Types.Msg> =
     match msg with
     | MainMsg mainMsg ->
