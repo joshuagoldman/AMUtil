@@ -214,9 +214,7 @@ let changeNameRequest ( socket : Browser.WebSocket ) changeNugetNameModel dispat
                         Msg = response.ToLower().Replace("@finished","")
                     }
 
-let changeNameRequestToMsgArray projectsWithNewNames dispatch =
-    
-    let socket = Browser.WebSocket.Create("ws://127.0.0.1:3001")
+let changeNameRequestToMsgArray projectsWithNewNames =
 
     projectsWithNewNames
     |> Array.map (fun (proj : Project_Info,version) ->
@@ -228,7 +226,7 @@ let changeNameRequestToMsgArray projectsWithNewNames dispatch =
                 changeNugetModel
                 |> SharedTypes.Shared.ServerMsg.ChangeNuGet
 
-            serverMsg |> Elmish.Bridge.Bridge.Send
+            return( Bridge.Bridge.Send serverMsg)
         })
 
 let ChangeNugetNameAndBuildSolution projects dispatch = 
@@ -279,12 +277,9 @@ let ChangeNugetNameAndBuildSolution projects dispatch =
 
     match existsProjectsWithNewNames with
     | Some projectsWithNewNames ->
-        let msgWithRequests =
-            dispatch |>
-            (
-                changeNameRequestToMsgArray projectsWithNewNames >>
-                Batch_Upgrade_Nuget_Async
-            )
+        let msgWithRequests = 
+            changeNameRequestToMsgArray projectsWithNewNames 
+            |> SendServerMsgs
             
         let loadingProjsToChangeToBuild =
             projects

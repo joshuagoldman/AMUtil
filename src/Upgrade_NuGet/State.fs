@@ -230,6 +230,12 @@ let update msg (model:Model) : Types.Model * Global.Types.GlobalMsg * Cmd<Msg> =
         model, Global.Types.MsgNone, []
 
     | Change_LogAnalyzer_Loading_Mix(result,dispatch) ->
-        Logic.LoadingMix.changeLoadingMix model result dispatch 
+        Logic.LoadingMix.changeLoadingMix model result dispatch
+    | SendServerMsgs msgs ->
+        msgs
+        |> Array.iter (fun msg ->
+                msg
+                |> Async.StartImmediate
+            )
 
-            
+        model, Global.Types.MsgNone,[]            
