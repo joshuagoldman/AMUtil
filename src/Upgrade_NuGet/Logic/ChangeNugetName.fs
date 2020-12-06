@@ -287,8 +287,10 @@ let ChangeNugetNameAndBuildSolution projects dispatch =
             |> Array.choose (fun proj ->
                 match proj.Server_Options with
                 | Server_Options.Push_Nuget ->
-                    None
-                | _ -> proj |> Some)
+                    proj |> Some
+                | Server_Options.Is_To_Be_Updated ->
+                    proj |> Some
+                | _ -> None )
             |> function
                 | res when (res |> Array.length) <> 0 ->
                     res |> Some

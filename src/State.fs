@@ -171,7 +171,7 @@ let update msg (model:Model) : Types.Model * Cmd<Types.Msg> =
                     App.Types.MainMsg >>
                     dispatch
                 )
-                |> App.Logic.SocketMsgHandle.handleSocketMsgs model socketMsg
+                |> App.Logic.SocketMsgHandle.handleActions model socketMsg
                 
             match socketMsgHandlingResult with
             | App.Logic.SocketMsgHandle.SocketDecision.MsgsToDispatch msg ->
@@ -183,8 +183,6 @@ let update msg (model:Model) : Types.Model * Cmd<Types.Msg> =
                         Cmd.ofMsg
                     )
                 model, msgIntoAppMsg
-            | App.Logic.SocketMsgHandle.SocketDecision.PopupChange popupStyle ->
-                {model with Popup = popupStyle},[]
             | _ ->
                 model,[]
         | _ ->

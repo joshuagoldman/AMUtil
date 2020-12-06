@@ -39,7 +39,7 @@ let receiveStream model ( clientDispatch : Dispatch<SharedTypes.Shared.ClientMsg
         using(File.Open(model.Paths.SpecificPath, FileMode.Open))( fun file ->
             let bt =
                 [|0..model.Rate + 5|]
-                |> Array.map (fun _ -> 1048756 |> byte)
+                |> Array.map (fun _ -> 100 |> byte)
 
             let mutable readByte = file.Read(bt, 0, bt.Length) 
 
@@ -95,7 +95,7 @@ let writeToFile ( model : ChangeNugetNameModel)
 
             let bt =
                 [|0..model.Rate + 5|]
-                |> Array.map (fun _ -> 1048756 |> byte)
+                |> Array.map (fun _ -> 100 |> byte)
 
             let mutable readByte : int = writeStream.Read(bt, 0, bt.Length)
 
@@ -128,7 +128,7 @@ let writeToFile ( model : ChangeNugetNameModel)
             }
 
             let socketMsg =
-                (nugetInfo,"finished!") |>
+                nugetInfo |>
                 (
                     Ok >>
                     SharedTypes.Shared.Process.Finished >>
@@ -146,8 +146,13 @@ let writeToFile ( model : ChangeNugetNameModel)
             Console.ForegroundColor <- ConsoleColor.Red
             Console.WriteLine("No file info fetched")
 
+            let nugetInfo = {
+                SharedTypes.Shared.NuGetInfo.ProjectName = model.Project.ProjectNamePure
+                SharedTypes.Shared.NuGetInfo.Uploaded = 0.0 |> float
+            }
+
             let socketMsg =
-                ex.Message |>
+                (nugetInfo,ex.Message) |>
                 (
                     Error >>
                     SharedTypes.Shared.Process.Finished >>
@@ -192,8 +197,12 @@ let rec update model msg (clientDispatch: Elmish.Dispatch<SharedTypes.Shared.Cli
         | Ok stream ->
             update model (stream |> WriteNewFileContent) clientDispatch
         | Error err ->
+            let nugetInfo = {
+                SharedTypes.Shared.NuGetInfo.ProjectName = model.Project.ProjectNamePure
+                SharedTypes.Shared.NuGetInfo.Uploaded = 0.0 |> float
+            }
             let socketMsg =
-                err |>
+                (nugetInfo,err) |>
                 (
                     Error >>
                     SharedTypes.Shared.Process.Finished >>

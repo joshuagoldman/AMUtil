@@ -93,9 +93,9 @@ type IApis = {
 module Shared =
     let endpoint = "./socket"
 
-    type Process<'a,'b> =
+    type Process<'a,'b,'c> =
         | OnGoing of 'a
-        | Finished of Result<'b, string>
+        | Finished of Result<'b,'c>
 
     type NuGetInfo = {
         ProjectName : string
@@ -104,7 +104,7 @@ module Shared =
 
     type BridgeAction =
         | None
-        | ChangeNuGet of Process<NuGetInfo,NuGetInfo * string>
+        | ChangeNuGet of Process<NuGetInfo,NuGetInfo,NuGetInfo * string>
 
     type BridgeModel = {
         CurrAction : BridgeAction

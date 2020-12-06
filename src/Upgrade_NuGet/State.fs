@@ -238,4 +238,42 @@ let update msg (model:Model) : Types.Model * Global.Types.GlobalMsg * Cmd<Msg> =
                 |> Async.StartImmediate
             )
 
-        model, Global.Types.MsgNone,[]            
+        model, Global.Types.MsgNone,[]  
+    | FailedWriteToNuget(projName,dispatch, error) ->
+        match model.Projects_Table with
+        | Upgrade_NuGet.Types.Loganalyzer_Projects_Table_Status.Info_Has_Been_Loaded res ->
+            match res with
+            | Upgrade_NuGet.Types.Loganalyzer_Projects_Table.Yes_Projects_Table_Info table ->
+                let foundTableProjInfoOpt =
+                    table
+                    |> Seq.tryFind (fun tableProjInfo ->
+                            tableProjInfo.Name.Replace(" ","") = projName.Replace(" ","")
+                        )
+
+                match foundTableProjInfoOpt with
+                | Some foundTableProjInfo ->
+                    let newStatus =
+                        error |>
+                        (
+                            Upgrade_NuGet.Types.Loading_To_Server_Result.Loading_To_Server_Failed >>
+                            Upgrade_NuGet.Types.Loading_Nuget_Info_Is_Done >>
+                            Upgrade_NuGet.Types.Loading_Info_To_Server 
+                        )
+                         
+                    let newLoadingStatusMsg =
+                        { foundTableProjInfo with Loading_To_Server = newStatus} |>
+                        (
+                            Upgrade_NuGet.Types.Change_Project_Info >>
+                            Global.Types.delayedMessage 2000 >>
+                            Upgrade_NuGet.Types.Upgrade_Nuget_Async >>
+                            Upgrade_NuGet.Logic.Miscellaneous.turnIntoSendPopupWithNewState dispatch >>
+                            Cmd.ofMsg
+                        )
+
+                    model,Global.Types.MsgNone, newLoadingStatusMsg 
+                | _ ->
+                    model,Global.Types.MsgNone,[]
+            | _ -> 
+                model,Global.Types.MsgNone,[]
+        | _ ->
+            model,Global.Types.MsgNone,[]         
