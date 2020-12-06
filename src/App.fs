@@ -151,7 +151,12 @@ open Elmish.HMR
 
 // App
 Program.mkProgram init update root
-|> Program.withBridgeConfig (Bridge.endpoint "./socket" |> Bridge.withUrlMode Append)
+|> Program.withBridgeConfig(
+    Bridge.endpoint "./socket"
+    |> Bridge.withMapping
+        (fun bridgeMsg ->
+            bridgeMsg
+            |> App.Types.SocketMsg))
 |> Program.toNavigable (parseHash pageParser) urlUpdate
 #if DEBUG
 |> Program.withDebugger
