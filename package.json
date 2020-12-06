@@ -53,7 +53,7 @@
         "concurrently": "^5.2.0",
         "copy-webpack-plugin": "^6.0.2",
         "css-loader": "^2.1.0",
-        "fable-compiler": "^2.10.1",
+        "fable-compiler": "^2.13.0",
         "fable-import-fetch": "^0.2.4",
         "fable-loader": "^2.1.2",
         "fable-utils": "^1.0.6",

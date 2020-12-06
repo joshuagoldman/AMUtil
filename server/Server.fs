@@ -21,17 +21,6 @@ let saveRcoFileAsync init = task {
     update init WriteFile.Initialize
 }
 
-let startSocketServer = 
-    let listenSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream,ProtocolType.Tcp)
-    let hostIP = (Dns.GetHostEntry(IPAddress.Parse("127.0.0.1"))).AddressList.[0]
-    let ep = IPEndPoint(hostIP, 3001)
-    listenSocket.Bind(ep)
-    listenSocket.Listen()
-
-    System.Console.WriteLine("Server has started on localhost:3001...")
-
-startSocketServer
-
 let getRcoAsObject (formFile : obj ) = async{
     let file = formFile :?> Microsoft.AspNetCore.Http.IFormFile
     let stream = file.OpenReadStream()
@@ -131,9 +120,6 @@ let getProjectInfo ( projectName : string ) =
             return content
         }
 
-let server =
-  Bridge.mkServer Shared.endpoint WebSocketServer.init WebSocketServer.update
-  |> Bridge.run Giraffe.server
 
 let apis = {
     GetRcoObject = getRcoAsObject
@@ -148,16 +134,29 @@ let ajajRouter =
     |> Remoting.fromValue apis
     |> Remoting.buildHttpHandler
 
+let webApp = router {
+    get "/api/init" (fun next ctx ->
+        task {
+            return! text "Yo ma nigga" next ctx
+        }) 
+    forward "/socket" WebSocketServer.server
+    forward "" ajajRouter   
+}
+
+
+let tryGetEnv = System.Environment.GetEnvironmentVariable >> function null | "" -> None | x -> Some x
+
+let port =
+    "SERVER_PORT"
+    |> tryGetEnv |> Option.map uint16 |> Option.defaultValue 8085us
+
 let app =
     application {
-        url "http://localhost:8086"
-        use_router ajajRouter
-        use_router server
-        memory_cache
+        url ("http://localhost:" + port.ToString() + "/")
+        use_router webApp
+        disable_diagnostics
         app_config Giraffe.useWebSockets
-        use_json_serializer(Thoth.Json.Giraffe.ThothSerializer())
-        use_static "../public"
         use_gzip
+        use_iis
     }
-
 run app

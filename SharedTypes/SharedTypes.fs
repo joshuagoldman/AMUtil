@@ -91,7 +91,7 @@ type IApis = {
 }
 
 module Shared =
-    let endpoint = "ws://localhost:8086"
+    let endpoint = "./socket"
 
     type Process<'a,'b> =
         | OnGoing of 'a
@@ -112,6 +112,8 @@ module Shared =
 
     type ServerMsg =
         | ChangeNuGet of NuGetChange.ChangeNugetNameModel
+        | ServerMsgNone
+        | TestMsg
 
     type ClientMsg = 
         | ChangeAction of BridgeAction

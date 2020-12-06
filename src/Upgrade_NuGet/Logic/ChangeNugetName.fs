@@ -9,6 +9,7 @@ open Global.Types
 open Feliz
 open Fable.Core.JsInterop
 open SharedTypes.NuGetChange
+open Elmish.Bridge
 
 let saveChanges model dispatch =
     match model.Info with
@@ -226,7 +227,7 @@ let changeNameRequestToMsgArray projectsWithNewNames =
                 changeNugetModel
                 |> SharedTypes.Shared.ServerMsg.ChangeNuGet
 
-            return( Bridge.Bridge.Send serverMsg)
+            Bridge.Send serverMsg
         })
 
 let ChangeNugetNameAndBuildSolution projects dispatch = 

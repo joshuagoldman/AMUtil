@@ -3,7 +3,6 @@ module App.Types
 open Main.Types
 
 type Msg =
-    | BatchAsync of Async<Msg> array
     | Global of Global.Types.GlobalMsg
     | MainMsg of  Main.Types.Msg
     | SocketMsg of SharedTypes.Shared.ClientMsg

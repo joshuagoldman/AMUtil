@@ -120,18 +120,24 @@ let mainPage model ( dispatch : Msg -> unit ) =
     | Global.Types.Git_Installed_Check_Performing ->
         Global.View.verifyPage
 
-let addDispatch ( model : Model ) dispatch = 
+let addDispatch ( model : Model ) dispatch = async {
     match model.Dispatch with
     | Some _ -> ()
     | _ ->
+        SharedTypes.Shared.ServerMsg.TestMsg
+        |> Bridge.Bridge.Send
+
         dispatch |>
         (
             Types.AddDispatch >>
             dispatch
         )
+}
 
 let root (model: Model) dispatch =
-    addDispatch |> ignore   
+    addDispatch model dispatch
+    |> Async.StartImmediate
+
     Html.div[
         prop.children[
             mainPage model dispatch
@@ -145,8 +151,8 @@ open Elmish.HMR
 
 // App
 Program.mkProgram init update root
+|> Program.withBridgeConfig (Bridge.endpoint "./socket" |> Bridge.withUrlMode Append)
 |> Program.toNavigable (parseHash pageParser) urlUpdate
-|> Program.withBridge SharedTypes.Shared.endpoint
 #if DEBUG
 |> Program.withDebugger
 #endif

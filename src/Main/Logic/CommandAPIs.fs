@@ -19,6 +19,9 @@ let isGitInstalledMsgsToDispatch dispatch
                                 ( firstResp : string ) = 
     Async.FromContinuations <| fun (resolve,_,_) ->
         let isInstalled =
+                "cmd/git"
+                |> firstResp.Contains ||
+
                 "bin/git"
                 |> firstResp.Contains
 
