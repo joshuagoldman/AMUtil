@@ -60,7 +60,7 @@ type Loading_To_Server_Result =
     | Loading_To_Server_Failed of string
 
 type Loading_To_Nuget_Server_Alternatives =
-    | Changing_Nuget_Name of float
+    | Changing_Nuget_Name of float * additionalMsg:string
     | Building
     | Executing_Nuget_Server_Command
 

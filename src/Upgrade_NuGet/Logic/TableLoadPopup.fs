@@ -90,12 +90,14 @@ let loadingIntoServerStrMsgs projs =
             match status with
             | Loading_Nuget_Status.Loading_Nuget_Info_Is_Not_Done alternatives ->
                 match alternatives with
-                | Loading_To_Nuget_Server_Alternatives.Changing_Nuget_Name progress ->
+                | Loading_To_Nuget_Server_Alternatives.Changing_Nuget_Name(progress,addMsg) ->
                     (
                         String.Format(
-                            "{0} -> {1}",
+                            "{0} -> {1}
+{2}",
                                 info.Name,
-                                "Changing NuGet version name"
+                                "Changing NuGet version name",
+                                addMsg
                         ),
                         Progress_Popup(progress)
                     )

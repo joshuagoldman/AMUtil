@@ -100,6 +100,7 @@ module Shared =
     type NuGetInfo = {
         ProjectName : string
         Uploaded : float
+        AddMsg : string
     }
 
     type BridgeAction =

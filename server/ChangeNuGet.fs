@@ -52,6 +52,7 @@ let receiveStream model ( clientDispatch : Dispatch<SharedTypes.Shared.ClientMsg
                 let nugetInfo = {
                     SharedTypes.Shared.NuGetInfo.ProjectName = model.Project.ProjectNamePure
                     SharedTypes.Shared.NuGetInfo.Uploaded = percentage |> float
+                    SharedTypes.Shared.NuGetInfo.AddMsg = "Reading existing bytes..."
                 }
 
                 let socketMsg =
@@ -108,6 +109,7 @@ let writeToFile ( model : ChangeNugetNameModel)
                 let nugetInfo = {
                     SharedTypes.Shared.NuGetInfo.ProjectName = model.Project.ProjectNamePure
                     SharedTypes.Shared.NuGetInfo.Uploaded = percentage |> float
+                    SharedTypes.Shared.NuGetInfo.AddMsg = "Writing new stream..."
                 }
 
                 let socketMsg =
@@ -125,6 +127,7 @@ let writeToFile ( model : ChangeNugetNameModel)
             let nugetInfo = {
                 SharedTypes.Shared.NuGetInfo.ProjectName = model.Project.ProjectNamePure
                 SharedTypes.Shared.NuGetInfo.Uploaded = 100.0 |> float
+                SharedTypes.Shared.NuGetInfo.AddMsg = "Finished writing new stream..."
             }
 
             let socketMsg =
@@ -149,6 +152,7 @@ let writeToFile ( model : ChangeNugetNameModel)
             let nugetInfo = {
                 SharedTypes.Shared.NuGetInfo.ProjectName = model.Project.ProjectNamePure
                 SharedTypes.Shared.NuGetInfo.Uploaded = 0.0 |> float
+                SharedTypes.Shared.NuGetInfo.AddMsg = "ERROR!"
             }
 
             let socketMsg =
@@ -200,6 +204,7 @@ let rec update model msg (clientDispatch: Elmish.Dispatch<SharedTypes.Shared.Cli
             let nugetInfo = {
                 SharedTypes.Shared.NuGetInfo.ProjectName = model.Project.ProjectNamePure
                 SharedTypes.Shared.NuGetInfo.Uploaded = 0.0 |> float
+                SharedTypes.Shared.NuGetInfo.AddMsg = "ERROR!"
             }
             let socketMsg =
                 (nugetInfo,err) |>
