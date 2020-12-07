@@ -18,6 +18,8 @@ let init result =
 
 let update msg (model:Model) : Types.Model * Global.Types.GlobalMsg * Cmd<Msg> =
     match msg with
+    | Upgrade_NuGet_Msg_None ->
+        model, Global.Types.MsgNone, []
     | Upgrade_Nuget_Async asyncMsg ->
         let msg =
             asyncMsg

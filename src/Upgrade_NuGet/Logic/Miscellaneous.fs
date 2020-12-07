@@ -158,6 +158,55 @@ let kickedOutTemplate dispatch msg =
 
     kickedOutMsg
 
+let changeToNuGetCommandMsgs (projs : Project_Info array ) dispatch =
+    let hasAValidName proj =
+        match proj.Nuget_Names.New_Nuget_Name with
+        | New_Nuget_Name.Has_New_Name validity ->
+            match validity with
+            | Nuget_Name_Valid newName ->
+                newName |> Some
+            | Upgrade_NuGet.Types.Nuget_Name_Not_Valid reason -> 
+                match reason with
+                | Upgrade_NuGet.Types.Not_Valid_Nuget_Reason.Nuget_Already_In_Server newName ->
+                    newName |> Some
+                | _ -> None
+        | _ -> None
+
+    let anyReadyMsgs =
+        projs
+        |> Array.choose (fun proj ->
+            match ( hasAValidName proj ) with
+            | Some validName ->
+                let deleteNuGetMsg =
+                    Perform_Nuget_Action_To_Server(proj,validName,dispatch)
+                let newStatus =
+                    Loading_To_Nuget_Server_Alternatives.Executing_Nuget_Server_Command |>
+                    (
+                        Loading_Nuget_Info_Is_Not_Done >>
+                        Loading_Info_To_Server
+                    )
+                 
+                let newLoadingStatusMsg =
+                    { proj with Loading_To_Server = newStatus} |>
+                    (
+                        Upgrade_NuGet.Types.Change_Project_Info 
+                    )
+                    |> turnIntoSendPopupWithNewState dispatch
+
+                [|
+                    newLoadingStatusMsg
+                    deleteNuGetMsg
+                |]
+                |> Upgrade_NuGet.Types.Batch
+                |> Some
+            | _ -> None)
+        |> function
+            | res when (res |> Array.length) <> 0 ->
+                res |> Some
+            | _ -> None
+
+    anyReadyMsgs
+
 let changeToBuildingMsgs projs dispatch =
     projs
     |> Array.map (fun proj ->
@@ -178,6 +227,19 @@ let changeToBuildingMsgs projs dispatch =
         newLoadingStatusMsg
         )
     |> Upgrade_NuGet.Types.Batch
+
+let nameToChose proj =
+    match proj.Nuget_Names.New_Nuget_Name with
+    | New_Nuget_Name.Has_New_Name newNameValidity ->
+        match newNameValidity with
+        | Nuget_Name_Validity.Nuget_Name_Valid newName ->
+            newName
+        | Nuget_Name_Validity.Nuget_Name_Not_Valid reason ->
+            match reason with
+            | Nuget_Already_In_Server newName ->
+                newName
+            | _ -> proj.Nuget_Names.CurrName
+    | _ -> proj.Nuget_Names.CurrName
 
 let allProjsLoadingDecisionQuestionPopup projects =
     projects
@@ -203,14 +265,14 @@ let allProjsLoadingDecisionQuestionPopup projects =
             String.Format(
                 "{0} -> version {1} is about to be deleted from NuGet server",
                 proj.Name,
-                proj.Nuget_Names.CurrName
+                nameToChose proj
             )
             |> Some
         | Server_Options.Is_To_Be_Updated ->
             String.Format(
                 "{0} -> version {1} is about to be replaced from NuGet server",
                 proj.Name,
-                proj.Nuget_Names.CurrName
+                nameToChose proj
             )
             |> Some)
     |> Array.collect (fun projMsg ->

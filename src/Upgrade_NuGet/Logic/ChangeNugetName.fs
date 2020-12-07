@@ -147,6 +147,30 @@ let changeNameRequestToMsgArray projectsWithNewNames =
             changeNugetModel
         )
 
+let existsProjectsWithNewNamesNoDelete projects =
+    projects
+    |> Array.choose (fun proj ->
+        match proj.Server_Options with
+        | Server_Options.Is_To_Be_Deleted -> None
+        | _ ->
+            match proj.Nuget_Names.New_Nuget_Name with
+            | New_Nuget_Name.Has_New_Name validity ->
+                match validity with
+                | Nuget_Name_Valid newName ->
+                    (proj,newName) |> Some
+                | Upgrade_NuGet.Types.Nuget_Name_Not_Valid reason -> 
+                    match reason with
+                    | Upgrade_NuGet.Types.Not_Valid_Nuget_Reason.Nuget_Already_In_Server newName ->
+                        (proj,newName) |> Some
+                    | _ -> None
+            | _ -> None)
+    |> function
+        | res when (res |> Array.length) <> 0 ->
+            res |> Some
+        | _ -> None
+
+
+
 let ChangeNugetNameAndBuildSolution projects dispatch = 
     let killPopup =
         Popup.Types.Popup_Is_Dead |>
@@ -175,28 +199,10 @@ let ChangeNugetNameAndBuildSolution projects dispatch =
             Upgrade_NuGet.Types.GlobalMsg_Upgrade_Nuget
         )
 
-    let existsProjectsWithNewNames =
-        projects
-        |> Array.choose (fun proj ->
-            match proj.Server_Options with
-            | Server_Options.Push_Nuget ->
-                match proj.Nuget_Names.New_Nuget_Name with
-                | New_Nuget_Name.Has_New_Name validity ->
-                    match validity with
-                    | Nuget_Name_Valid newName ->
-                        (proj,newName) |> Some
-                    | _ -> None
-                | _ -> None
-            | _ -> None)
-        |> function
-            | res when (res |> Array.length) <> 0 ->
-                res |> Some
-            | _ -> None
-
-    match existsProjectsWithNewNames with
-    | Some projectsWithNewNames ->
+    match (existsProjectsWithNewNamesNoDelete projects) with
+    | Some projectsWithNewNamesNoDelete ->
         let msgWithRequests = 
-            changeNameRequestToMsgArray projectsWithNewNames |>
+            changeNameRequestToMsgArray projectsWithNewNamesNoDelete |>
             (
                 SharedTypes.Shared.ServerMsg.ChangeNuGet >>
                 SendServerMsgs
@@ -231,18 +237,30 @@ let ChangeNugetNameAndBuildSolution projects dispatch =
         | _ -> 
             yesNoPopupMsg msgWithRequests
     | _ ->
-        let buildMsg =
-            dispatch |>
-            (
-                Build_Solution_If_Ready_Msg >>
-                delayedMessage 3000 >>
-                Upgrade_NuGet.Types.Upgrade_Nuget_Async
-            )
-        let buildAndChangeNameMsgs =
-            [|
-                Upgrade_NuGet.Logic.Miscellaneous.changeToBuildingMsgs projects dispatch
-                buildMsg
-            |]
-            |> Upgrade_NuGet.Types.Batch
+        let loadingProjsToChangeToNuGetCommand =
+            projects
+            |> Array.choose (fun proj ->
+                match proj.Server_Options with
+                | Server_Options.Is_To_Be_Deleted ->
+                    proj |> Some
+                | Server_Options.Is_To_Be_Updated ->
+                    None
+                | _ -> None )
+            |> function
+                | res when (res |> Array.length) <> 0 ->
+                    res |> Some
+                | _ -> None
 
-        yesNoPopupMsg buildAndChangeNameMsgs
+        match loadingProjsToChangeToNuGetCommand with
+        | Some nugetCommandProjs ->
+
+            match (Upgrade_NuGet.Logic.Miscellaneous.changeToNuGetCommandMsgs nugetCommandProjs dispatch) with
+            | Some msgsToDispatch ->
+                msgsToDispatch |>
+                (   
+                    Upgrade_NuGet.Types.Batch >>
+                    yesNoPopupMsg 
+                )
+                
+            | _ -> Upgrade_NuGet.Types.Upgrade_NuGet_Msg_None
+        | _ -> Upgrade_NuGet.Types.Upgrade_NuGet_Msg_None

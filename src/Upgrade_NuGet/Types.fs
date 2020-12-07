@@ -34,7 +34,7 @@ type Server_Options =
     | No_Server_Actions
 
 type Not_Valid_Nuget_Reason =
-    | Nuget_Already_In_Server 
+    | Nuget_Already_In_Server of string
     | Has_Wrong_Pattern
 
 type Nuget_Name_Validity =
