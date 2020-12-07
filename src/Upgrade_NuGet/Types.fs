@@ -132,8 +132,7 @@ type Msg =
     | Send_Popup_With_New_State of Msg * (Msg -> unit)
     | Send_Popup of (Msg -> unit)
     | Change_LogAnalyzer_Loading_Mix of Loganalyzer_Projects_Table_Result * (Msg -> unit)
-    | SendServerMsgs of Async<unit> array
-    | FailedWriteToNuget of projectName:string * (Msg -> unit ) * error:string
+    | SendServerMsgs of SharedTypes.Shared.ServerMsg
 
 type Model = {
     Info : Git_Info_Nuget

@@ -174,9 +174,9 @@ let update msg (model:Model) : Types.Model * Cmd<Types.Msg> =
                 |> App.Logic.SocketMsgHandle.handleActions model socketMsg
                 
             match socketMsgHandlingResult with
-            | App.Logic.SocketMsgHandle.SocketDecision.MsgsToDispatch msg ->
+            | App.Logic.SocketMsgHandle.SocketDecision.MsgsToDispatch newStateMsg ->
                 let msgIntoAppMsg =
-                    msg |>
+                    newStateMsg |>
                     (
                         Main.Types.Upgrade_NuGet_Msg >>
                         App.Types.MainMsg >>

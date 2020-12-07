@@ -138,20 +138,14 @@ let changeNameRequest ( socket : Browser.WebSocket ) changeNugetNameModel dispat
                         Msg = response.ToLower().Replace("@finished","")
                     }
 
-let changeNameRequestToMsgArray projectsWithNewNames =
-
+let changeNameRequestToMsgArray projectsWithNewNames = 
     projectsWithNewNames
-    |> Array.map (fun (proj : Project_Info,version) ->
-        async {
+    |> Array.map (fun (proj : Project_Info,version) -> 
 
             let changeNugetModel = reqModel version proj
 
-            let serverMsg =
-                changeNugetModel
-                |> SharedTypes.Shared.ServerMsg.ChangeNuGet
-
-            Bridge.Send serverMsg
-        })
+            changeNugetModel
+        )
 
 let ChangeNugetNameAndBuildSolution projects dispatch = 
     let killPopup =
@@ -202,17 +196,20 @@ let ChangeNugetNameAndBuildSolution projects dispatch =
     match existsProjectsWithNewNames with
     | Some projectsWithNewNames ->
         let msgWithRequests = 
-            changeNameRequestToMsgArray projectsWithNewNames 
-            |> SendServerMsgs
+            changeNameRequestToMsgArray projectsWithNewNames |>
+            (
+                SharedTypes.Shared.ServerMsg.ChangeNuGet >>
+                SendServerMsgs
+            ) 
             
         let loadingProjsToChangeToBuild =
             projects
             |> Array.choose (fun proj ->
                 match proj.Server_Options with
-                | Server_Options.Push_Nuget ->
+                | Server_Options.Is_To_Be_Deleted ->
                     proj |> Some
                 | Server_Options.Is_To_Be_Updated ->
-                    proj |> Some
+                    None
                 | _ -> None )
             |> function
                 | res when (res |> Array.length) <> 0 ->

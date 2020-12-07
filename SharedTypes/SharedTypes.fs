@@ -112,7 +112,7 @@ module Shared =
     }
 
     type ServerMsg =
-        | ChangeNuGet of NuGetChange.ChangeNugetNameModel
+        | ChangeNuGet of NuGetChange.ChangeNugetNameModel []
         | ServerMsgNone
         | TestMsg
 

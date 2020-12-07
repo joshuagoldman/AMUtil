@@ -12,9 +12,20 @@ let init _ ()=
 
 let update (clientDispatch : Dispatch<SharedTypes.Shared.ClientMsg>) msg (model : BridgeModel) =
     match msg with
-    | ChangeNuGet nugetModel ->
-
-        ChangeNuGetName.update nugetModel ChangeNuGetName.Initialize clientDispatch
+    | ChangeNuGet nugetModelArr ->
+        let actionsAsync =
+            nugetModelArr
+            |> Array.map (fun nugetModel ->
+                    async {
+                        ChangeNuGetName.update nugetModel ChangeNuGetName.Initialize clientDispatch
+                    }
+                )
+        
+        actionsAsync
+        |> Async.Parallel
+        |> Async.RunSynchronously
+        |> ignore
+        
 
         model, Cmd.none
     | ServerMsgNone -> 

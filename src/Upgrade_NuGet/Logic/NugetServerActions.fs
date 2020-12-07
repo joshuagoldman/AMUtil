@@ -142,36 +142,33 @@ let performNugetActionToServerAsync proj version dispatch = async {
         
         return(res)
     | Server_Options.Is_To_Be_Deleted ->
-        let! deleteResp = request nugetDeleteTemplate
+        let! res = strResponse (nugetDeleteTemplate proj.Name version)
         
-        match deleteResp.status with
-        | 200.0 ->
-            match (deleteResp.responseText.Contains("was deleted successfully.")) with
-            | false ->
-                
-                let errorMsg =
-                    getErrorMsg deleteResp.responseText "couldn't delete NuGet"
 
-                return(failedMsg errorMsg)
-        
-            | _ ->
-                let newStatus =
-                    Loading_To_Server_Result.Loading_To_Server_Succeeded |>
-                    (
-                        Loading_Nuget_Status.Loading_Nuget_Info_Is_Done >>
-                        Loading_Info_To_Server
-                    )
-                     
-                let newLoadingStatusMsg =
-                    { proj with Loading_To_Server = newStatus} |>
-                    (
-                        Upgrade_NuGet.Types.Change_Project_Info 
-                    )
-                    |> Upgrade_NuGet.Logic.Miscellaneous.turnIntoSendPopupWithNewState dispatch
+        match (res.Contains("was deleted successfully.")) with
+        | false ->
+            
+            let errorMsg =
+                getErrorMsg res "couldn't delete NuGet"
 
-                return(newLoadingStatusMsg)
+            return(failedMsg errorMsg)
+    
         | _ ->
-            return(failedMsg deleteResp.responseText)
+            let newStatus =
+                Loading_To_Server_Result.Loading_To_Server_Succeeded |>
+                (
+                    Loading_Nuget_Status.Loading_Nuget_Info_Is_Done >>
+                    Loading_Info_To_Server
+                )
+                 
+            let newLoadingStatusMsg =
+                { proj with Loading_To_Server = newStatus} |>
+                (
+                    Upgrade_NuGet.Types.Change_Project_Info 
+                )
+                |> Upgrade_NuGet.Logic.Miscellaneous.turnIntoSendPopupWithNewState dispatch
+
+            return(newLoadingStatusMsg)
     | _ ->
         return(MsgNone |> Upgrade_NuGet.Types.GlobalMsg_Upgrade_Nuget)
         

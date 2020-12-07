@@ -33,11 +33,19 @@ let isWrittenNewNugetNameValid newName project =
                         )
                             
                     | _ ->
-                        Not_Valid_Nuget_Reason.Nuget_Already_In_Server |>
-                        (
-                            Nuget_Name_Not_Valid >>
-                            Some
-                        )
+                        match project.Server_Options with
+                        | Server_Options.Is_To_Be_Deleted ->
+                            newName |>
+                            (
+                                Nuget_Name_Validity.Nuget_Name_Valid >>
+                                Some
+                            )
+                        | _ ->
+                            Not_Valid_Nuget_Reason.Nuget_Already_In_Server |>
+                            (
+                                Nuget_Name_Not_Valid >>
+                                Some
+                            )
                 | _ ->
                     Not_Valid_Nuget_Reason.Has_Wrong_Pattern |>
                     (

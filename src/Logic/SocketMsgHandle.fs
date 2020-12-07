@@ -24,19 +24,17 @@ let changeStatusFailed nugetUtils errMsg =
         [|
             { nugetUtils.TableProjInfo with Loading_To_Server = newStatus} |>
             (
-                Upgrade_NuGet.Types.Change_Project_Info >>
-                Global.Types.delayedMessage 3000
+                Upgrade_NuGet.Types.Change_Project_Info
             )
 
 
             nugetUtils.Dispatch |>
             (
-                Upgrade_NuGet.Types.Build_Solution_If_Ready_Msg >>
-                Global.Types.delayedMessage 3000
+                Upgrade_NuGet.Types.Build_Solution_If_Ready_Msg
             )
         |] |>
         (
-            Upgrade_NuGet.Types.Batch_Upgrade_Nuget_Async >>
+            Upgrade_NuGet.Types.Batch>>
             Upgrade_NuGet.Logic.Miscellaneous.turnIntoSendPopupWithNewState nugetUtils.Dispatch
         )
 
@@ -55,28 +53,26 @@ let changeStatusFinished nugetUtils =
         [|
             { nugetUtils.TableProjInfo with Loading_To_Server = newStatus} |>
             (
-                Upgrade_NuGet.Types.Change_Project_Info >>
-                Global.Types.delayedMessage 3000
+                Upgrade_NuGet.Types.Change_Project_Info
             )
 
 
             nugetUtils.Dispatch |>
             (
-                Upgrade_NuGet.Types.Build_Solution_If_Ready_Msg >>
-                Global.Types.delayedMessage 3000
+                Upgrade_NuGet.Types.Build_Solution_If_Ready_Msg
             )
         |] |>
         (
-            Upgrade_NuGet.Types.Batch_Upgrade_Nuget_Async >>
+            Upgrade_NuGet.Types.Batch >>
             Upgrade_NuGet.Logic.Miscellaneous.turnIntoSendPopupWithNewState nugetUtils.Dispatch
         )
 
     newLoadingStatusMsg
     |> MsgsToDispatch
 
-let changeStatus nugetUtils progress =
+let changeStatus nugetUtils progress additionalMsg =
     let newStatus =
-            progress |>
+            (progress,additionalMsg) |>
             (
                 Upgrade_NuGet.Types.Loading_To_Nuget_Server_Alternatives.Changing_Nuget_Name >>
                 Upgrade_NuGet.Types.Loading_Nuget_Info_Is_Not_Done >>
@@ -84,15 +80,9 @@ let changeStatus nugetUtils progress =
             )
 
     let newLoadingStatusMsg =
-        [|
-            { nugetUtils.TableProjInfo with Loading_To_Server = newStatus} |>
-            (
-                Upgrade_NuGet.Types.Change_Project_Info >>
-                Global.Types.delayedMessage 3000
-            )
-        |] |>
+        { nugetUtils.TableProjInfo with Loading_To_Server = newStatus} |>
         (
-            Upgrade_NuGet.Types.Batch_Upgrade_Nuget_Async >>
+            Upgrade_NuGet.Types.Change_Project_Info >>
             Upgrade_NuGet.Logic.Miscellaneous.turnIntoSendPopupWithNewState nugetUtils.Dispatch
         )
 
@@ -153,6 +143,6 @@ let handleActions ( model : App.Types.Model ) socketMsg dispatch =
             | Shared.OnGoing nugetInfo ->
                 match (projectTableExists model dispatch nugetInfo.ProjectName) with
                 | Some nugetUtils ->
-                    changeStatus nugetUtils nugetInfo.Uploaded
+                    changeStatus nugetUtils nugetInfo.Uploaded nugetInfo.AddMsg
                 | _ ->
                     NoSocketDecision
