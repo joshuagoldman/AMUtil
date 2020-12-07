@@ -110,6 +110,7 @@ type Nuget_Server_Options =
     | Nuget_Server_Is_Not_Available
 
 type Msg =
+    | Upgrade_NuGet_Msg_None
     | Batch of Msg[]
     | Batch_Upgrade_Nuget_Async of Async<Msg>[]
     | Upgrade_Nuget_Async of Async<Msg>

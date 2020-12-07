@@ -256,11 +256,14 @@ let ChangeNugetNameAndBuildSolution projects dispatch =
 
             match (Upgrade_NuGet.Logic.Miscellaneous.changeToNuGetCommandMsgs nugetCommandProjs dispatch) with
             | Some msgsToDispatch ->
-                msgsToDispatch |>
-                (   
-                    Upgrade_NuGet.Types.Batch >>
-                    yesNoPopupMsg 
-                )
+                let res = 
+                    msgsToDispatch |>
+                    (   
+                        Upgrade_NuGet.Types.Batch >>
+                        yesNoPopupMsg 
+                    )
+
+                res
                 
-            | _ -> Upgrade_NuGet.Types.Upgrade_NuGet_Msg_None
+            | _ ->  Upgrade_NuGet.Types.Upgrade_NuGet_Msg_None
         | _ -> Upgrade_NuGet.Types.Upgrade_NuGet_Msg_None
